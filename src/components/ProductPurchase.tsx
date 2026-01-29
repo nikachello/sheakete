@@ -4,6 +4,7 @@ import ProductOptions from "./ProductOptions";
 import { pipeOptions } from "@/lib/products";
 import CountdownTimer from "./CountdownTimer";
 import { ComboOptions } from "@/lib/types";
+import { createLead } from "@/lib/actions";
 
 const ProductPurchase = ({
   comboOptions,
@@ -46,13 +47,20 @@ const ProductPurchase = ({
     `;
 
     try {
-      const res = await fetch("/api/telegram", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message }),
+      // const res = await fetch("/api/telegram", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ message }),
+      // });
+      const res = await createLead({
+        name,
+        phone,
+        productTitle,
+        comboDetails: `${currentOption?.quantity} ${unit}`, // Format combo info
+        price: currentOption?.totalPrice || 0,
       });
 
-      if (res.ok) {
+      if (res.success) {
         setIsSuccess(true);
         setName("");
         setPhone("");
