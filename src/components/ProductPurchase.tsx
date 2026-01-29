@@ -3,31 +3,43 @@ import { useState } from "react";
 import ProductOptions from "./ProductOptions";
 import { pipeOptions } from "@/lib/products";
 import CountdownTimer from "./CountdownTimer";
+import { ComboOptions } from "@/lib/types";
 
-const ProductPurchase = () => {
-  const [selectedOption, setSelectedOption] = useState(2);
+const ProductPurchase = ({
+  comboOptions,
+  unit,
+}: {
+  comboOptions: ComboOptions[];
+  unit: string;
+}) => {
+  const [selectedOptionKey, setSelectedOptionKey] = useState(
+    comboOptions?.find((opt) => opt.isPopular)?._key || comboOptions?.[0]?._key
+  );
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
 
-  const currentOption = pipeOptions.find(
-    (option) => option.id === selectedOption
+  const currentOption = comboOptions?.find(
+    (option) => option._key === selectedOptionKey
   );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ name, phone, selectedOption, price: currentOption?.price });
   };
+
+  console.log(comboOptions);
 
   return (
     <div className="flex flex-col gap-4 w-full">
       <ProductOptions
-        selectedOption={selectedOption}
-        setOption={setSelectedOption}
+        selectedOption={selectedOptionKey}
+        setOption={setSelectedOptionKey}
+        options={comboOptions}
+        unit={unit}
       />
       <div className="flex flex-col gap-2">
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 items-start sm:items-center">
           <p className="text-xl md:text-2xl font-bold text-red-500">
-            {currentOption?.title} - {currentOption?.price} ლარი
+            {currentOption?.quantity} {unit} - {currentOption?.totalPrice} ლარი
           </p>
           <p className="bg-sky-600 text-xs p-2 rounded-full text-white whitespace-nowrap">
             50% ფასდაკლება

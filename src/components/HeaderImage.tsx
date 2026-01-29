@@ -1,10 +1,10 @@
 import Image from "next/image";
 
-export default function HeaderImage() {
+export default function HeaderImage({ imageUrl }: { imageUrl: string }) {
   return (
     <div className="w-full">
       <Image
-        src="/images/header-1.png"
+        src={imageUrl}
         width={1000}
         height={400}
         alt="header-1"

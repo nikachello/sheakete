@@ -1,7 +1,5 @@
-const ProductDescription = () => {
-  return (
-    <div>გაქვს სახლში სხვადასხვა სამუშაო? ეს თქვენთვის იდეალური მიგნებაა!</div>
-  );
+const ProductDescription = ({ description }: { description: string }) => {
+  return <div>{description}</div>;
 };
 
 export default ProductDescription;

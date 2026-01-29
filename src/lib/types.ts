@@ -5,3 +5,11 @@ export type ProductOption = {
   pricePerUnit: number;
   isPopular?: boolean;
 };
+
+export type ComboOptions = {
+  _key: string;
+  isPopular: boolean;
+  unitPrice: number;
+  quantity: number;
+  totalPrice: number;
+};

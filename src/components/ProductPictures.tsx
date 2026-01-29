@@ -1,37 +1,25 @@
 import Image from "next/image";
-import React from "react";
 
-const ProductPictures = () => {
+interface Props {
+  images: { url: string; alt?: string }[];
+}
+
+const ProductPictures = ({ images }: Props) => {
+  if (!images || images.length === 0) return null;
+
   return (
-    <div className="mt-2 flex flex-col gap-2">
-      <Image
-        src={"/images/product-1.jpg"}
-        alt="image-1"
-        width={1000}
-        height={400}
-        className="shadow-lg"
-      />
-      <Image
-        src={"/images/product-2.jpg"}
-        alt="image-1"
-        width={1000}
-        height={400}
-        className="shadow-lg"
-      />
-      <Image
-        src={"/images/product-3.jpg"}
-        alt="image-1"
-        width={1000}
-        height={400}
-        className="shadow-lg"
-      />
-      <Image
-        src={"/images/product-4.jpg"}
-        alt="image-1"
-        width={1000}
-        height={400}
-        className="shadow-lg"
-      />
+    <div className="grid grid-cols-1 gap-4 w-full">
+      {images.map((image, index) => (
+        <div key={index}>
+          <Image
+            src={image.url}
+            alt={image.alt || "Product image"}
+            width={1000}
+            height={400}
+            className="object-contain rounded-xl shadow-xl"
+          />
+        </div>
+      ))}
     </div>
   );
 };

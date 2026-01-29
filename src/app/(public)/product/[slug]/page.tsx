@@ -8,7 +8,25 @@ import ProductPurchase from "@/components/ProductPurchase";
 import ProductTitle from "@/components/ProductTitle";
 import Rating from "@/components/Rating";
 import Urgency from "@/components/Urgency";
+import { isEmpty } from "@/lib/helpers";
+import { client } from "@/lib/sanity.client";
 import { notFound } from "next/navigation";
+
+const query = `
+  *[_type == "product" && slug.current == $slug][0]{
+    title,
+    description,
+    price,
+    cons,
+    unit,
+    combos,
+    "imageUrl": image.asset->url,
+    "gallery": gallery[]{
+      "url": asset->url,
+      alt
+    }
+  }
+`;
 
 export default async function ProductPage({
   params,
@@ -17,28 +35,32 @@ export default async function ProductPage({
 }) {
   const { slug } = await params;
 
-  if (slug !== "pipe") notFound();
+  const product = await client.fetch(query, {
+    slug,
+  });
+
+  if (isEmpty(product)) return <div>არ მოიძებნა პროდუქტი</div>;
 
   return (
     <div className="flex flex-col gap-6 md:gap-10 w-full">
       {/* Header Text */}
       <HeaderText />
       {/*  Header Image */}
-      <HeaderImage />
+      <HeaderImage imageUrl={product.imageUrl} />
       {/* Urgency */}
       <Urgency />
       {/* Title */}
-      <ProductTitle />
+      <ProductTitle title={product.title} />
       {/* Ratings */}
       <Rating />
       {/* Product Cons List */}
-      <ProductConsList />
+      <ProductConsList cons={product.cons} />
       {/* Description */}
-      <ProductDescription />
+      <ProductDescription description={product.description} />
       {/* Options Chooser */}
-      <ProductPurchase />
+      <ProductPurchase comboOptions={product.combos} unit={product.unit} />
       {/* Product Images */}
-      <ProductPictures />
+      <ProductPictures images={product.gallery} />
       {/* Footer */}
       <Footer />
     </div>
