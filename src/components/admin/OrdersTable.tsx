@@ -16,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -80,11 +79,11 @@ export default function OrdersTable({ data: initialData }: { data: any[] }) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="PENDING">⏳მოლოდინში</SelectItem>
-              <SelectItem value="NO_ANSWER">📞არ პასუხობს</SelectItem>
-              <SelectItem value="CONFIRMED">✅დადასტურებული</SelectItem>
-              <SelectItem value="CANCELLED">❌გაუქმებული</SelectItem>
-              <SelectItem value="PAID">💰გადახდილი</SelectItem>
+              <SelectItem value="PENDING">მოლოდინში</SelectItem>
+              <SelectItem value="NO_ANSWER">არ პასუხობს</SelectItem>
+              <SelectItem value="CONFIRMED">დადასტურებული</SelectItem>
+              <SelectItem value="CANCELLED">გაუქმებული</SelectItem>
+              <SelectItem value="PAID">გადახდილი</SelectItem>
             </SelectContent>
           </Select>
         );
@@ -114,7 +113,15 @@ export default function OrdersTable({ data: initialData }: { data: any[] }) {
           <TabsTrigger value="LEADS">
             ლიდები ({initialData.filter((o) => o.status === "PENDING").length})
           </TabsTrigger>
-          <TabsTrigger value="ORDERS">შეკვეთები</TabsTrigger>
+          <TabsTrigger value="ORDERS">
+            შეკვეთები (
+            {
+              initialData.filter((o) =>
+                ["CONFIRMED", "RECEIVED", "SHIPPED", "PAID"].includes(o.status)
+              ).length
+            }
+            )
+          </TabsTrigger>
         </TabsList>
       </Tabs>
 

@@ -12,7 +12,7 @@ export default async function AdminDashboard() {
 
   const totalRevenue = orders
     .filter((o) => o.status === "PAID" || o.status === "CONFIRMED")
-    .reduce((acc, curr) => acc + (curr.price ?? 0), 0);
+    .reduce((acc, curr) => acc + Number(curr.actualPaidPrice ?? 0), 0);
 
   return (
     <div className="p-8 bg-slate-50 min-h-screen space-y-8">

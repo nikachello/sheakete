@@ -47,4 +47,6 @@ model Order {
   status         OrderStatus @default(PENDING)
   
   notes          String?
+
+  actualPaidPrice String?
 }

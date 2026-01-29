@@ -11,7 +11,7 @@ export type CreateLeadInput = {
   comboDetails?: string;
   price: number;
   notes?: string;
-  isManual?: boolean; // If true, we can customize the TG message
+  actualPaidPrice?: string;
 };
 
 export const createLead = async (formData: CreateLeadInput) => {
@@ -26,7 +26,7 @@ export const createLead = async (formData: CreateLeadInput) => {
         price: formData.price,
         notes: formData.notes,
         status: "PENDING",
-        type: formData.isManual ? "ORDER" : "LEAD", // Manual entries usually start as Orders
+        actualPaidPrice: formData.actualPaidPrice,
       },
     });
 
@@ -35,9 +35,8 @@ export const createLead = async (formData: CreateLeadInput) => {
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
     if (botToken && chatId) {
-      const sourceEmoji = formData.isManual ? "📝 (Admin)" : "🌐 (Web)";
       const message =
-        `<b>${sourceEmoji} ახალი შეკვეთა!</b>\n\n` +
+        `<b> ახალი შეკვეთა!</b>\n\n` +
         `<b>👤 სახელი:</b> ${formData.name}\n` +
         `<b>📞 ტელ:</b> ${formData.phone}\n` +
         `<b>📦 პროდუქტი:</b> ${formData.productTitle}\n` +

@@ -29,6 +29,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
     phone: "",
     productId: "",
     comboKey: "",
+    actualPaidPrice: "",
   });
 
   const selectedProduct = products.find((p) => p._id === formData.productId);
@@ -47,10 +48,17 @@ export default function OrderForm({ products }: { products: Product[] }) {
       productTitle: selectedProduct.title,
       comboDetails: `${selectedCombo.quantity} ${selectedProduct.unit}`,
       price: selectedCombo.totalPrice,
+      actualPaidPrice: formData.actualPaidPrice,
     });
 
     if (res.success) {
-      setFormData({ name: "", phone: "", productId: "", comboKey: "" });
+      setFormData({
+        name: "",
+        phone: "",
+        productId: "",
+        comboKey: "",
+        actualPaidPrice: "",
+      });
     } else {
       alert(res.error);
     }
@@ -133,6 +141,18 @@ export default function OrderForm({ products }: { products: Product[] }) {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>გადასახდელი თანხა</Label>
+            <Input
+              type="text"
+              value={formData.actualPaidPrice}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
+              required
+            />
           </div>
 
           <Button
