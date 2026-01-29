@@ -8,25 +8,81 @@ import { ComboOptions } from "@/lib/types";
 const ProductPurchase = ({
   comboOptions,
   unit,
+  productTitle,
 }: {
   comboOptions: ComboOptions[];
   unit: string;
+  productTitle: string;
 }) => {
   const [selectedOptionKey, setSelectedOptionKey] = useState(
     comboOptions?.find((opt) => opt.isPopular)?._key || comboOptions?.[0]?._key
   );
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const currentOption = comboOptions?.find(
     (option) => option._key === selectedOptionKey
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    const message = `
+🚀 **ახალი შეკვეთა!**
+━━━━━━━━━━━━━━━━
+📦 **პროდუქტი:** ${productTitle}
+👤 **სახელი:** ${name}
+📞 **ტელეფონი:** \`${phone}\`
+━━━━━━━━━━━━━━━━
+🎁 **არჩევანი:** ${currentOption?.quantity} ${unit}
+💰 **ჯამური ფასი:** ${currentOption?.totalPrice} ლარი
+━━━━━━━━━━━━━━━━
+📅 ${new Date().toLocaleString("ka-GE")}
+    `;
+
+    try {
+      const res = await fetch("/api/telegram", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+
+      if (res.ok) {
+        setIsSuccess(true);
+        setName("");
+        setPhone("");
+      } else {
+        alert("ვერ გაიგზავნა. სცადეთ მოგვიანებით.");
+      }
+    } catch (err) {
+      alert("დაფიქსირდა შეცდომა.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  console.log(comboOptions);
+  if (isSuccess) {
+    return (
+      <div className="bg-green-50 border-2 border-green-500 rounded-2xl p-8 text-center flex flex-col items-center gap-4">
+        <div className="text-5xl">✅</div>
+        <h2 className="text-2xl font-bold text-green-700">
+          შეკვეთა მიღებულია!
+        </h2>
+        <p className="text-green-600">ჩვენი მენეჯერი მალე დაგიკავშირდებათ.</p>
+        <button
+          onClick={() => setIsSuccess(false)}
+          className="text-sm underline text-green-800 mt-4"
+        >
+          ახალი შეკვეთა
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4 w-full">
@@ -47,7 +103,7 @@ const ProductPurchase = ({
         </div>
         <p className="text-xs">✅მარაგშია</p>
         <CountdownTimer />
-        <div className="mt-4">
+        <div className="mt-4 scroll-mt-15">
           <p className="text-xl md:text-2xl font-bold mb-4">
             შესაძენად შეავსე განაცხადი:
           </p>

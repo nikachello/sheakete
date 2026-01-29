@@ -16,7 +16,7 @@ const ProductOptions = ({
 }) => {
   console.log("from options:", options);
   return (
-    <>
+    <div id="purchase-form">
       <h1 className="text-xl md:text-2xl font-bold mb-4">
         შეიძინე მეტი უფრო იაფად
       </h1>
@@ -45,7 +45,7 @@ const ProductOptions = ({
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 };
 

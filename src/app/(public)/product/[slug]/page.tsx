@@ -58,7 +58,11 @@ export default async function ProductPage({
       {/* Description */}
       <ProductDescription description={product.description} />
       {/* Options Chooser */}
-      <ProductPurchase comboOptions={product.combos} unit={product.unit} />
+      <ProductPurchase
+        productTitle={product.title}
+        comboOptions={product.combos}
+        unit={product.unit}
+      />
       {/* Product Images */}
       <ProductPictures images={product.gallery} />
       {/* Footer */}

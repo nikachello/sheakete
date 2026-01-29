@@ -9,9 +9,12 @@ const HeaderCard = () => {
       <p className="font-georgian text-lg md:text-2xl mb-6">
         შეუკვეთეთ და მიიღეთ პროდუქცია მეორე დღეს განსაკუთრებული ფასდაკლებით!
       </p>
-      <button className="bg-white text-[#8B5E3C] font-bold px-8 py-3 rounded-full shadow-md hover:bg-gray-100 transition cursor-pointer">
+      <a
+        href="#purchase-form"
+        className="inline-block bg-white text-[#8B5E3C] font-bold px-8 py-3 rounded-full shadow-md hover:bg-gray-100 transition cursor-pointer"
+      >
         შეუკვეთეთ ახლავე
-      </button>
+      </a>
     </div>
   );
 };
