@@ -14,6 +14,24 @@ export default async function AdminDashboard() {
     .filter((o) => o.status === "PAID" || o.status === "CONFIRMED")
     .reduce((acc, curr) => acc + Number(curr.actualPaidPrice ?? 0), 0);
 
+  const confirmed = orders.filter((o) =>
+    ["CONFIRMED", "PAID", "SHIPPED", "RECEIVED"].includes(o.status)
+  );
+
+  const stats = confirmed.reduce(
+    (acc, curr) => {
+      const revenue = curr.price || 0;
+      const costs = (curr.productCost || 0) + (curr.shippingCost || 0);
+
+      return {
+        revenue: acc.revenue + revenue,
+        expenses: acc.expenses + costs,
+        profit: acc.profit + (revenue - costs),
+      };
+    },
+    { revenue: 0, expenses: 0, profit: 0 }
+  );
+
   return (
     <div className="p-8 bg-slate-50 min-h-screen space-y-8">
       <div className="flex justify-between items-center">

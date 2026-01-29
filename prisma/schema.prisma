@@ -41,12 +41,15 @@ model Order {
   customerPhone  String
   productTitle   String?
   comboDetails   String?
+
   price          Float?
+  productCost Float @default(0)
+  shippingCost Float @default(0)
+  actualPaidPrice String?
+
   
   type           OrderType   @default(LEAD)
   status         OrderStatus @default(PENDING)
-  
   notes          String?
-
-  actualPaidPrice String?
+  
 }

@@ -149,7 +149,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
               type="text"
               value={formData.actualPaidPrice}
               onChange={(e) =>
-                setFormData({ ...formData, phone: e.target.value })
+                setFormData({ ...formData, actualPaidPrice: e.target.value })
               }
               required
             />

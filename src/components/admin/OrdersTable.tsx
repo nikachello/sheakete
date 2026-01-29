@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { updateOrderStatus } from "@/lib/actions";
+import { updateOrder, updateOrderStatus } from "@/lib/actions";
 import { OrderStatus } from "generated/prisma/enums";
 
 const columnHelper = createColumnHelper<any>();
@@ -89,9 +89,34 @@ export default function OrdersTable({ data: initialData }: { data: any[] }) {
         );
       },
     }),
+    columnHelper.accessor("shippingCost", {
+      header: "კურიერის ხარჯი",
+      cell: (info) => (
+        <div className="flex items-center gap-1">
+          <input
+            type="number"
+            defaultValue={info.getValue() || 0}
+            className="w-16 border rounded px-1 text-sm py-1 focus:ring-1 focus:ring-blue-500 outline-none"
+            onBlur={(e) => {
+              const val = parseFloat(e.target.value);
+              if (val !== info.getValue()) {
+                updateOrder(info.row.original.id, { shippingCost: val });
+              }
+            }}
+          />
+          <span className="text-xs text-muted-foreground">₾</span>
+        </div>
+      ),
+    }),
     columnHelper.accessor("price", {
       header: "ფასი",
       cell: (info) => <span className="font-bold">{info.getValue()} ₾</span>,
+    }),
+    columnHelper.accessor("actualCost", {
+      header: "რეალური თანხა",
+      cell: (info) => (
+        <span className="font-bold">{info.row.original.actualPaidPrice} ₾</span>
+      ),
     }),
   ];
 

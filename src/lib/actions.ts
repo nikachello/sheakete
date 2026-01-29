@@ -93,3 +93,33 @@ export const getOrders = async () => {
     orderBy: { createdAt: "desc" },
   });
 };
+
+export async function updateOrder(
+  orderId: string,
+  data: Partial<{
+    status: OrderStatus;
+    price: number;
+    productCost: number;
+    shippingCost: number;
+    notes: string;
+  }>
+) {
+  try {
+    // Logic: If status is confirmed/paid, ensure it is marked as an ORDER type
+    const updateData: any = { ...data };
+    if (data.status && ["CONFIRMED", "PAID", "SHIPPED"].includes(data.status)) {
+      updateData.type = "ORDER";
+    }
+
+    const updated = await prisma.order.update({
+      where: { id: orderId },
+      data: updateData,
+    });
+
+    revalidatePath("/admin/dashboard");
+    return { success: true, updated };
+  } catch (error) {
+    console.error("Update Error:", error);
+    return { success: false, error: "განახლება ვერ მოხერხდა" };
+  }
+}
