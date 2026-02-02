@@ -5,6 +5,7 @@ import { createColumnHelper, ColumnDef } from "@tanstack/react-table";
 import { Lead } from "@/types/leads";
 import { updateLead } from "@/actions/admin/leads-actions";
 import { OrderStatus } from "generated/prisma/enums";
+import { ConfirmLeadDialog } from "../ConfirmLeadToOrderDialog";
 
 const columnHelper = createColumnHelper<Lead>();
 
@@ -15,7 +16,7 @@ const statusColors: Record<string, string> = {
   CONFIRMED: "bg-blue-500",
 };
 
-// EditableCell for text fields
+// Editable text cell
 function EditableCell({
   value: initialValue,
   rowId,
@@ -62,22 +63,27 @@ function EditableCell({
   );
 }
 
-// EditableStatusCell
+// Status cell with select and dialog trigger
 function EditableStatusCell({
   value: initialValue,
   rowId,
+  lead,
 }: {
   value: string;
   rowId: string;
+  lead: Lead;
 }) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(initialValue);
+  const [openDialog, setOpenDialog] = useState(false);
 
-  const handleSave = async (newValue: string) => {
-    if (newValue !== initialValue) {
+  const handleChange = async (newValue: string) => {
+    if (newValue === "CONFIRMED") {
+      setOpenDialog(true);
+    } else {
       await updateLead(rowId, { status: newValue as OrderStatus });
+      setValue(newValue);
     }
-    setValue(newValue);
     setEditing(false);
   };
 
@@ -87,8 +93,8 @@ function EditableStatusCell({
     return (
       <select
         value={value}
-        onChange={(e) => handleSave(e.target.value)}
-        onBlur={() => handleSave(value)}
+        onChange={(e) => handleChange(e.target.value)}
+        onBlur={() => setEditing(false)}
         autoFocus
         className="px-2 py-1 text-xs sm:text-sm border rounded focus:outline-none focus:ring-1 focus:ring-slate-400"
       >
@@ -102,19 +108,33 @@ function EditableStatusCell({
   }
 
   return (
-    <span
-      className={`px-2 py-1 rounded-full text-white text-xs font-semibold cursor-pointer ${
-        statusColors[value] || "bg-gray-400"
-      }`}
-      onDoubleClick={() => setEditing(true)}
-      onTouchStart={() => setEditing(true)}
-    >
-      {value.replace("_", " ")}
-    </span>
+    <>
+      <span
+        className={`px-2 py-1 rounded-full text-white text-xs font-semibold cursor-pointer ${
+          statusColors[value] || "bg-gray-400"
+        }`}
+        onClick={() => setEditing(true)}
+        onDoubleClick={() => setEditing(true)}
+        onTouchStart={() => setEditing(true)}
+      >
+        {value.replace("_", " ")}
+      </span>
+
+      {openDialog && (
+        <ConfirmLeadDialog
+          leadId={rowId}
+          defaultCity={lead.city || ""}
+          defaultAddress={lead.address || ""}
+          productTitle={lead.productTitle || ""}
+          expectedPrice={lead.expectedPrice || 0}
+          onClose={() => setOpenDialog(false)}
+        />
+      )}
+    </>
   );
 }
 
-// Columns definition
+// Columns
 export const leadColumns: ColumnDef<Lead, any>[] = [
   columnHelper.accessor("id", {
     header: "ID",
@@ -147,7 +167,11 @@ export const leadColumns: ColumnDef<Lead, any>[] = [
   columnHelper.accessor("status", {
     header: "სტატუსი",
     cell: ({ row, getValue }) => (
-      <EditableStatusCell value={getValue<string>()} rowId={row.original.id} />
+      <EditableStatusCell
+        value={getValue<string>()}
+        rowId={row.original.id}
+        lead={row.original}
+      />
     ),
   }),
   columnHelper.accessor("createdAt", {
@@ -163,15 +187,15 @@ export const leadColumns: ColumnDef<Lead, any>[] = [
   }),
   columnHelper.accessor("productTitle", {
     header: "პროდუქტი",
-    cell: (info) => {
-      return <span className="text-sm text-gray-500">{info.getValue()}</span>;
-    },
+    cell: (info) => (
+      <span className="text-sm text-gray-500">{info.getValue()}</span>
+    ),
   }),
   columnHelper.accessor("comboDetails", {
     header: "შეთავაზება",
-    cell: (info) => {
-      return <span className="text-sm text-gray-500">{info.getValue()}</span>;
-    },
+    cell: (info) => (
+      <span className="text-sm text-gray-500">{info.getValue()}</span>
+    ),
   }),
   columnHelper.accessor("expectedPrice", {
     header: "ფასი",

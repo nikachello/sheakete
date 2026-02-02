@@ -16,8 +16,6 @@ export const getLeads = async () => {
   });
 };
 
-// app/actions/leads.ts
-
 export async function updateLead(
   id: string,
   data: Partial<{
@@ -39,6 +37,29 @@ export async function updateLead(
     data,
   });
 
-  // Optional: revalidate the leads page so RSC updates
+  revalidatePath("/leads");
+}
+
+export async function confirmLeadAndCreateOrder(
+  leadId: string,
+  data: {
+    city?: string;
+    address?: string;
+    productTitle?: string;
+    expectedPrice?: number;
+  }
+) {
+  await prisma.order.update({
+    where: { id: leadId },
+    data: {
+      type: "ORDER",
+      status: "CONFIRMED",
+      city: data.city,
+      address: data.address,
+      productTitle: data.productTitle,
+      expectedPrice: data.expectedPrice,
+    },
+  });
+
   revalidatePath("/leads");
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,6 +10,7 @@ import {
   SortingState,
   PaginationState,
 } from "@tanstack/react-table";
+import { useState } from "react";
 import { Lead } from "@/types/leads";
 import { leadColumns } from "./columns";
 import {
@@ -49,7 +49,7 @@ export function LeadsTable({ leads }: Props) {
 
   return (
     <div className="w-full max-w-full space-y-4">
-      {/* Header & Search */}
+      {/* Header + Search */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-2">
         <div>
           <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-slate-900">
@@ -99,6 +99,7 @@ export function LeadsTable({ leads }: Props) {
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
                   className="group transition-colors hover:bg-slate-50/50"
                 >
                   {row.getVisibleCells().map((cell) => (
