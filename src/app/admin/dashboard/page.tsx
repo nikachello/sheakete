@@ -8,7 +8,7 @@ import { NeedsAttentionTable } from "@/components/admin/dashboard/NeedsAttention
 import { RecentActivityFeed } from "@/components/admin/dashboard/RecentActivityFeed";
 import { DASHBOARD_LAYOUT } from "@/constants/dashboard";
 import { extractMetrics } from "@/utils/dashboard/mapper";
-import { buildStatCards } from "@/utils/metricsToCards";
+import { buildStatCards } from "@/utils/dashboard/metricsToCards";
 
 export const revalidate = 0;
 

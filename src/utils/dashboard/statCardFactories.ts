@@ -1,6 +1,6 @@
 import { DashboardMetrics, StatCard } from "@/types/dashboard";
 import { STAT_CARD_CONFIG } from "@/constants/dashboard";
-import { formatCurrency, formatNumber } from "./formatters";
+import { formatCurrency, formatNumber } from "../formatters";
 
 export const STAT_CARD_FACTORIES: Record<
   string,
