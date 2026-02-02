@@ -29,20 +29,14 @@ export default async function AdminDashboardPage() {
   const needAttentionTableRows = await getNeedsAttention(10);
 
   return (
-    <div className="flex min-h-screen bg-zinc-50/50">
-      <Sidebar />
-
-      <main className="flex-1 pt-20 lg:pt-10">
-        {/* 
-          pt-20 on mobile to clear the absolute hamburger button
-          lg:pt-10 on desktop for normal spacing
-        */}
-        <div className="max-w-7xl mx-auto px-6">
+    <>
+      <div>
+        <div className="max-w-7xl mx-auto">
           <DataCard stats={stats} />
           <NeedsAttentionTable rows={needAttentionTableRows} />
           <RecentActivityFeed activity={recentActivity} />
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }
