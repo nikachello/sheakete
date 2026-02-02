@@ -1,10 +1,9 @@
 "use client";
 import { useState } from "react";
 import ProductOptions from "./ProductOptions";
-import { pipeOptions } from "@/lib/products";
 import CountdownTimer from "./CountdownTimer";
-import { ComboOptions } from "@/lib/types";
-import { createLead } from "@/lib/actions";
+import { ComboOptions } from "@/types/product";
+import { createLead } from "@/actions/public/leads-actions";
 
 const ProductPurchase = ({
   comboOptions,

@@ -15,3 +15,13 @@ export interface Lead {
   paymentStatus: PaymentStatus;
   notes?: string | null;
 }
+
+export type CreateLeadInput = {
+  name: string;
+  phone: string;
+  productTitle: string;
+  comboDetails?: string;
+  price: number;
+  notes?: string;
+  actualPaidPrice?: string;
+};
