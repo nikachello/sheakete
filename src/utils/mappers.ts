@@ -1,4 +1,3 @@
-import { STAT_CARD_CONFIG } from "@/lib/constants";
 import {
   DashboardMetrics,
   RawDashboardData,
@@ -6,6 +5,7 @@ import {
 } from "@/types/dashboard";
 import { OrderStatus, PaymentStatus } from "generated/prisma/enums";
 import { formatCurrency, formatNumber, calculateTrend } from "./formatter";
+import { STAT_CARD_CONFIG } from "@/constants/dashboard";
 
 /**
  * Extract business metrics from raw database results

@@ -1,29 +1,3 @@
-import { OrderStatus, PaymentStatus } from "generated/prisma/enums";
-
-/**
- * Human-readable labels for order statuses
- * Single source of truth for status display names
- */
-export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  PENDING: "მიმდინარე",
-  NO_ANSWER: "პასუხის გარეშე",
-  CANCELLED: "გაუქმებული",
-  CONFIRMED: "დადასტურებული",
-  SHIPPED: "გაგზავნილი",
-  DELIVERED: "მიწოდებული",
-  RETURNED: "დაბრუნებული",
-} as const;
-
-/**
- * Human-readable labels for payment statuses
- */
-export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
-  AWAITING_COLLECTION: "ასაღები",
-  COLLECTED: "აღებული",
-  SETTLED: "ჩარიცხული",
-  REFUNDED: "დაბრუნებული",
-} as const;
-
 export const STAT_CARD_CONFIG = {
   PENDING_LEADS: {
     title: "ახალი ლიდები",

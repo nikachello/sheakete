@@ -1,4 +1,4 @@
-import { DEFAULT_CURRENCY } from "@/lib/constants";
+import { DEFAULT_CURRENCY } from "@/constants/dashboard";
 import { TrendData } from "@/types/dashboard";
 import { OrderStatus } from "generated/prisma/enums";
 

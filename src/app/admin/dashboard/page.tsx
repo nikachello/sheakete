@@ -6,7 +6,7 @@ import {
 import { DataCard } from "@/components/admin/dashboard/DataCard";
 import { NeedsAttentionTable } from "@/components/admin/dashboard/NeedsAttentionTable";
 import { RecentActivityFeed } from "@/components/admin/dashboard/RecentActivityFeed";
-import { DASHBOARD_LAYOUT } from "@/lib/constants";
+import { DASHBOARD_LAYOUT } from "@/constants/dashboard";
 import { extractMetrics } from "@/utils/mappers";
 import { buildStatCards } from "@/utils/metricsToCards";
 
