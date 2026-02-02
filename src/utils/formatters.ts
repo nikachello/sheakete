@@ -31,3 +31,33 @@ export function formatNumber(num: number | null | undefined): string {
 
   return new Intl.NumberFormat("ka-GE").format(num);
 }
+
+export function formatTimeAgo(date: Date): string {
+  const now = new Date();
+  const diffInMs = now.getTime() - new Date(date).getTime();
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInMinutes < 1) return "ახლავე";
+  if (diffInMinutes < 60) return `${diffInMinutes} წუთის წინ`;
+  if (diffInHours < 24) return `${diffInHours} საათის წინ`;
+  if (diffInDays === 1) return "გუშინ";
+  if (diffInDays < 7) return `${diffInDays} დღის წინ`;
+
+  return new Date(date).toLocaleDateString("ka-GE");
+}
+
+export function getTodayTrendText(trend: number): string {
+  if (trend > 20) return "ძალიან კარგი დინამიკა!";
+  if (trend > 0) return "დადებითი დინამიკა";
+  if (trend === 0) return "იგივე, რაც გუშინ";
+  if (trend > -20) return "ოდნავ დაბალია";
+  return "საყურადღებოა!";
+}
+
+export function formatTrendValue(trend: number): string {
+  if (trend === 0) return "0%";
+  const sign = trend > 0 ? "+" : "";
+  return `${sign}${trend.toFixed(1)}%`;
+}

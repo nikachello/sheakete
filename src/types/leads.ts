@@ -25,3 +25,57 @@ export type CreateLeadInput = {
   notes?: string;
   actualPaidPrice?: string;
 };
+
+export interface LeadsStats {
+  activeLeads: {
+    count: number;
+    label: string;
+  };
+  conversionRate: {
+    percentage: number;
+    confirmed: number;
+    total: number;
+    label: string;
+  };
+  needsFollowUp: {
+    count: number;
+    label: string;
+  };
+  todayLeads: {
+    count: number;
+    trend: number;
+    yesterdayCount: number;
+    label: string;
+  };
+}
+
+export interface LeadStatCard {
+  id: string;
+  title: string;
+  value: string | number;
+  description: string;
+  footerText: string;
+  trend: {
+    value: string;
+    type: "up" | "down" | "neutral";
+    isPositive: boolean;
+  } | null;
+  icon?: string;
+}
+
+export interface StatusBreakdown {
+  status: OrderStatus;
+  _count: {
+    id: number;
+  };
+}
+
+export interface DailyLeadsData {
+  date: Date;
+  count: number;
+}
+
+export interface LeadsAnalytics {
+  statusBreakdown: StatusBreakdown[];
+  dailyLeads: DailyLeadsData[];
+}
