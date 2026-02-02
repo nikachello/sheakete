@@ -5,7 +5,9 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex min-h-screen bg-zinc-50/50">
       <Sidebar />
-      <div className="flex-1 pt-20 lg:pt-10 px-6">{children}</div>
+      <div className="flex-1 pt-20 lg:pt-10 px-6 overflow-hidden">
+        {children}
+      </div>
     </div>
   );
 };
