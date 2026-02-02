@@ -1,100 +1,48 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import OrdersTable from "@/components/admin/OrdersTable";
-import OrderForm from "@/components/admin/OrderForm";
-import { DollarSign, Package, Users, ShoppingCart } from "lucide-react";
-import { getAdminProducts } from "@/lib/admin-helpers";
-import { getOrders } from "@/lib/actions";
+import { DataCard } from "@/components/admin/DataCard";
+import { NeedsAttentionTable } from "@/components/admin/NeedsAttentionTable";
+import { RecentActivityFeed } from "@/components/admin/RecentActivityFeed";
+import { Sidebar } from "@/components/admin/sidebar/Sidebar";
+import {
+  getDashboardStats,
+  getNeedsAttention,
+  getRecentActivity,
+} from "@/lib/admin-actions";
+import { DASHBOARD_LAYOUT } from "@/lib/constants";
+import { extractMetrics, metricsToStatCards } from "@/utils/mappers";
+import { buildStatCards } from "@/utils/metricsToCards";
 
-export default async function AdminDashboard() {
-  const products = await getAdminProducts();
+export default async function AdminDashboardPage() {
+  // Step 1: Fetch raw aggregated data from database
+  const rawData = await getDashboardStats();
 
-  const orders = await getOrders();
+  console.log(rawData);
 
-  const totalRevenue = orders
-    .filter((o) => o.status === "PAID" || o.status === "CONFIRMED")
-    .reduce((acc, curr) => acc + Number(curr.actualPaidPrice ?? 0), 0);
+  // Step 2: Transform raw data into meaningful business metrics
+  const metrics = extractMetrics(rawData);
 
-  const confirmed = orders.filter((o) =>
-    ["CONFIRMED", "PAID", "SHIPPED", "RECEIVED"].includes(o.status)
-  );
+  // Step 3: Format metrics into display-ready stat cards
+  // const stats = metricsToStatCards(metrics);
+  const stats = buildStatCards(metrics, DASHBOARD_LAYOUT);
 
-  const stats = confirmed.reduce(
-    (acc, curr) => {
-      const revenue = curr.price || 0;
-      const costs = (curr.productCost || 0) + (curr.shippingCost || 0);
+  const recentActivity = await getRecentActivity(10);
 
-      return {
-        revenue: acc.revenue + revenue,
-        expenses: acc.expenses + costs,
-        profit: acc.profit + (revenue - costs),
-      };
-    },
-    { revenue: 0, expenses: 0, profit: 0 }
-  );
+  const needAttentionTableRows = await getNeedsAttention(10);
 
   return (
-    <div className="p-8 bg-slate-50 min-h-screen space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">მართვა</h1>
-      </div>
+    <div className="flex min-h-screen bg-zinc-50/50">
+      <Sidebar />
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title="სულ შემოსავალი"
-          value={`${totalRevenue} GEL`}
-          icon={<DollarSign />}
-          color="text-green-600"
-        />
-        <StatCard
-          title="ლიდები"
-          value={orders.length}
-          icon={<ShoppingCart />}
-          color="text-blue-600"
-        />
-        <StatCard
-          title="გაყიდვები"
-          value={orders.filter((o) => o.status === "CONFIRMED").length}
-          icon={<Package />}
-          color="text-purple-600"
-        />
-        <StatCard
-          title="კონვერსია"
-          value={`${((orders.filter((o) => o.status === "CONFIRMED").length / orders.length) * 100 || 0).toFixed(1)}%`}
-          icon={<Users />}
-          color="text-orange-600"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-1">
-          <OrderForm products={products} />
+      <main className="flex-1 pt-20 lg:pt-10">
+        {/* 
+          pt-20 on mobile to clear the absolute hamburger button
+          lg:pt-10 on desktop for normal spacing
+        */}
+        <div className="max-w-7xl mx-auto px-6">
+          <DataCard stats={stats} />
+          <NeedsAttentionTable rows={needAttentionTableRows} />
+          <RecentActivityFeed activity={recentActivity} />
         </div>
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>მომხმარებლები</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <OrdersTable data={orders} />
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      </main>
     </div>
-  );
-}
-
-function StatCard({ title, value, icon, color }: any) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <div className={color}>{icon}</div>
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-      </CardContent>
-    </Card>
   );
 }

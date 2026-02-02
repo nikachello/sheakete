@@ -28,28 +28,62 @@ enum OrderStatus {
   CONFIRMED
   
   // Order Stages
-  RECEIVED
   SHIPPED
-  PAID
+  DELIVERED
+  RETURNED
+}
+
+enum PaymentStatus {
+  AWAITING_COLLECTION
+  COLLECTED
+  SETTLED
   REFUNDED
 }
 
 model Order {
   id             String      @id @default(uuid())
   createdAt      DateTime    @default(now())
+  updatedAt DateTime @updatedAt
+  returnedAt DateTime? 
+
   customerName   String
   customerPhone  String
+  city String?
+  address String?
+
   productTitle   String?
   comboDetails   String?
 
-  price          Float?
+  expectedPrice Float @default(0)
+  actualPaidPrice Float?
   productCost Float @default(0)
-  shippingCost Float @default(0)
-  actualPaidPrice String?
+  shippingFee Float @default(0)
+  additionalCosts Float @default(0)
 
   
   type           OrderType   @default(LEAD)
   status         OrderStatus @default(PENDING)
+  paymentStatus PaymentStatus @default(AWAITING_COLLECTION)
   notes          String?
+
+  remittanceId String?
+  remittance Remittance? @relation(fields: [remittanceId],references: [id])
+
+  @@index([status])
+  @@index([type])
+  @@index([paymentStatus])
   
+}
+
+model Remittance {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  totalAmount Float
+  bankReference String?
+  dateReceived DateTime @default(now())
+
+  orders Order[]
+
+  notes String?
 }
