@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { RawDashboardData } from "@/types/dashboard";
 import { getCurrentMonthProfit } from "./financials";
-import { activityMessageFromOrder } from "@/utils/formatter";
-import { mapOrderToAttentionRow } from "@/utils/mappers";
 import { OrderStatus } from "generated/prisma/enums";
 import { subHours } from "date-fns";
+import { activityMessageFromOrder } from "@/utils/dashboard/formatter";
+import { mapOrderToAttentionRow } from "@/utils/dashboard/mapper";
 
 /**
  * Fetch raw dashboard statistics from database
@@ -12,6 +12,9 @@ import { subHours } from "date-fns";
  *
  * @returns Raw aggregated data from Prisma queries
  */
+
+export const revalidate = 0;
+
 export async function getDashboardStats(): Promise<RawDashboardData> {
   const [statusGroups, paymentGroups, currentMonth] = await Promise.all([
     // Group orders by status and sum expected prices

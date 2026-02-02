@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "generated/prisma/enums";
 
+export const revalidate = 0;
+
 export async function getCurrentMonthProfit() {
   const startOfMonth = new Date();
   startOfMonth.setDate(1);

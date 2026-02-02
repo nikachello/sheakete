@@ -7,8 +7,10 @@ import { DataCard } from "@/components/admin/dashboard/DataCard";
 import { NeedsAttentionTable } from "@/components/admin/dashboard/NeedsAttentionTable";
 import { RecentActivityFeed } from "@/components/admin/dashboard/RecentActivityFeed";
 import { DASHBOARD_LAYOUT } from "@/constants/dashboard";
-import { extractMetrics } from "@/utils/mappers";
+import { extractMetrics } from "@/utils/dashboard/mapper";
 import { buildStatCards } from "@/utils/metricsToCards";
+
+export const revalidate = 0;
 
 export default async function AdminDashboardPage() {
   const rawData = await getDashboardStats();
