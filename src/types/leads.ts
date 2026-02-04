@@ -8,6 +8,7 @@ export interface Lead {
   customerPhone: string;
   city?: string | null;
   address?: string | null;
+  productId?: string | null;
   productTitle?: string | null;
   comboDetails?: string | null;
   expectedPrice: number;

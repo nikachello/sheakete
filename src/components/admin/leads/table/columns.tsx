@@ -127,6 +127,7 @@ function EditableStatusCell({
           defaultAddress={lead.address || ""}
           productTitle={lead.productTitle || ""}
           expectedPrice={lead.expectedPrice || 0}
+          productId={lead.productId || ""}
           onClose={() => setOpenDialog(false)}
         />
       )}

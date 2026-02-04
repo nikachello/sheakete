@@ -15,6 +15,7 @@ interface ConfirmDialogProps {
   onClose: () => void;
   defaultCity?: string;
   defaultAddress?: string;
+  productId?: string;
   productTitle?: string;
   expectedPrice?: number;
 }
@@ -24,6 +25,7 @@ export function ConfirmLeadDialog({
   onClose,
   defaultCity,
   defaultAddress,
+  productId,
   productTitle,
   expectedPrice,
 }: ConfirmDialogProps) {
@@ -31,6 +33,7 @@ export function ConfirmLeadDialog({
   const [city, setCity] = useState(defaultCity || "");
   const [address, setAddress] = useState(defaultAddress || "");
   const [price, setPrice] = useState(expectedPrice || 0);
+  const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const handleConfirm = async () => {
@@ -41,6 +44,8 @@ export function ConfirmLeadDialog({
         address,
         productTitle,
         expectedPrice: price,
+        productId,
+        quantity,
       });
       setOpen(false);
       onClose();
@@ -96,6 +101,13 @@ export function ConfirmLeadDialog({
             }}
           />
         </div>
+
+        <Input
+          type="number"
+          placeholder="რაოდენობა"
+          value={quantity}
+          onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+        />
 
         <DialogFooter className="mt-4">
           <Button

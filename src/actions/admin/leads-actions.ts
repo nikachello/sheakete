@@ -274,7 +274,9 @@ export async function confirmLeadAndCreateOrder(
     city?: string;
     address?: string;
     productTitle?: string;
+    productId?: string;
     expectedPrice?: number;
+    quantity: number;
   }
 ) {
   await prisma.order.update({
@@ -284,8 +286,10 @@ export async function confirmLeadAndCreateOrder(
       status: "CONFIRMED",
       city: data.city,
       address: data.address,
+      productId: data.productId,
       productTitle: data.productTitle,
       expectedPrice: data.expectedPrice,
+      quantity: data.quantity,
     },
   });
 

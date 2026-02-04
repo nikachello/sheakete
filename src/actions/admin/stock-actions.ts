@@ -168,7 +168,7 @@ export async function restoreStockForReturn(
     data: {
       productId,
       productTitle,
-      quantity: quantity, // Positive for return
+      quantity: quantity,
       type: StockMovementType.RETURN,
       orderId,
       notes: `Order returned`,

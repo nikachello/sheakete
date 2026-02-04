@@ -3,7 +3,7 @@ import { OrderStatus } from "generated/prisma/enums";
 export const ORDER_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   CONFIRMED: ["SHIPPED", "CANCELLED"],
   SHIPPED: ["DELIVERED", "RETURNED"],
-  DELIVERED: [],
+  DELIVERED: ["RETURNED"],
   RETURNED: [],
   CANCELLED: [],
 

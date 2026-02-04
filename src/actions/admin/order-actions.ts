@@ -284,7 +284,7 @@ export async function updateOrderStatus(
   });
 
   if (order.productId) {
-    // When order is shipped, reduce stock
+    console.log("Order: ", order, newStatus);
     if (newStatus === OrderStatus.SHIPPED) {
       await reduceStockForShipment(
         orderId,
@@ -323,7 +323,6 @@ async function reduceStockForShipment(
   });
 
   if (existingMovement) {
-    // Already reduced stock for this order
     return;
   }
 
@@ -332,7 +331,7 @@ async function reduceStockForShipment(
     data: {
       productId,
       productTitle,
-      quantity: -quantity, // Negative for reduction
+      quantity: -quantity,
       type: StockMovementType.SALE,
       orderId,
       notes: `Order shipped`,
