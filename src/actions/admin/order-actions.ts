@@ -4,6 +4,49 @@ import { ORDER_STATUS_TRANSITIONS } from "@/utils/orders/order-status";
 import { OrderStatus, OrderType, PaymentStatus } from "generated/prisma/enums";
 import { revalidatePath } from "next/cache";
 
+export async function createOrder(data: {
+  customerName: string;
+  customerPhone: string;
+  city?: string;
+  address?: string;
+  productTitle?: string;
+  comboDetails?: string;
+  expectedPrice: number;
+  productCost: number;
+  shippingFee: number;
+  additionalCosts: number;
+  notes?: string;
+}) {
+  try {
+    await prisma.order.create({
+      data: {
+        customerName: data.customerName,
+        customerPhone: data.customerPhone,
+        city: data.city || null,
+        address: data.address || null,
+        productTitle: data.productTitle || null,
+        comboDetails: data.comboDetails || null,
+        expectedPrice: data.expectedPrice,
+        productCost: data.productCost,
+        shippingFee: data.shippingFee,
+        additionalCosts: data.additionalCosts,
+        notes: data.notes || null,
+        type: OrderType.ORDER,
+        status: OrderStatus.CONFIRMED,
+        paymentStatus: PaymentStatus.AWAITING_COLLECTION,
+      },
+    });
+
+    revalidatePath("/orders");
+    revalidatePath("/dashboard");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to create order:", error);
+    throw new Error("შეკვეთის შექმნა ვერ მოხერხდა");
+  }
+}
+
 export async function getOrdersStats() {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());

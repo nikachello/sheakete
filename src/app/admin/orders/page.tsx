@@ -1,4 +1,5 @@
 import { getOrders, getOrdersStats } from "@/actions/admin/order-actions";
+import { AddOrderDialog } from "@/components/admin/orders/AddNewOrderDialog";
 import { OrdersStatsCards } from "@/components/admin/orders/OrdersStatsCard";
 import { OrdersTable } from "@/components/admin/orders/table/Table";
 import { ordersStatsToCards } from "@/utils/orders/mappers";
@@ -25,6 +26,7 @@ export default async function LeadsPage() {
           <div className="bg-white rounded-lg shadow-sm border border-zinc-200 p-6">
             <OrdersTable orders={orders} />
           </div>
+          <AddOrderDialog />
         </div>
       </main>
     </div>
