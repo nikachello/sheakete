@@ -10,6 +10,7 @@ import { DASHBOARD_LAYOUT } from "@/constants/dashboard";
 import { extractMetrics } from "@/utils/dashboard/mapper";
 import { buildStatCards } from "@/utils/dashboard/metricsToCards";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AdminDashboardPage() {

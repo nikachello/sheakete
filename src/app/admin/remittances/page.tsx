@@ -8,6 +8,9 @@ import { RemittancesTable } from "@/components/admin/remittances/RemittancesTabl
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Banknote, TrendingUp, Wallet } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function RemittancesPage() {
   const [remittances, stats] = await Promise.all([
     getRemittances(),

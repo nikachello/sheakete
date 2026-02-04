@@ -5,6 +5,9 @@ import { StocksTable } from "@/components/admin/stocks/Table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, AlertTriangle, TrendingUp } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function StocksPage() {
   const [stocks, stats] = await Promise.all([
     getStockLevels(),

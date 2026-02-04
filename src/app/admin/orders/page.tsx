@@ -4,6 +4,9 @@ import { OrdersStatsCards } from "@/components/admin/orders/OrdersStatsCard";
 import { OrdersTable } from "@/components/admin/orders/table/Table";
 import { ordersStatsToCards } from "@/utils/orders/mappers";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function LeadsPage() {
   const orders = await getOrders();
 

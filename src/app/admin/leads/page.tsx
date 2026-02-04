@@ -3,6 +3,9 @@ import { LeadsStatsCards } from "@/components/admin/leads/LeadsStatsCard";
 import { LeadsTable } from "@/components/admin/leads/table/Table";
 import { leadsStatsToCards } from "@/utils/leads/mapper";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function LeadsPage() {
   // Fetch leads statistics
   const stats = await getLeadsStats();
