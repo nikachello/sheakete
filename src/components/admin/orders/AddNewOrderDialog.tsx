@@ -46,6 +46,7 @@ export function AddOrderDialog() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedCombo, setSelectedCombo] = useState<string>("");
   const [expectedPrice, setExpectedPrice] = useState<string>("");
+  const [quantity, setQuantity] = useState<string>("1"); // Add this
 
   useEffect(() => {
     if (open) {
@@ -58,6 +59,7 @@ export function AddOrderDialog() {
     setSelectedProduct(product || null);
     setSelectedCombo("");
     setExpectedPrice("");
+    setQuantity("1"); // Reset quantity
   }
 
   function handleComboChange(comboIndex: string) {
@@ -67,6 +69,7 @@ export function AddOrderDialog() {
       const combo = selectedProduct.combos?.[parseInt(comboIndex)];
       if (combo) {
         setExpectedPrice(combo.totalPrice.toString());
+        setQuantity(combo.quantity.toString()); // Auto-fill quantity from combo
       }
     }
   }
@@ -79,14 +82,11 @@ export function AddOrderDialog() {
 
     // Get combo details if selected
     let comboDetails = "";
-    let expectedPrice =
-      parseFloat(formData.get("expectedPrice") as string) || 0;
 
     if (selectedProduct && selectedCombo) {
       const combo = selectedProduct.combos?.[parseInt(selectedCombo)];
       if (combo) {
         comboDetails = `${combo.quantity} ${selectedProduct.unit || "ცალი"}`;
-        expectedPrice = combo.totalPrice;
       }
     }
 
@@ -95,9 +95,11 @@ export function AddOrderDialog() {
       customerPhone: formData.get("customerPhone") as string,
       city: formData.get("city") as string,
       address: formData.get("address") as string,
+      productId: selectedProduct?._id || null,
       productTitle: selectedProduct?.title || "",
       comboDetails: comboDetails || (formData.get("comboDetails") as string),
-      expectedPrice: expectedPrice,
+      quantity: parseInt(quantity) || 1, // Use state value
+      expectedPrice: parseFloat(expectedPrice) || 0, // Use state value
       productCost: parseFloat(formData.get("productCost") as string) || 0,
       shippingFee: parseFloat(formData.get("shippingFee") as string) || 0,
       additionalCosts:
@@ -111,6 +113,8 @@ export function AddOrderDialog() {
       e.currentTarget.reset();
       setSelectedProduct(null);
       setSelectedCombo("");
+      setExpectedPrice("");
+      setQuantity("1"); // Reset
     } catch (error) {
       console.error("Failed to create order:", error);
     } finally {
@@ -249,6 +253,22 @@ export function AddOrderDialog() {
                 </div>
               )}
 
+            {/* Quantity - Now controlled */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="quantity" className="text-right">
+                რაოდენობა
+              </Label>
+              <Input
+                id="quantity"
+                name="quantity"
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                min={1}
+                className="col-span-3"
+              />
+            </div>
+
             <div className="border-t pt-4" />
 
             {/* Pricing Information */}
@@ -268,6 +288,7 @@ export function AddOrderDialog() {
                 required
               />
             </div>
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="productCost" className="text-right">
                 პროდუქტის ღირებულება

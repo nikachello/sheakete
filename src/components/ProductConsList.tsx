@@ -10,8 +10,8 @@ const ProductConsList = ({ cons }: { cons: string[] }) => {
           <li>✅ერგება ყველანაირ ელექტრო დრელს</li>
           <li>✅გამოდგება ნებისმიერი სახლის საქმიანობისთვის</li>
           <li>✅დამზადებულია უმაღლესი ხარისხის ლითონისგან</li> */}
-          {cons.map((con) => (
-            <li>✅{con}</li>
+          {cons.map((con, index) => (
+            <li key={index}>✅{con}</li>
           ))}
         </ul>
       </div>

@@ -1,7 +1,5 @@
 import { DEFAULT_CURRENCY } from "@/constants/dashboard";
 
-const GEORGIAN_LOCALE = "ka-GE";
-
 export function formatCurrency(
   amount: number | null | undefined,
   currency: string = DEFAULT_CURRENCY

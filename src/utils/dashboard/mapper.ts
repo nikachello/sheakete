@@ -1,5 +1,4 @@
-import { OrderStatus } from "generated/prisma/enums";
-import { PaymentStatus } from "generated/prisma/enums";
+import { OrderStatus, PaymentStatus } from "generated/prisma/enums";
 import { STAT_CARD_CONFIG } from "@/constants/dashboard";
 import { calculateTrend } from "@/utils/dashboard/stats";
 import {
@@ -8,6 +7,7 @@ import {
   StatCard,
 } from "@/types/dashboard";
 import { formatCurrency, formatNumber } from "../formatters";
+import { OrderActivity } from "@/types/order";
 
 export function mapOrderToActivityMessage(
   status: OrderStatus,
@@ -48,31 +48,47 @@ export function extractMetrics(data: RawDashboardData): DashboardMetrics {
   };
 }
 
+/**
+ * Transform business metrics into display-ready stat cards
+ */
 export function metricsToStatCards(
   current: DashboardMetrics,
-  previous?: DashboardMetrics // Optional: if provided, trends are calculated
+  previous?: DashboardMetrics
 ): StatCard[] {
-  // Helper to build a card to avoid 100 lines of repetitive code
+  // We map the UI IDs to keys in DashboardMetrics.
+  // We omit 'monthlyRevenue' because it is an object and cannot be passed to calculateTrend directly.
+  const numericMetricMap: Record<
+    string,
+    keyof Omit<DashboardMetrics, "monthlyRevenue">
+  > = {
+    "pending-leads": "pendingLeads",
+    "pending-shipment": "pendingShipmentValue",
+    "cash-with-courier": "cashWithCourier",
+    "settled-amount": "settledAmount",
+    "rto-loss": "rtoLoss",
+  };
+
   const createCard = (
     id: string,
     config: (typeof STAT_CARD_CONFIG)[keyof typeof STAT_CARD_CONFIG],
     value: number,
     isCurrency = true
-  ): StatCard => ({
-    id,
-    title: config.title,
-    value: isCurrency ? formatCurrency(value) : formatNumber(value),
-    description: config.description,
-    footerText: config.footerText,
-    trend: previous
-      ? calculateTrend(
-          value,
-          (previous as any)[
-            id === "pending-leads" ? "pendingLeads" : id.replace(/-/g, "")
-          ] || 0
-        )
-      : null,
-  });
+  ): StatCard => {
+    const metricKey = numericMetricMap[id];
+
+    // Safely retrieve the previous value as a number
+    const prevValue =
+      previous && metricKey ? (previous[metricKey] as number) : 0;
+
+    return {
+      id,
+      title: config.title,
+      value: isCurrency ? formatCurrency(value) : formatNumber(value),
+      description: config.description,
+      footerText: config.footerText,
+      trend: previous ? calculateTrend(value, prevValue) : null,
+    };
+  };
 
   return [
     createCard(
@@ -117,19 +133,12 @@ export function mapOrderToAttentionRow(order: {
 }
 
 /**
- * Transform business metrics into display-ready stat cards
- * This layer adds formatting, labels, and presentation logic
- *
- * @param metrics - Processed business metrics
- * @returns Array of stat cards ready for UI rendering
+ * Explicit transform with trends - handled manually to avoid mapping complexity
  */
-
 export function metricsToStatCardsWithTrends(
   current: DashboardMetrics,
   previous: DashboardMetrics
 ): StatCard[] {
-  // No need for require() - calculateTrend is already imported at the top!
-
   return [
     {
       id: "pending-leads",

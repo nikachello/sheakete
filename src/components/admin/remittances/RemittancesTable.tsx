@@ -121,8 +121,8 @@ export function RemittancesTable({
                       <AlertDialogHeader>
                         <AlertDialogTitle>დარწმუნებული ხართ?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          გადარიცხვის წაშლის შემდეგ, შეკვეთები დაბრუნდება
-                          "ასაღები" სტატუსში.
+                          გადარიცხვის წაშლის შემდეგ, შეკვეთები დაბრუნდება ასაღებ
+                          თანხებში.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>

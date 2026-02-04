@@ -4,9 +4,13 @@ import { createColumnHelper, ColumnDef } from "@tanstack/react-table";
 import { EditableOrderStatusCell } from "./EditableOrderStatusCell";
 import { Order } from "generated/prisma/client";
 
+/**
+ * We use createColumnHelper with the Order type.
+ * This ensures getValue() returns the correct type for each specific field.
+ */
 const columnHelper = createColumnHelper<Order>();
 
-export const orderColumns: ColumnDef<Order, any>[] = [
+export const orderColumns = [
   columnHelper.accessor("id", {
     header: "ID",
     cell: (info) => (
@@ -25,6 +29,7 @@ export const orderColumns: ColumnDef<Order, any>[] = [
 
   columnHelper.accessor("customerPhone", {
     header: "ტელეფონი",
+    cell: (info) => <span className="text-sm">{info.getValue()}</span>,
   }),
 
   columnHelper.accessor("status", {
@@ -43,4 +48,6 @@ export const orderColumns: ColumnDef<Order, any>[] = [
     header: "შექმნილია",
     cell: (info) => new Date(info.getValue()).toLocaleDateString("ka-GE"),
   }),
-];
+] as ColumnDef<Order, unknown>[];
+// Using 'as' here allows the array to contain mixed types (Date, string, number)
+// while satisfying the ESLint rule against the raw 'any' type.

@@ -1,7 +1,7 @@
 import { Remittance } from "generated/prisma/browser";
 import { Order, OrderStatus, PaymentStatus } from "generated/prisma/client";
 
-interface OrderActivity {
+export interface OrderActivity {
   customerName: string;
   productTitle: string | null;
   comboDetails: string | null;

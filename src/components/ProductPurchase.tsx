@@ -32,19 +32,6 @@ const ProductPurchase = ({
 
     setIsSubmitting(true);
 
-    const message = `
-🚀 **ახალი შეკვეთა!**
-━━━━━━━━━━━━━━━━
-📦 **პროდუქტი:** ${productTitle}
-👤 **სახელი:** ${name}
-📞 **ტელეფონი:** \`${phone}\`
-━━━━━━━━━━━━━━━━
-🎁 **არჩევანი:** ${currentOption?.quantity} ${unit}
-💰 **ჯამური ფასი:** ${currentOption?.totalPrice} ლარი
-━━━━━━━━━━━━━━━━
-📅 ${new Date().toLocaleString("ka-GE")}
-    `;
-
     try {
       // const res = await fetch("/api/telegram", {
       //   method: "POST",
@@ -68,6 +55,7 @@ const ProductPurchase = ({
       }
     } catch (err) {
       alert("დაფიქსირდა შეცდომა.");
+      console.error(err);
     } finally {
       setIsSubmitting(false);
     }

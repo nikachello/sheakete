@@ -135,12 +135,12 @@ function EditableStatusCell({
 }
 
 // Columns
-export const leadColumns: ColumnDef<Lead, any>[] = [
+export const leadColumns = [
   columnHelper.accessor("id", {
     header: "ID",
     cell: (info) => (
       <span className="text-sm font-mono text-gray-700">
-        {(info.getValue() as string)?.slice(0, 6) ?? "N/A"}
+        {String(info.getValue())?.slice(0, 6) ?? "N/A"}
       </span>
     ),
   }),
@@ -148,7 +148,7 @@ export const leadColumns: ColumnDef<Lead, any>[] = [
     header: "სახელი",
     cell: ({ row, getValue }) => (
       <EditableCell
-        value={getValue<string>()}
+        value={String(getValue() ?? "")}
         rowId={row.original.id}
         field="customerName"
       />
@@ -158,7 +158,7 @@ export const leadColumns: ColumnDef<Lead, any>[] = [
     header: "ტელეფონი",
     cell: ({ row, getValue }) => (
       <EditableCell
-        value={getValue<string>()}
+        value={String(getValue() ?? "")}
         rowId={row.original.id}
         field="customerPhone"
       />
@@ -168,7 +168,7 @@ export const leadColumns: ColumnDef<Lead, any>[] = [
     header: "სტატუსი",
     cell: ({ row, getValue }) => (
       <EditableStatusCell
-        value={getValue<string>()}
+        value={String(getValue() ?? "")}
         rowId={row.original.id}
         lead={row.original}
       />
@@ -177,7 +177,8 @@ export const leadColumns: ColumnDef<Lead, any>[] = [
   columnHelper.accessor("createdAt", {
     header: "შექმნილია",
     cell: (info) => {
-      const date = new Date(info.getValue());
+      const val = info.getValue();
+      const date = val instanceof Date ? val : new Date(String(val));
       return (
         <span className="text-sm text-gray-500">
           {!isNaN(date.getTime()) ? date.toLocaleDateString("ka-GE") : "—"}
@@ -188,20 +189,24 @@ export const leadColumns: ColumnDef<Lead, any>[] = [
   columnHelper.accessor("productTitle", {
     header: "პროდუქტი",
     cell: (info) => (
-      <span className="text-sm text-gray-500">{info.getValue()}</span>
+      <span className="text-sm text-gray-500">
+        {String(info.getValue() ?? "")}
+      </span>
     ),
   }),
   columnHelper.accessor("comboDetails", {
     header: "შეთავაზება",
     cell: (info) => (
-      <span className="text-sm text-gray-500">{info.getValue()}</span>
+      <span className="text-sm text-gray-500">
+        {String(info.getValue() ?? "")}
+      </span>
     ),
   }),
   columnHelper.accessor("expectedPrice", {
     header: "ფასი",
     cell: ({ row, getValue }) => (
       <EditableCell
-        value={getValue<string>()}
+        value={String(getValue() ?? "")}
         rowId={row.original.id}
         field="expectedPrice"
       />
@@ -211,10 +216,10 @@ export const leadColumns: ColumnDef<Lead, any>[] = [
     header: "შენიშვნები",
     cell: ({ row, getValue }) => (
       <EditableCell
-        value={getValue<string>() || ""}
+        value={String(getValue() ?? "")}
         rowId={row.original.id}
         field="notes"
       />
     ),
   }),
-];
+] as ColumnDef<Lead, unknown>[];

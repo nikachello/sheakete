@@ -1,7 +1,8 @@
 "use client";
+import { ComboOptions } from "@/types/product";
 import { Dispatch, SetStateAction } from "react";
-import { pipeOptions } from "@/lib/products";
-import { ComboOptions } from "@/lib/types";
+// import { pipeOptions } from "@/lib/products";
+// import { ComboOptions } from "@/lib/types";
 
 const ProductOptions = ({
   selectedOption,

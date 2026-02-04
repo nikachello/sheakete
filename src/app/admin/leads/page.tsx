@@ -1,7 +1,6 @@
 import { getLeads, getLeadsStats } from "@/actions/admin/leads-actions";
 import { LeadsStatsCards } from "@/components/admin/leads/LeadsStatsCard";
 import { LeadsTable } from "@/components/admin/leads/table/Table";
-import { Sidebar } from "@/components/admin/sidebar/Sidebar";
 import { leadsStatsToCards } from "@/utils/leads/mapper";
 
 export default async function LeadsPage() {

@@ -15,6 +15,13 @@ datasource db {
 }
 
 
+enum StockMovementType {
+  PURCHASE // maragis damateba
+  SALE // gayidvisas akldeba
+  ADJUSTMENT // xelit shesworeba
+  RETURN // momxmarebeli roca abrunebs (stock emateba)
+}
+
 enum OrderType {
   LEAD
   ORDER
@@ -40,6 +47,38 @@ enum PaymentStatus {
   REFUNDED
 }
 
+model Stock {
+  id String @id @default(uuid())
+  productId String @unique // sanity product _id
+  productTitle String
+
+  quantity Int @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+}
+
+model StockMovement {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  productId String // sanity product _id
+  productTitle String
+
+  quantity Int // positive for additions, negative for reductions
+  type StockMovementType
+
+  orderId String?
+  order Order? @relation(fields: [orderId], references: [id])
+
+  notes String?
+
+  @@index([productId])
+  @@index([type])
+  @@index([createdAt])
+}
+
 model Order {
   id             String      @id @default(uuid())
   createdAt      DateTime    @default(now())
@@ -51,8 +90,12 @@ model Order {
   city String?
   address String?
 
+  productId String?
   productTitle   String?
   comboDetails   String?
+
+
+  quantity Int @default(1)
 
   expectedPrice Float @default(0)
   cashCollected Float?
@@ -71,6 +114,8 @@ model Order {
 
   remittanceId String?
   remittance Remittance? @relation(fields: [remittanceId],references: [id])
+
+  stockMoveemnts StockMovement[]
 
   @@index([status])
   @@index([type])

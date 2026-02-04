@@ -10,7 +10,6 @@ import Rating from "@/components/Rating";
 import Urgency from "@/components/Urgency";
 import { isEmpty } from "@/lib/helpers";
 import { client } from "@/lib/sanity.client";
-import { notFound } from "next/navigation";
 
 const query = `
   *[_type == "product" && slug.current == $slug][0]{

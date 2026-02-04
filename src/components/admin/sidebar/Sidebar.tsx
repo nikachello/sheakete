@@ -17,7 +17,7 @@ const menuItems = [
   { label: "ლიდები", icon: Users, href: "/admin/leads", badge: 5 },
   { label: "შეკვეთები", icon: ShoppingCart, href: "/admin/orders" },
   { label: "ჩარიცხვები", icon: ShoppingCart, href: "/admin/remittances" },
-  { label: "მარაგები", icon: Package, href: "/admin/stock" },
+  { label: "მარაგები", icon: Package, href: "/admin/stocks" },
 ];
 
 // Reusable Navigation Content

@@ -1,7 +1,12 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { ORDER_STATUS_TRANSITIONS } from "@/utils/orders/order-status";
-import { OrderStatus, OrderType, PaymentStatus } from "generated/prisma/enums";
+import {
+  OrderStatus,
+  OrderType,
+  PaymentStatus,
+  StockMovementType,
+} from "generated/prisma/enums";
 import { revalidatePath } from "next/cache";
 
 export async function createOrder(data: {
@@ -9,9 +14,11 @@ export async function createOrder(data: {
   customerPhone: string;
   city?: string;
   address?: string;
+  productId?: string | null;
   productTitle?: string;
   comboDetails?: string;
   expectedPrice: number;
+  quantity: number;
   productCost: number;
   shippingFee: number;
   additionalCosts: number;
@@ -24,8 +31,10 @@ export async function createOrder(data: {
         customerPhone: data.customerPhone,
         city: data.city || null,
         address: data.address || null,
+        productId: data.productId || null,
         productTitle: data.productTitle || null,
         comboDetails: data.comboDetails || null,
+        quantity: data.quantity || 1,
         expectedPrice: data.expectedPrice,
         productCost: data.productCost,
         shippingFee: data.shippingFee,
@@ -274,5 +283,129 @@ export async function updateOrderStatus(
     },
   });
 
+  if (order.productId) {
+    // When order is shipped, reduce stock
+    if (newStatus === OrderStatus.SHIPPED) {
+      await reduceStockForShipment(
+        orderId,
+        order.productId,
+        order.productTitle || "Unknown Product",
+        order.quantity || 1 // Use actual quantity from order
+      );
+    }
+
+    // When order is returned, restore stock
+    if (newStatus === OrderStatus.RETURNED) {
+      await restoreStockForReturn(
+        orderId,
+        order.productId,
+        order.productTitle || "Unknown Product",
+        order.quantity || 1 // Use actual quantity from order
+      );
+    }
+  }
+
   revalidatePath("/orders");
+}
+
+async function reduceStockForShipment(
+  orderId: string,
+  productId: string,
+  productTitle: string,
+  quantity: number
+) {
+  // Check if stock movement already exists for this order
+  const existingMovement = await prisma.stockMovement.findFirst({
+    where: {
+      orderId,
+      type: StockMovementType.SALE,
+    },
+  });
+
+  if (existingMovement) {
+    // Already reduced stock for this order
+    return;
+  }
+
+  // Create movement record
+  await prisma.stockMovement.create({
+    data: {
+      productId,
+      productTitle,
+      quantity: -quantity, // Negative for reduction
+      type: StockMovementType.SALE,
+      orderId,
+      notes: `Order shipped`,
+    },
+  });
+
+  // Reduce stock
+  const stock = await prisma.stock.findUnique({
+    where: { productId },
+  });
+
+  if (stock) {
+    await prisma.stock.update({
+      where: { productId },
+      data: {
+        quantity: { decrement: quantity },
+      },
+    });
+  } else {
+    // Create stock record with negative quantity if it doesn't exist
+    await prisma.stock.create({
+      data: {
+        productId,
+        productTitle,
+        quantity: -quantity,
+      },
+    });
+  }
+}
+
+// Helper function for restoring stock
+async function restoreStockForReturn(
+  orderId: string,
+  productId: string,
+  productTitle: string,
+  quantity: number
+) {
+  // Check if we already restored stock for this return
+  const existingReturn = await prisma.stockMovement.findFirst({
+    where: {
+      orderId,
+      type: StockMovementType.RETURN,
+    },
+  });
+
+  if (existingReturn) {
+    // Already restored stock for this return
+    return;
+  }
+
+  // Create movement record
+  await prisma.stockMovement.create({
+    data: {
+      productId,
+      productTitle,
+      quantity: quantity, // Positive for return
+      type: StockMovementType.RETURN,
+      orderId,
+      notes: `Order returned`,
+    },
+  });
+
+  // Add back to stock
+  await prisma.stock.upsert({
+    where: { productId },
+    create: {
+      productId,
+      productTitle,
+      quantity,
+    },
+    update: {
+      quantity: { increment: quantity },
+      productTitle,
+    },
+  });
 }
