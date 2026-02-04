@@ -21,9 +21,6 @@ interface LeadsStatsCardsProps {
   className?: string;
 }
 
-/**
- * Displays stat cards for the leads dashboard
- */
 export function LeadsStatsCards({ cards, className }: LeadsStatsCardsProps) {
   return (
     <div

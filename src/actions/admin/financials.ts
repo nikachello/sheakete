@@ -16,8 +16,6 @@ export async function getCurrentMonthProfit() {
     select: {
       actualPaidPrice: true,
       productCost: true,
-      shippingFee: true,
-      additionalCosts: true,
     },
   });
 
@@ -25,12 +23,8 @@ export async function getCurrentMonthProfit() {
   let totalCosts = 0;
 
   deliveredOrders.forEach((order) => {
-    totalRevenue += order.actualPaidPrice || 0;
-
-    totalCosts +=
-      (order.productCost || 0) +
-      (order.shippingFee || 0) +
-      (order.additionalCosts || 0);
+    totalRevenue += order.actualPaidPrice || 0; // Net revenue (already minus fees)
+    totalCosts += order.productCost || 0; // Only product cost
   });
 
   const grossProfit = totalRevenue - totalCosts;

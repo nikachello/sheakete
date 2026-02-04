@@ -55,7 +55,10 @@ model Order {
   comboDetails   String?
 
   expectedPrice Float @default(0)
+  cashCollected Float?
   actualPaidPrice Float?
+
+
   productCost Float @default(0)
   shippingFee Float @default(0)
   additionalCosts Float @default(0)

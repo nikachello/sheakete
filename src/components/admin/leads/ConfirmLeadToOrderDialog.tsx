@@ -80,10 +80,20 @@ export function ConfirmLeadDialog({
             onChange={(e) => setAddress(e.target.value)}
           />
           <Input
-            type="number"
+            type="text"
             placeholder="თანხა"
-            value={price}
-            onChange={(e) => setPrice(Number(e.target.value))}
+            value={price.toString()}
+            onChange={(e) => {
+              // Allow only digits and optionally one decimal point
+              const value = e.target.value.replace(/[^0-9.]/g, "");
+              // Allow only one dot
+              const dots = value.split(".");
+              const sanitized =
+                dots.length > 2
+                  ? dots[0] + "." + dots.slice(1).join("")
+                  : value;
+              setPrice(sanitized === "" ? 0 : parseFloat(sanitized));
+            }}
           />
         </div>
 
