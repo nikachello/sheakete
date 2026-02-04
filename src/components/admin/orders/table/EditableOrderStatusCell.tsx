@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { OrderStatus } from "generated/prisma/enums";
 import { ORDER_STATUS_TRANSITIONS } from "@/utils/orders/order-status";
 import { updateOrderStatus } from "@/actions/admin/order-actions";
+import { OrderStatus } from "prisma/generated/prisma/client";
 
 const statusColors: Record<OrderStatus, string> = {
   CONFIRMED: "bg-blue-500",

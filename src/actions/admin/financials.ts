@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { OrderStatus } from "generated/prisma/enums";
+import { OrderStatus } from "prisma/generated/prisma/client";
 
 export const revalidate = 0;
 

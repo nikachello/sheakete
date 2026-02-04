@@ -1,4 +1,3 @@
-import { OrderStatus, PaymentStatus } from "generated/prisma/enums";
 import { STAT_CARD_CONFIG } from "@/constants/dashboard";
 import { calculateTrend } from "@/utils/dashboard/stats";
 import {
@@ -8,6 +7,7 @@ import {
 } from "@/types/dashboard";
 import { formatCurrency, formatNumber } from "../formatters";
 import { OrderActivity } from "@/types/order";
+import { OrderStatus, PaymentStatus } from "prisma/generated/prisma/client";
 
 export function mapOrderToActivityMessage(
   status: OrderStatus,

@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { RawDashboardData } from "@/types/dashboard";
 import { getCurrentMonthProfit } from "./financials";
-import { OrderStatus } from "generated/prisma/enums";
 import { subHours } from "date-fns";
 import { activityMessageFromOrder } from "@/utils/dashboard/formatter";
 import { mapOrderToAttentionRow } from "@/utils/dashboard/mapper";
+import { OrderStatus } from "prisma/generated/prisma/client";
 
 /**
  * Fetch raw dashboard statistics from database

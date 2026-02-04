@@ -24,8 +24,8 @@ import {
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { addStock } from "@/actions/admin/stock-actions";
-import { StockMovementType } from "generated/prisma/enums";
 import { getProducts } from "@/actions/admin/products-actions";
+import { StockMovementType } from "prisma/generated/prisma/client";
 
 type Product = {
   _id: string;

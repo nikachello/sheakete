@@ -1,5 +1,9 @@
-import { Remittance } from "generated/prisma/browser";
-import { Order, OrderStatus, PaymentStatus } from "generated/prisma/client";
+import {
+  Order,
+  OrderStatus,
+  PaymentStatus,
+  Remittance,
+} from "prisma/generated/prisma/client";
 
 export interface OrderActivity {
   customerName: string;

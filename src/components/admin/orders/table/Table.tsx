@@ -16,8 +16,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
-import { Order } from "generated/prisma/client";
 import { orderColumns } from "./column";
+import { Order } from "prisma/generated/prisma/client";
 
 export function OrdersTable({ orders }: { orders: Order[] }) {
   const table = useReactTable({

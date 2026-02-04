@@ -1,8 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { PaymentStatus } from "generated/prisma/enums";
 import { revalidatePath } from "next/cache";
+import { PaymentStatus } from "prisma/generated/prisma/client";
 
 export async function getRemittances() {
   return prisma.remittance.findMany({

@@ -2,7 +2,7 @@
 
 import { createColumnHelper, ColumnDef } from "@tanstack/react-table";
 import { EditableOrderStatusCell } from "./EditableOrderStatusCell";
-import { Order } from "generated/prisma/client";
+import { Order } from "prisma/generated/prisma/client";
 
 /**
  * We use createColumnHelper with the Order type.
