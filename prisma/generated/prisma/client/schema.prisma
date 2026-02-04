@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum StockMovementType {
+  PURCHASE
+  SALE
+  ADJUSTMENT
+  RETURN
+}
+
+enum OrderType {
+  LEAD
+  ORDER
+}
+
+enum OrderStatus {
+  PENDING
+  NO_ANSWER
+  CANCELLED
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  RETURNED
+}
+
+enum PaymentStatus {
+  AWAITING_COLLECTION
+  COLLECTED
+  SETTLED
+  REFUNDED
+}
+
+model Stock {
+  id           String   @id @default(uuid())
+  productId    String   @unique
+  productTitle String
+  quantity     Int      @default(0)
+  updatedAt    DateTime @updatedAt
+
+  @@index([productId])
+}
+
+model StockMovement {
+  id           String            @id @default(uuid())
+  createdAt    DateTime          @default(now())
+  productId    String
+  productTitle String
+  quantity     Int
+  type         StockMovementType
+  orderId      String?
+  order        Order?            @relation(fields: [orderId], references: [id])
+  notes        String?
+
+  @@index([productId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model Order {
+  id              String          @id @default(uuid())
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  returnedAt      DateTime?
+  customerName    String
+  customerPhone   String
+  city            String?
+  address         String?
+  productId       String?
+  productTitle    String?
+  comboDetails    String?
+  quantity        Int             @default(1)
+  expectedPrice   Float           @default(0)
+  cashCollected   Float?
+  actualPaidPrice Float?
+  productCost     Float           @default(0)
+  shippingFee     Float           @default(0)
+  additionalCosts Float           @default(0)
+  type            OrderType       @default(LEAD)
+  status          OrderStatus     @default(PENDING)
+  paymentStatus   PaymentStatus   @default(AWAITING_COLLECTION)
+  notes           String?
+  remittanceId    String?
+  remittance      Remittance?     @relation(fields: [remittanceId], references: [id])
+  stockMoveemnts  StockMovement[]
+
+  @@index([status])
+  @@index([type])
+  @@index([paymentStatus])
+}
+
+model Remittance {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now())
+  totalAmount   Float
+  bankReference String?
+  dateReceived  DateTime @default(now())
+  orders        Order[]
+  notes         String?
+}

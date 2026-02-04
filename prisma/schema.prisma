@@ -1,27 +1,20 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-  url      = env("DATABASE_URL")
+  provider = "prisma-client-js"
+  output   = "./generated/prisma/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 
-datasource db {
-  provider = "postgresql"
-}
-
-
 enum StockMovementType {
-  PURCHASE // maragis damateba
-  SALE // gayidvisas akldeba
-  ADJUSTMENT // xelit shesworeba
-  RETURN // momxmarebeli roca abrunebs (stock emateba)
+  PURCHASE
+  SALE
+  ADJUSTMENT
+  RETURN
 }
 
 enum OrderType {
@@ -30,13 +23,10 @@ enum OrderType {
 }
 
 enum OrderStatus {
-  // Lead Stages
   PENDING
   NO_ANSWER
   CANCELLED
   CONFIRMED
-  
-  // Order Stages
   SHIPPED
   DELIVERED
   RETURNED
@@ -51,31 +41,23 @@ enum PaymentStatus {
 
 model Stock {
   id String @id @default(uuid())
-  productId String @unique // sanity product _id
+  productId String @unique
   productTitle String
-
   quantity Int @default(0)
-
   updatedAt DateTime @updatedAt
-
   @@index([productId])
 }
 
 model StockMovement {
   id String @id @default(uuid())
   createdAt DateTime @default(now())
-
-  productId String // sanity product _id
+  productId String
   productTitle String
-
-  quantity Int // positive for additions, negative for reductions
+  quantity Int
   type StockMovementType
-
   orderId String?
   order Order? @relation(fields: [orderId], references: [id])
-
   notes String?
-
   @@index([productId])
   @@index([type])
   @@index([createdAt])
@@ -86,54 +68,38 @@ model Order {
   createdAt      DateTime    @default(now())
   updatedAt DateTime @updatedAt
   returnedAt DateTime? 
-
   customerName   String
   customerPhone  String
   city String?
   address String?
-
   productId String?
   productTitle   String?
   comboDetails   String?
-
-
   quantity Int @default(1)
-
   expectedPrice Float @default(0)
   cashCollected Float?
   actualPaidPrice Float?
-
-
   productCost Float @default(0)
   shippingFee Float @default(0)
   additionalCosts Float @default(0)
-
-  
   type           OrderType   @default(LEAD)
   status         OrderStatus @default(PENDING)
   paymentStatus PaymentStatus @default(AWAITING_COLLECTION)
   notes          String?
-
   remittanceId String?
-  remittance Remittance? @relation(fields: [remittanceId],references: [id])
-
+  remittance Remittance? @relation(fields: [remittanceId], references: [id])
   stockMoveemnts StockMovement[]
-
   @@index([status])
   @@index([type])
   @@index([paymentStatus])
-  
 }
 
 model Remittance {
   id String @id @default(uuid())
   createdAt DateTime @default(now())
-
   totalAmount Float
   bankReference String?
   dateReceived DateTime @default(now())
-
   orders Order[]
-
   notes String?
 }

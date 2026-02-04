@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { createColumnHelper, ColumnDef } from "@tanstack/react-table";
 import { Lead } from "@/types/leads";
 import { updateLead } from "@/actions/admin/leads-actions";
-import { OrderStatus } from "generated/prisma/enums";
 import { ConfirmLeadDialog } from "../ConfirmLeadToOrderDialog";
+import { OrderStatus } from "prisma/generated/prisma/client";
 
 const columnHelper = createColumnHelper<Lead>();
 

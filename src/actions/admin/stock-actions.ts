@@ -2,10 +2,10 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { StockMovementType } from "generated/prisma/enums";
 import { revalidatePath } from "next/cache";
 import { getProducts } from "./products-actions";
 import { Product } from "@/types/product";
+import { StockMovementType } from "prisma/generated/prisma/client";
 
 export async function getStockLevels() {
   const [stocks, products] = await Promise.all([

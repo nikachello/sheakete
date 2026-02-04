@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus } from "generated/prisma/enums";
+import { OrderStatus, PaymentStatus } from "prisma/generated/prisma/client";
 
 export interface Lead {
   id: string;

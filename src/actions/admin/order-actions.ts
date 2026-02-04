@@ -1,13 +1,13 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { ORDER_STATUS_TRANSITIONS } from "@/utils/orders/order-status";
+import { revalidatePath } from "next/cache";
 import {
   OrderStatus,
   OrderType,
   PaymentStatus,
   StockMovementType,
-} from "generated/prisma/enums";
-import { revalidatePath } from "next/cache";
+} from "prisma/generated/prisma/client";
 
 export async function createOrder(data: {
   customerName: string;

@@ -1,4 +1,4 @@
-import { OrderStatus } from "generated/prisma/enums";
+import { OrderStatus } from "prisma/generated/prisma/client";
 
 export const ORDER_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   CONFIRMED: ["SHIPPED", "CANCELLED"],

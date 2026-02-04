@@ -1,8 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { OrderStatus, OrderType } from "generated/prisma/enums";
 import { revalidatePath } from "next/cache";
+import { OrderStatus, OrderType } from "prisma/generated/prisma/client";
 
 export const getLeadsStats = async () => {
   const now = new Date();
