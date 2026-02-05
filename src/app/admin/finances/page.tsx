@@ -25,13 +25,7 @@ export default async function FinancialsPage() {
     ]);
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      {/* Page Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">ფინანსები</h1>
-        <p className="text-muted-foreground">ფინანსური ანალიზი</p>
-      </div>
-
+    <div className="max-w-7xl mx-auto px-4 space-y-6">
       {/* Main Metrics Cards */}
       <FinancialsMetrics data={financialsData} />
 

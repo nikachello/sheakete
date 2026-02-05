@@ -41,7 +41,10 @@ export async function getExpenseStats(month: number, year: number) {
     0
   );
 
-  const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const totalAmount =
+    expenses.reduce((sum, e) => sum + e.amount, 0) +
+    courierAmount +
+    additionalFeesTotal;
   const marketingAmount = expenses
     .filter((e) => e.type === ExpenseType.MARKETING)
     .reduce((sum, e) => sum + e.amount, 0);

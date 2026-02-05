@@ -8,6 +8,7 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
+import { ExpenseType } from "prisma/generated/prisma/client";
 
 export interface FinancialsData {
   // Overall metrics
@@ -15,6 +16,7 @@ export interface FinancialsData {
   totalOrders: number;
   totalProfit: number;
   averageOrderValue: number;
+  netProfit: number;
 
   // Payment status breakdown
   paymentBreakdown: {
@@ -38,6 +40,7 @@ export interface FinancialsData {
     profitMargin: number;
     deliveredOrdersProfit: number;
     deliveredOrdersMargin: number;
+    netProfitMargin: number;
   };
 
   // Month comparison
@@ -99,78 +102,99 @@ export async function getFinancialsData(): Promise<FinancialsData> {
   const previousMonthEnd = endOfMonth(subMonths(now, 1));
 
   // Get all orders with financial data
-  const [allOrders, currentMonthOrders, previousMonthOrders, paymentGroups] =
-    await Promise.all([
-      // All orders for overall metrics
-      prisma.order.findMany({
-        where: {
-          type: "ORDER",
-        },
-        select: {
-          actualPaidPrice: true,
-          expectedPrice: true,
-          productCost: true,
-          shippingFee: true,
-          additionalCosts: true,
-          paymentStatus: true,
-          status: true,
-          quantity: true,
-        },
-      }),
+  const [
+    allOrders,
+    currentMonthOrders,
+    previousMonthOrders,
+    paymentGroups,
+    expenses,
+  ] = await Promise.all([
+    // All orders for overall metrics
+    prisma.order.findMany({
+      where: {
+        type: "ORDER",
+      },
+      select: {
+        actualPaidPrice: true,
+        expectedPrice: true,
+        productCost: true,
+        shippingFee: true,
+        additionalCosts: true,
+        paymentStatus: true,
+        status: true,
+        quantity: true,
+      },
+    }),
 
-      // Current month orders
-      prisma.order.findMany({
-        where: {
-          type: "ORDER",
-          createdAt: {
-            gte: currentMonthStart,
-            lte: currentMonthEnd,
-          },
+    // Current month orders
+    prisma.order.findMany({
+      where: {
+        type: "ORDER",
+        createdAt: {
+          gte: currentMonthStart,
+          lte: currentMonthEnd,
         },
-        select: {
-          actualPaidPrice: true,
-          expectedPrice: true,
-          productCost: true,
-          shippingFee: true,
-          additionalCosts: true,
-          quantity: true,
-        },
-      }),
+      },
+      select: {
+        actualPaidPrice: true,
+        expectedPrice: true,
+        productCost: true,
+        shippingFee: true,
+        additionalCosts: true,
+        quantity: true,
+      },
+    }),
 
-      // Previous month orders
-      prisma.order.findMany({
-        where: {
-          type: "ORDER",
-          createdAt: {
-            gte: previousMonthStart,
-            lte: previousMonthEnd,
-          },
+    // Previous month orders
+    prisma.order.findMany({
+      where: {
+        type: "ORDER",
+        createdAt: {
+          gte: previousMonthStart,
+          lte: previousMonthEnd,
         },
-        select: {
-          actualPaidPrice: true,
-          expectedPrice: true,
-          productCost: true,
-          shippingFee: true,
-          additionalCosts: true,
-          quantity: true,
-        },
-      }),
+      },
+      select: {
+        actualPaidPrice: true,
+        expectedPrice: true,
+        productCost: true,
+        shippingFee: true,
+        additionalCosts: true,
+        quantity: true,
+      },
+    }),
 
-      // Payment status grouping
-      prisma.order.groupBy({
-        by: ["paymentStatus"],
-        where: {
-          type: "ORDER",
-        },
-        _sum: {
-          actualPaidPrice: true,
-          expectedPrice: true,
-        },
-        _count: {
-          id: true,
-        },
-      }),
-    ]);
+    // Payment status grouping
+    prisma.order.groupBy({
+      by: ["paymentStatus"],
+      where: {
+        type: "ORDER",
+      },
+      _sum: {
+        actualPaidPrice: true,
+        expectedPrice: true,
+      },
+      _count: {
+        id: true,
+      },
+    }),
+    await prisma.expense.findMany({
+      where: {
+        month: now.getMonth() + 1,
+        year: now.getFullYear(),
+      },
+      select: {
+        amount: true,
+        type: true,
+      },
+    }),
+  ]);
+
+  const marketingExpenses = expenses
+    .filter((e) => e.type === ExpenseType.MARKETING)
+    .reduce((sum, e) => sum + e.amount, 0);
+
+  // Net profit = gross profit - expenses
 
   // Calculate overall metrics
   const totalRevenue = allOrders.reduce(
@@ -190,6 +214,8 @@ export async function getFinancialsData(): Promise<FinancialsData> {
   const totalProfit = totalRevenue - totalCosts;
   const totalOrders = allOrders.length;
   const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+  const netProfit = totalProfit - marketingExpenses;
 
   // Calculate payment breakdown
   const totalPaymentAmount = paymentGroups.reduce(
@@ -250,6 +276,7 @@ export async function getFinancialsData(): Promise<FinancialsData> {
     deliveredOrdersProfit: deliveredProfit,
     deliveredOrdersMargin:
       deliveredRevenue > 0 ? (deliveredProfit / deliveredRevenue) * 100 : 0,
+    netProfitMargin: netProfit > 0 ? (netProfit / totalRevenue) * 100 : 0,
   };
 
   // Calculate month comparison
@@ -322,6 +349,7 @@ export async function getFinancialsData(): Promise<FinancialsData> {
     costBreakdown,
     profitMetrics,
     monthComparison,
+    netProfit,
   };
 }
 

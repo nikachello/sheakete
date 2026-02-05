@@ -78,6 +78,25 @@ export function FinancialsMetrics({ data }: FinancialsMetricsProps) {
       footer: "წინა თვესთან შედარებით",
     },
     {
+      id: "net-profit",
+      title: "სუფთა მოგება",
+      value: formatCurrency(data.netProfit),
+      description: `${data.profitMetrics.netProfitMargin.toFixed(1)}% მარჟა`,
+      icon: IconChartLine,
+      iconColor: "text-blue-600",
+      iconBg: "bg-blue-50",
+      // trend: {
+      //   value: formatPercentage(data.monthComparison.growth.profitGrowth),
+      //   type:
+      //     data.monthComparison.growth.profitGrowth > 0
+      //       ? "up"
+      //       : data.monthComparison.growth.profitGrowth < 0
+      //         ? "down"
+      //         : "neutral",
+      // },
+      footer: "გამოკლებულია მარკეტინგის ხარჯი",
+    },
+    {
       id: "total-orders",
       title: "ყველა შეკვეთა",
       value: data.totalOrders.toLocaleString(),
