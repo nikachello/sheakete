@@ -39,6 +39,16 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum ExpenseType {
+  MARKETING
+  SALARY
+  RENT
+  SOFTWARE
+  LOGISTICS
+  TAX
+  OTHER
+}
+
 model Stock {
   id           String   @id @default(uuid())
   productId    String   @unique
@@ -105,4 +115,23 @@ model Remittance {
   dateReceived  DateTime @default(now())
   orders        Order[]
   notes         String?
+}
+
+model Expense {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  type   ExpenseType
+  amount Float
+
+  description String?
+  reference   String? // invoice, campaign name, etc.
+
+  month Int
+  year  Int
+
+  isVirtual Boolean @default(false) // for founder salary
+
+  @@index([type])
+  @@index([month, year])
 }

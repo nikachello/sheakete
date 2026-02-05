@@ -175,6 +175,18 @@ exports.Prisma.RemittanceScalarFieldEnum = {
   notes: 'notes'
 };
 
+exports.Prisma.ExpenseScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  type: 'type',
+  amount: 'amount',
+  description: 'description',
+  reference: 'reference',
+  month: 'month',
+  year: 'year',
+  isVirtual: 'isVirtual'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -218,11 +230,22 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
   REFUNDED: 'REFUNDED'
 };
 
+exports.ExpenseType = exports.$Enums.ExpenseType = {
+  MARKETING: 'MARKETING',
+  SALARY: 'SALARY',
+  RENT: 'RENT',
+  SOFTWARE: 'SOFTWARE',
+  LOGISTICS: 'LOGISTICS',
+  TAX: 'TAX',
+  OTHER: 'OTHER'
+};
+
 exports.Prisma.ModelName = {
   Stock: 'Stock',
   StockMovement: 'StockMovement',
   Order: 'Order',
-  Remittance: 'Remittance'
+  Remittance: 'Remittance',
+  Expense: 'Expense'
 };
 
 /**
