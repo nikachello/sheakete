@@ -18,6 +18,7 @@ const menuItems = [
   { label: "შეკვეთები", icon: ShoppingCart, href: "/admin/orders" },
   { label: "ჩარიცხვები", icon: ShoppingCart, href: "/admin/remittances" },
   { label: "მარაგები", icon: Package, href: "/admin/stocks" },
+  { label: "ფინანსები", icon: Package, href: "/admin/finances" },
 ];
 
 // Reusable Navigation Content
