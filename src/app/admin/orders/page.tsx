@@ -16,22 +16,16 @@ export default async function LeadsPage() {
   const statCards = ordersStatsToCards(stats);
 
   return (
-    <div className="flex min-h-screen bg-zinc-50/50">
-      <main className="flex-1 pt-20 lg:pt-10">
-        <div className="max-w-7xl mx-auto px-4 lg:px-6 space-y-6">
-          {/* Page Header */}
-          <div>
-            <h1 className="text-2xl font-bold text-zinc-900">შეკვეთები</h1>
-          </div>
-          <OrdersStatsCards cards={statCards} />
+    <div className="max-w-7xl mx-auto px-4 lg:px-6 space-y-6">
+      <OrdersStatsCards cards={statCards} />
 
-          {/* Filters and Table */}
-          <div className="bg-white rounded-lg shadow-sm border border-zinc-200 p-6">
-            <OrdersTable orders={orders} />
-          </div>
-          <AddOrderDialog />
-        </div>
-      </main>
+      {/* Filters and Table */}
+      <div className="bg-white rounded-lg shadow-sm border border-zinc-200 p-6">
+        <OrdersTable orders={orders} />
+      </div>
+      <div className="mb-6">
+        <AddOrderDialog />
+      </div>
     </div>
   );
 }

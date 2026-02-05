@@ -15,12 +15,7 @@ export default async function StocksPage() {
   ]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">მარაგები</h1>
-        <AddStockDialog />
-      </div>
-
+    <div className="max-w-7xl mx-auto px-4 space-y-6">
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
@@ -67,6 +62,9 @@ export default async function StocksPage() {
 
       {/* Stocks Table */}
       <StocksTable stocks={stocks} />
+      <div className="mb-6">
+        <AddStockDialog />
+      </div>
     </div>
   );
 }
