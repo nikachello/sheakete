@@ -1,78 +1,114 @@
-// // app/(dashboard)/remittances/page.tsx
-// import { getRemittances } from "@/actions/admin/remittances-actions";
-// import { AddRemittanceDialog } from "@/components/admin/remittances/AddRemittanceDialog";
-// import { RemittancesTable } from "@/components/admin/remittances/RemittancesTable";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Banknote, TrendingUp, Wallet } from "lucide-react";
+import {
+  getRemittances,
+  getCollectedOrders,
+} from "@/actions/admin/remittances-actions";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { CreateRemittanceForm } from "@/components/admin/remittances/create-remittance-form";
+import { CollectedOrdersList } from "@/components/admin/remittances/collected-orders-list";
+import { RemittanceList } from "@/components/admin/remittances/remittance-list";
 
-// export const dynamic = "force-dynamic";
-// export const revalidate = 0;
+export default async function RemittancesPage() {
+  const [remittances, collectedOrders] = await Promise.all([
+    getRemittances(),
+    getCollectedOrders(),
+  ]);
 
-// export default async function RemittancesPage() {
-//   const [remittances, stats] = await Promise.all([
-//     getRemittances(),
-//     getRemittanceStats(),
-//   ]);
+  if (
+    !remittances.success ||
+    !remittances.data ||
+    !collectedOrders.success ||
+    !collectedOrders.data
+  ) {
+    return <div>მოხდა შეცდომა</div>;
+  }
 
-//   return (
-//     <div className="max-w-7xl mx-auto px-4 space-y-6">
-//       {/* Stats Cards */}
-//       <div className="grid gap-4 md:grid-cols-3">
-//         <Card>
-//           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//             <CardTitle className="text-sm font-medium">
-//               ასაღები თანხები
-//             </CardTitle>
-//             <Wallet className="h-4 w-4 text-muted-foreground" />
-//           </CardHeader>
-//           <CardContent>
-//             <div className="text-2xl font-bold">
-//               {stats.pending.amount.toFixed(2)} ₾
-//             </div>
-//             <p className="text-xs text-muted-foreground">
-//               {stats.pending.count} შეკვეთა
-//             </p>
-//           </CardContent>
-//         </Card>
+  const totalPending = collectedOrders.data.reduce(
+    (sum, order) => sum + (order.actualPaidPrice || 0),
+    0
+  );
 
-//         <Card>
-//           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//             <CardTitle className="text-sm font-medium">
-//               თვიური გადარიცხვები
-//             </CardTitle>
-//             <TrendingUp className="h-4 w-4 text-muted-foreground" />
-//           </CardHeader>
-//           <CardContent>
-//             <div className="text-2xl font-bold">
-//               {stats.thisMonth.amount.toFixed(2)} ₾
-//             </div>
-//             <p className="text-xs text-muted-foreground">
-//               {stats.thisMonth.count} გადარიცხვა
-//             </p>
-//           </CardContent>
-//         </Card>
+  return (
+    <div className="space-y-6 p-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">გადარიცხვები </h1>
+        <CreateRemittanceForm collectedOrders={collectedOrders.data} />
+      </div>
 
-//         <Card>
-//           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//             <CardTitle className="text-sm font-medium">ჯამური თანხა</CardTitle>
-//             <Banknote className="h-4 w-4 text-muted-foreground" />
-//           </CardHeader>
-//           <CardContent>
-//             <div className="text-2xl font-bold">
-//               {stats.total.amount.toFixed(2)} ₾
-//             </div>
-//             <p className="text-xs text-muted-foreground">
-//               {stats.total.count} გადარიცხვა
-//             </p>
-//           </CardContent>
-//         </Card>
-//       </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm text-gray-600">
+              ასაღები თანხები
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">₾{totalPending.toFixed(2)}</div>
+            <div className="text-sm text-gray-600">
+              {collectedOrders.data.length} შეკვეთა მზად
+            </div>
+          </CardContent>
+        </Card>
 
-//       {/* Remittances Table */}
-//       <RemittancesTable remittances={remittances} />
-//       <div className="mb-6">
-//         <AddRemittanceDialog />
-//       </div>
-//     </div>
-//   );
-// }
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm text-gray-600">
+              სულ ჩარიცხვები
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{remittances.data.length}</div>
+            <div className="text-sm text-gray-600">სულ</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm text-gray-600">ამ თვის</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {
+                remittances.data.filter((r) => {
+                  const date = new Date(r.createdAt);
+                  const now = new Date();
+                  return (
+                    date.getMonth() === now.getMonth() &&
+                    date.getFullYear() === now.getFullYear()
+                  );
+                }).length
+              }
+            </div>
+            <div className="text-sm text-gray-600">ჩარიცხვები</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Collected Orders Waiting for Remittance */}
+      {collectedOrders.data.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              ⚠️ ჩასარიცხები ({collectedOrders.data.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CollectedOrdersList orders={collectedOrders.data} />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Remittance History */}
+      <Card>
+        <CardHeader>
+          <CardTitle>ჩარციხვების ისტორია</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {remittances.success && (
+            <RemittanceList remittances={remittances.data} />
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
