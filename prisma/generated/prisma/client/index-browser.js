@@ -125,7 +125,13 @@ exports.Prisma.StockScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
   productTitle: 'productTitle',
+  quantityOnHand: 'quantityOnHand',
+  quantityReserved: 'quantityReserved',
   quantity: 'quantity',
+  averageCost: 'averageCost',
+  lastPurchasePrice: 'lastPurchasePrice',
+  reorderPoint: 'reorderPoint',
+  reorderQuantity: 'reorderQuantity',
   updatedAt: 'updatedAt'
 };
 
@@ -137,7 +143,10 @@ exports.Prisma.StockMovementScalarFieldEnum = {
   quantity: 'quantity',
   type: 'type',
   orderId: 'orderId',
-  notes: 'notes'
+  notes: 'notes',
+  isReservation: 'isReservation',
+  unitCost: 'unitCost',
+  totalCost: 'totalCost'
 };
 
 exports.Prisma.OrderScalarFieldEnum = {
@@ -184,7 +193,28 @@ exports.Prisma.ExpenseScalarFieldEnum = {
   reference: 'reference',
   month: 'month',
   year: 'year',
-  isVirtual: 'isVirtual'
+  isVirtual: 'isVirtual',
+  paidFromBank: 'paidFromBank'
+};
+
+exports.Prisma.BankTransactionScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  amount: 'amount',
+  type: 'type',
+  remittanceId: 'remittanceId',
+  expenseId: 'expenseId',
+  note: 'note'
+};
+
+exports.Prisma.FounderLoanTransactionScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  amount: 'amount',
+  type: 'type',
+  expenseId: 'expenseId',
+  bankTransactionId: 'bankTransactionId',
+  note: 'note'
 };
 
 exports.Prisma.SortOrder = {
@@ -205,7 +235,9 @@ exports.StockMovementType = exports.$Enums.StockMovementType = {
   PURCHASE: 'PURCHASE',
   SALE: 'SALE',
   ADJUSTMENT: 'ADJUSTMENT',
-  RETURN: 'RETURN'
+  RETURN: 'RETURN',
+  RESERVATION: 'RESERVATION',
+  RESERVATION_RELEASE: 'RESERVATION_RELEASE'
 };
 
 exports.OrderType = exports.$Enums.OrderType = {
@@ -240,12 +272,24 @@ exports.ExpenseType = exports.$Enums.ExpenseType = {
   OTHER: 'OTHER'
 };
 
+exports.BankTransactionType = exports.$Enums.BankTransactionType = {
+  IN: 'IN',
+  OUT: 'OUT'
+};
+
+exports.FounderLoanType = exports.$Enums.FounderLoanType = {
+  COMPANY_OWES_FOUNDER: 'COMPANY_OWES_FOUNDER',
+  COMPANY_REPAID_FOUNDER: 'COMPANY_REPAID_FOUNDER'
+};
+
 exports.Prisma.ModelName = {
   Stock: 'Stock',
   StockMovement: 'StockMovement',
   Order: 'Order',
   Remittance: 'Remittance',
-  Expense: 'Expense'
+  Expense: 'Expense',
+  BankTransaction: 'BankTransaction',
+  FounderLoanTransaction: 'FounderLoanTransaction'
 };
 
 /**

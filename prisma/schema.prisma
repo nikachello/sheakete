@@ -17,6 +17,8 @@ enum StockMovementType {
   SALE
   ADJUSTMENT
   RETURN
+  RESERVATION        
+  RESERVATION_RELEASE
 }
 
 enum OrderType {
@@ -51,11 +53,32 @@ enum ExpenseType {
   OTHER
 }
 
+enum BankTransactionType {
+  IN
+  OUT
+}
+
+enum FounderLoanType {
+  COMPANY_OWES_FOUNDER
+  COMPANY_REPAID_FOUNDER
+}
+
 model Stock {
   id String @id @default(uuid())
   productId String @unique
   productTitle String
+
+  quantityOnHand  Int      @default(0)
+  quantityReserved Int     @default(0)
+
   quantity Int @default(0)
+
+  averageCost     Float?
+  lastPurchasePrice Float?
+
+  reorderPoint    Int?
+  reorderQuantity Int?
+
   updatedAt DateTime @updatedAt
   @@index([productId])
 }
@@ -70,6 +93,12 @@ model StockMovement {
   orderId String?
   order Order? @relation(fields: [orderId], references: [id])
   notes String?
+
+  isReservation Boolean          @default(false)
+  unitCost     Float?
+  totalCost    Float?
+
+  @@unique([orderId, type])
   @@index([productId])
   @@index([type])
   @@index([createdAt])
@@ -107,30 +136,57 @@ model Order {
 }
 
 model Remittance {
-  id String @id @default(uuid())
-  createdAt DateTime @default(now())
-  totalAmount Float
-  bankReference String?
-  dateReceived DateTime @default(now())
-  orders Order[]
-  notes String?
+  id               String            @id @default(uuid())
+  createdAt        DateTime          @default(now())
+  totalAmount      Float
+  bankReference    String?
+  dateReceived     DateTime          @default(now())
+  notes            String?
+  orders           Order[]
+  bankTransactions BankTransaction[] @relation(name: "RemittanceBankTransactions")
 }
 
+
+
 model Expense {
-  id          String      @id @default(uuid())
-  createdAt   DateTime    @default(now())
-
-  type        ExpenseType
-  amount      Float
-
-  description String?
-  reference   String?     // invoice, campaign name, etc.
-
-  month       Int
-  year        Int
-
-  isVirtual   Boolean     @default(false) // for founder salary
+  id           String                   @id @default(uuid())
+  createdAt    DateTime                 @default(now())
+  type         ExpenseType
+  amount       Float
+  description  String?
+  reference    String?
+  month        Int
+  year         Int
+  isVirtual    Boolean                  @default(false)
+  paidFromBank Boolean                  @default(false)
+  bankTransaction BankTransaction?      @relation(name: "ExpenseBankTransaction")
+  founderLoan     FounderLoanTransaction?
 
   @@index([type])
   @@index([month, year])
+}
+
+model BankTransaction {
+  id           String                  @id @default(uuid())
+  createdAt    DateTime                @default(now())
+  amount       Float
+  type         BankTransactionType
+  remittanceId String?
+  remittance   Remittance?             @relation(name: "RemittanceBankTransactions", fields: [remittanceId], references: [id])
+  expenseId    String?                 @unique
+  expense      Expense?                @relation(name: "ExpenseBankTransaction", fields: [expenseId], references: [id])
+  founderLoan  FounderLoanTransaction?
+  note         String?
+}
+
+model FounderLoanTransaction {
+  id                String           @id @default(uuid())
+  createdAt         DateTime         @default(now())
+  amount            Float
+  type              FounderLoanType
+  expenseId         String?          @unique
+  expense           Expense?         @relation(fields: [expenseId], references: [id])
+  bankTransactionId String?          @unique
+  bankTransaction   BankTransaction? @relation(fields: [bankTransactionId], references: [id])
+  note              String?
 }
