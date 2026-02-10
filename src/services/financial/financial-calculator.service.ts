@@ -70,11 +70,11 @@ export class FinancialCalculatorService {
     const expenses = await this.expenseRepo.findInPeriod(startDate, endDate);
 
     const marketingExpenses = expenses
-      .filter((e) => e.type === ExpenseType.MARKETING)
+      .filter((e) => !e.isVirtual && e.type === ExpenseType.MARKETING)
       .reduce((sum, e) => sum + e.amount, 0);
 
     const operatingExpenses = expenses
-      .filter((e) => e.type !== ExpenseType.MARKETING)
+      .filter((e) => !e.isVirtual && e.type !== ExpenseType.MARKETING)
       .reduce((sum, e) => sum + e.amount, 0);
 
     const totalOpEx = marketingExpenses + operatingExpenses;

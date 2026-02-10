@@ -9,13 +9,23 @@ export class ExpenseRepository {
           gte: startDate,
           lte: endDate,
         },
+        isVirtual: {
+          not: true,
+        },
       },
     });
   }
 
   async findByMonth(month: number, year: number): Promise<Expense[]> {
     return prisma.expense.findMany({
-      where: { month, year },
+      where: {
+        month,
+        year,
+        isVirtual: {
+          not: true,
+        },
+      },
+
       include: {
         founderLoan: true,
         bankTransaction: true,
@@ -32,6 +42,9 @@ export class ExpenseRepository {
     const result = await prisma.expense.aggregate({
       where: {
         type,
+        isVirtual: {
+          not: true,
+        },
         createdAt: {
           gte: startDate,
           lte: endDate,
