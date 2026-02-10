@@ -13,6 +13,7 @@ import {
 } from "@/actions/admin/expenses-analytics-actions";
 import { ExpenseForm } from "@/components/admin/expenses/expense-form";
 import { ExpenseChart } from "@/components/admin/expenses/expense-chart";
+import { PayOwnerDialog } from "@/components/admin/expenses/PayOwnerDialog";
 
 export const dynamic = "force-dynamic";
 
@@ -117,10 +118,6 @@ export default async function ExpensesPage() {
                 ? founderLoan.data.currentBalance.toFixed(2)
                 : "0.00"}
             </div>
-            <div className="text-sm text-red-600">
-              {founderLoan.success && founderLoan.data.unpaidExpenses.length}{" "}
-              გადაუხდელი
-            </div>
           </CardContent>
         </Card>
       </div>
@@ -135,13 +132,8 @@ export default async function ExpensesPage() {
                 ვალი:{" "}
                 <strong>₾{founderLoan.data.currentBalance.toFixed(2)}</strong>
               </div>
-              <div className="text-sm">
-                გადაუხდელი ხარჯები: {founderLoan.data.unpaidExpenses.length}
-              </div>
               <div className="mt-4">
-                <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                  გადახდა
-                </button>
+                <PayOwnerDialog />
               </div>
             </div>
           </AlertDescription>

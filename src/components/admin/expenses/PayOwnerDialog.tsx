@@ -1,0 +1,59 @@
+"use client";
+
+import { useState } from "react";
+import { ExpenseType } from "prisma/generated/prisma/client";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  createExpense,
+  repayFounderLoan,
+} from "@/actions/admin/expenses-actions";
+
+export function PayOwnerDialog() {
+  const [open, setOpen] = useState(false);
+  const [amount, setAmount] = useState<number>(0);
+
+  const handleSubmit = async () => {
+    const now = new Date();
+    await repayFounderLoan(amount);
+    setOpen(false);
+    setAmount(0);
+    window.location.reload();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="default">გადახდა</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>დააფიქსირეთ ვალის გადახდა</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <Input
+            type="number"
+            placeholder="თანხა"
+            value={amount}
+            onChange={(e) => setAmount(Number(e.target.value))}
+          />
+          <Button onClick={handleSubmit}>გადახდა</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
