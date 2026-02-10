@@ -1,11 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { StockRepository } from "@/repositories/stock.repository";
 import { StockAlert } from "@/types/stock.types";
-import {
-  StockMovementType,
-  Prisma,
-  $Enums,
-} from "prisma/generated/prisma/client";
+import { $Enums, StockMovementType } from "prisma/generated/prisma/client";
 
 // Type for transaction client
 type TransactionClient = Omit<
@@ -114,9 +110,14 @@ export class StockManagerService {
             quantity: { decrement: quantity }, // Backward compatibility
           },
         });
-      } catch (error: any) {
+      } catch (error) {
         // If unique constraint violated, movement already exists
-        if (error.code === "P2002") {
+        if (
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === "P2002"
+        ) {
           console.log(`Stock movement already exists for order ${orderId}`);
           return;
         }
@@ -171,8 +172,13 @@ export class StockManagerService {
             quantity: { increment: quantity },
           },
         });
-      } catch (error: any) {
-        if (error.code === "P2002") {
+      } catch (error) {
+        if (
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === "P2002"
+        ) {
           console.log(`Return movement already exists for order ${orderId}`);
           return;
         }
@@ -297,7 +303,7 @@ export class StockManagerService {
       quantity: number;
       type:
         | typeof $Enums.StockMovementType.PURCHASE
-        | typeof $Enums.StockMovementType.StockMovementType.ADJUSTMENT;
+        | typeof $Enums.StockMovementType.ADJUSTMENT;
       unitCost?: number;
       notes?: string;
     },

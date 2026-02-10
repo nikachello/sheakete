@@ -12,7 +12,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { AlertTriangle } from "lucide-react";
-import { AdjustStockDialog } from "./AdjustStockDialog";
 
 type Stock = {
   productId: string;
@@ -77,13 +76,6 @@ export function StocksTable({ stocks }: { stocks: Stock[] }) {
                   {stock.updatedAt
                     ? format(new Date(stock.updatedAt), "dd/MM/yyyy HH:mm")
                     : "-"}
-                </TableCell>
-                <TableCell className="text-right">
-                  <AdjustStockDialog
-                    productId={stock.productId}
-                    productTitle={stock.productTitle}
-                    currentQuantity={stock.quantity}
-                  />
                 </TableCell>
               </TableRow>
             ))
