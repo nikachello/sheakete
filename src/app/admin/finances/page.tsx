@@ -224,7 +224,9 @@ export default async function FinancialsPage() {
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">თვითღირებულება</span>
+              <span className="text-sm font-medium">
+                თვითღირებულება (საკურიეროს და დამატებითი ხარჯების ჩათვლით)
+              </span>
               <span className="text-sm font-bold text-red-500">
                 -{formatCurrency(current.totalCOGS)}
               </span>
@@ -273,7 +275,9 @@ export default async function FinancialsPage() {
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">თვითღირებულება</span>
+              <span className="text-sm font-medium">
+                თვითღირებულება (საკურიეროს და დამატებითი ხარჯების ჩათვლით)
+              </span>
               <span className="text-sm font-bold text-red-500">
                 -{formatCurrency(previous.totalCOGS)}
               </span>
