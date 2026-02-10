@@ -98,7 +98,7 @@ export default async function FinancialsPage() {
     !financialsResult.success ||
     !financialsResult.data ||
     !bankBalanceResult.success ||
-    !bankBalanceResult.data
+    bankBalanceResult.data == undefined
   ) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
