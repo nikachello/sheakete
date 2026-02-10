@@ -1,7 +1,7 @@
 // components/stocks/add-stock-dialog.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,9 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
-import { addStock } from "@/actions/admin/stock-actions";
 import { getProducts } from "@/actions/admin/products-actions";
-import { StockMovementType } from "prisma/generated/prisma/client";
+import { addStockAction } from "@/actions/admin/stock-actions";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type Product = {
   _id: string;
@@ -34,11 +34,15 @@ type Product = {
   unit?: string;
 };
 
+type StockType = "PURCHASE" | "ADJUSTMENT";
+
 export function AddStockDialog() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<string>(""); // Changed to string for controlled Select
+  const [type, setType] = useState<StockType>("PURCHASE");
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (open) {
@@ -46,27 +50,56 @@ export function AddStockDialog() {
     }
   }, [open]);
 
+  // Reset form when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setSelectedProduct("");
+      setType("PURCHASE");
+      if (formRef.current) {
+        formRef.current.reset();
+      }
+    }
+  }, [open]);
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!selectedProduct) return;
 
-    setLoading(true);
+    const product = products.find((p) => p._id === selectedProduct);
+    if (!product) return;
 
+    setLoading(true);
     const formData = new FormData(e.currentTarget);
 
+    const quantity = Number(formData.get("quantity"));
+    const unitCost = formData.get("unitCost")
+      ? Number(formData.get("unitCost"))
+      : undefined;
+
     try {
-      await addStock({
-        productId: selectedProduct._id,
-        productTitle: selectedProduct.title,
-        quantity: parseInt(formData.get("quantity") as string),
-        type: formData.get("type") as StockMovementType,
-        notes: formData.get("notes") as string,
+      const result = await addStockAction({
+        productId: product._id,
+        productTitle: product.title,
+        quantity,
+        type,
+        unitCost: type === "PURCHASE" ? unitCost : undefined,
+        notes: (formData.get("notes") as string) || undefined,
       });
 
+      if (!result.success) {
+        alert(result.error || "მარაგის დამატება ვერ მოხერხდა");
+        return;
+      }
+
+      // Success - reset form and close
+      if (formRef.current) {
+        formRef.current.reset();
+      }
+      setSelectedProduct("");
+      setType("PURCHASE");
       setOpen(false);
-      setSelectedProduct(null);
     } catch (error) {
-      console.error("Failed to add stock:", error);
+      console.error(error);
       alert("მარაგის დამატება ვერ მოხერხდა");
     } finally {
       setLoading(false);
@@ -81,112 +114,134 @@ export function AddStockDialog() {
           მარაგის დამატება
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>მარაგის დამატება</DialogTitle>
-          <DialogDescription>
-            აირჩიეთ პროდუქტი და მიუთითეთ რაოდენობა
-          </DialogDescription>
+
+      <DialogContent className="max-w-md max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
+          <DialogTitle>მარაგის ოპერაცია</DialogTitle>
+          <DialogDescription>შესყიდვა ან ხელით კორექცია</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-4 py-4">
+
+        <ScrollArea className="flex-1 overflow-y-auto pr-4 -mr-4">
+          <form
+            ref={formRef}
+            onSubmit={handleSubmit}
+            className="space-y-4"
+            id="stock-form"
+          >
+            {/* PRODUCT */}
             <div className="space-y-2">
-              <Label htmlFor="product">პროდუქტი *</Label>
+              <Label>პროდუქტი *</Label>
               <Select
-                onValueChange={(value) => {
-                  const product = products.find((p) => p._id === value);
-                  setSelectedProduct(product || null);
-                }}
+                value={selectedProduct}
+                onValueChange={setSelectedProduct}
                 required
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="აირჩიეთ პროდუქტი" />
                 </SelectTrigger>
                 <SelectContent>
-                  {products.map((product) => (
-                    <SelectItem
-                      key={product._id}
-                      value={product._id}
-                      className="max-w-full"
-                    >
-                      <span className="block truncate max-w-[350px]">
-                        {product.title}
-                      </span>
-                    </SelectItem>
-                  ))}
+                  <ScrollArea className="max-h-[200px]">
+                    {products.map((p) => (
+                      <SelectItem key={p._id} value={p._id}>
+                        <span className="block truncate max-w-[300px]">
+                          {p.title}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
                 </SelectContent>
               </Select>
-              {selectedProduct && (
-                <p className="text-sm text-muted-foreground break-words">
-                  {selectedProduct.title}
-                </p>
-              )}
             </div>
 
+            {/* TYPE */}
             <div className="space-y-2">
-              <Label htmlFor="type">ტიპი *</Label>
+              <Label>ტიპი *</Label>
               <Select
-                name="type"
-                defaultValue={StockMovementType.PURCHASE}
-                required
+                value={type}
+                onValueChange={(v) => setType(v as StockType)}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={StockMovementType.PURCHASE}>
-                    შესყიდვა
+                  <SelectItem value="PURCHASE">
+                    შესყიდვა (ახალი მარაგი)
                   </SelectItem>
-                  <SelectItem value={StockMovementType.ADJUSTMENT}>
-                    კორექცია
-                  </SelectItem>
+                  <SelectItem value="ADJUSTMENT">კორექცია (+ / -)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
+            {/* QUANTITY */}
             <div className="space-y-2">
-              <Label htmlFor="quantity">რაოდენობა *</Label>
+              <Label>
+                რაოდენობა *
+                {type === "ADJUSTMENT" && (
+                  <span className="text-xs text-muted-foreground ml-2">
+                    (შეიძლება იყოს უარყოფითი)
+                  </span>
+                )}
+              </Label>
               <Input
-                id="quantity"
                 name="quantity"
                 type="number"
-                placeholder="0"
                 required
-                min="1"
+                step="1"
+                min={type === "PURCHASE" ? 1 : undefined}
+                placeholder={type === "ADJUSTMENT" ? "-5 ან 10" : "10"}
                 className="w-full"
               />
-              {selectedProduct?.unit && (
-                <p className="text-xs text-muted-foreground">
-                  ერთეული: {selectedProduct.unit}
-                </p>
-              )}
             </div>
 
+            {/* UNIT COST (PURCHASE ONLY) */}
+            {type === "PURCHASE" && (
+              <div className="space-y-2">
+                <Label>ერთეულის ფასი *</Label>
+                <Input
+                  name="unitCost"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  required
+                  placeholder="მაგ: 12.50"
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">
+                  გამოიყენება საშუალო თვითღირებულების დასათვლელად
+                </p>
+              </div>
+            )}
+
+            {/* NOTES */}
             <div className="space-y-2">
-              <Label htmlFor="notes">შენიშვნები</Label>
+              <Label>შენიშვნა</Label>
               <Textarea
-                id="notes"
                 name="notes"
-                placeholder="დამატებითი ინფორმაცია..."
                 rows={3}
+                placeholder="..."
                 className="w-full resize-none"
               />
             </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={loading}
-            >
-              გაუქმება
-            </Button>
-            <Button type="submit" disabled={loading || !selectedProduct}>
-              {loading ? "მიმდინარეობს..." : "დამატება"}
-            </Button>
-          </DialogFooter>
-        </form>
+          </form>
+        </ScrollArea>
+
+        <DialogFooter className="flex-shrink-0 mt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpen(false)}
+            disabled={loading}
+          >
+            გაუქმება
+          </Button>
+          <Button
+            type="submit"
+            form="stock-form"
+            disabled={loading || !selectedProduct}
+          >
+            {loading ? "მიმდინარეობს..." : "შენახვა"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

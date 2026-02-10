@@ -1,224 +1,122 @@
-// actions/admin/stock-actions.ts
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { StockRepository } from "@/repositories/stock.repository";
+import { stockManager } from "@/services/inventory/stock-manager.service";
 import { revalidatePath } from "next/cache";
-import { getProducts } from "./products-actions";
-import { Product } from "@/types/product";
 import { StockMovementType } from "prisma/generated/prisma/client";
 
+const stockRepo = new StockRepository();
+
 export async function getStockLevels() {
-  const [stocks, products] = await Promise.all([
-    prisma.stock.findMany({
+  try {
+    const stocks = await prisma.stock.findMany({
       orderBy: { updatedAt: "desc" },
-    }),
-    getProducts(),
-  ]);
+    });
 
-  // Merge with Sanity products to show products with 0 stock
-  const stockMap = new Map(stocks.map((s) => [s.productId, s]));
+    return { success: true, data: stocks };
+  } catch (error) {
+    console.error("Failed to get stock levels:", error);
+    return { success: false, error: "Failed to fetch stock" };
+  }
+}
 
-  return products.map((product: Product) => {
-    const stock = stockMap.get(product._id);
-    return {
-      productId: product._id,
-      productTitle: product.title,
-      quantity: stock?.quantity || 0,
-      price: product.price,
-      unit: product.unit,
-      updatedAt: stock?.updatedAt || null,
-    };
-  });
+export async function getLowStockAlerts() {
+  try {
+    const alerts = await stockManager.getLowStockAlerts();
+    return { success: true, data: alerts };
+  } catch (error) {
+    console.error("Failed to get low stock alerts:", error);
+    return { success: false, error: "Failed to fetch alerts" };
+  }
 }
 
 export async function getStockMovements(productId?: string) {
-  return prisma.stockMovement.findMany({
-    where: productId ? { productId } : undefined,
-    include: {
-      order: {
-        select: {
-          id: true,
-          customerName: true,
-          status: true,
+  try {
+    if (productId) {
+      const movements = await stockRepo.findMovementsForProduct(productId);
+      return { success: true, data: movements };
+    }
+
+    const movements = await prisma.stockMovement.findMany({
+      include: {
+        order: {
+          select: {
+            id: true,
+            customerName: true,
+            status: true,
+          },
         },
       },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-  });
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    });
+
+    return { success: true, data: movements };
+  } catch (error) {
+    console.error("Failed to get stock movements:", error);
+    return { success: false, error: "Failed to fetch movements" };
+  }
 }
 
-export async function addStock(data: {
+export async function addStockAction(data: {
   productId: string;
   productTitle: string;
   quantity: number;
-  type: StockMovementType;
+  type: "PURCHASE" | "ADJUSTMENT";
+  unitCost?: number;
   notes?: string;
 }) {
-  // Create movement record
-  await prisma.stockMovement.create({
-    data: {
+  try {
+    // Validate PURCHASE requires unitCost
+    if (data.type === "PURCHASE" && !data.unitCost) {
+      return {
+        success: false,
+        error: "ერთეულის ფასი აუცილებელია შესყიდვისთვის",
+      };
+    }
+
+    // Validate quantity is not zero
+    if (data.quantity === 0) {
+      return {
+        success: false,
+        error: "რაოდენობა არ შეიძლება იყოს 0",
+      };
+    }
+
+    // Validate PURCHASE quantity is positive
+    if (data.type === "PURCHASE" && data.quantity <= 0) {
+      return {
+        success: false,
+        error: "შესყიდვის რაოდენობა უნდა იყოს დადებითი",
+      };
+    }
+
+    // Map string type to enum
+    const movementType =
+      data.type === "PURCHASE"
+        ? StockMovementType.PURCHASE
+        : StockMovementType.ADJUSTMENT;
+
+    await stockManager.addStock({
       productId: data.productId,
       productTitle: data.productTitle,
       quantity: data.quantity,
-      type: data.type,
+      type: movementType,
+      unitCost: data.unitCost,
       notes: data.notes,
-    },
-  });
-
-  // Update or create stock record
-  await prisma.stock.upsert({
-    where: { productId: data.productId },
-    create: {
-      productId: data.productId,
-      productTitle: data.productTitle,
-      quantity: data.quantity,
-    },
-    update: {
-      quantity: { increment: data.quantity },
-      productTitle: data.productTitle, // Update title in case it changed
-    },
-  });
-
-  revalidatePath("/stocks");
-}
-
-export async function adjustStock(data: {
-  productId: string;
-  productTitle: string;
-  newQuantity: number;
-  notes?: string;
-}) {
-  const currentStock = await prisma.stock.findUnique({
-    where: { productId: data.productId },
-  });
-
-  const currentQty = currentStock?.quantity || 0;
-  const difference = data.newQuantity - currentQty;
-
-  if (difference !== 0) {
-    // Record the adjustment
-    await prisma.stockMovement.create({
-      data: {
-        productId: data.productId,
-        productTitle: data.productTitle,
-        quantity: difference,
-        type: StockMovementType.ADJUSTMENT,
-        notes:
-          data.notes || `Adjusted from ${currentQty} to ${data.newQuantity}`,
-      },
     });
 
-    // Update stock
-    await prisma.stock.upsert({
-      where: { productId: data.productId },
-      create: {
-        productId: data.productId,
-        productTitle: data.productTitle,
-        quantity: data.newQuantity,
-      },
-      update: {
-        quantity: data.newQuantity,
-        productTitle: data.productTitle,
-      },
-    });
+    revalidatePath("/stocks");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to add stock:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "მარაგის დამატება ვერ მოხერხდა",
+    };
   }
-
-  revalidatePath("/stocks");
-}
-
-export async function reduceStockForOrder(
-  orderId: string,
-  productId: string,
-  productTitle: string,
-  quantity: number
-) {
-  // Create movement record
-  await prisma.stockMovement.create({
-    data: {
-      productId,
-      productTitle,
-      quantity: -quantity, // Negative for reduction
-      type: StockMovementType.SALE,
-      orderId,
-      notes: `Order shipped`,
-    },
-  });
-
-  // Reduce stock
-  await prisma.stock.update({
-    where: { productId },
-    data: {
-      quantity: { decrement: quantity },
-    },
-  });
-
-  revalidatePath("/stocks");
-  revalidatePath("/orders");
-}
-
-export async function restoreStockForReturn(
-  orderId: string,
-  productId: string,
-  productTitle: string,
-  quantity: number
-) {
-  // Create movement record
-  await prisma.stockMovement.create({
-    data: {
-      productId,
-      productTitle,
-      quantity: quantity,
-      type: StockMovementType.RETURN,
-      orderId,
-      notes: `Order returned`,
-    },
-  });
-
-  // Add back to stock
-  await prisma.stock.upsert({
-    where: { productId },
-    create: {
-      productId,
-      productTitle,
-      quantity,
-    },
-    update: {
-      quantity: { increment: quantity },
-      productTitle,
-    },
-  });
-
-  revalidatePath("/stocks");
-  revalidatePath("/orders");
-}
-
-export async function getStockStats() {
-  const [stocks, recentMovements, lowStock] = await Promise.all([
-    prisma.stock.aggregate({
-      _sum: { quantity: true },
-      _count: { id: true },
-    }),
-
-    prisma.stockMovement.count({
-      where: {
-        createdAt: {
-          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
-        },
-      },
-    }),
-
-    prisma.stock.count({
-      where: {
-        quantity: { lte: 10 }, // Low stock threshold
-      },
-    }),
-  ]);
-
-  return {
-    totalProducts: stocks._count.id,
-    totalQuantity: stocks._sum.quantity || 0,
-    recentMovements,
-    lowStockCount: lowStock,
-  };
 }

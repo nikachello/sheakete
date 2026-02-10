@@ -1,193 +1,135 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { RemittanceRepository } from "@/repositories/remittance.repository";
+import { createRemittanceSchema } from "@/validations/remittance.validation";
 import { revalidatePath } from "next/cache";
-import { PaymentStatus } from "prisma/generated/prisma/client";
+import {
+  BankTransactionType,
+  PaymentStatus,
+} from "prisma/generated/prisma/client";
 
-export async function getRemittances() {
-  return prisma.remittance.findMany({
-    include: {
-      orders: {
+const remittanceRepo = new RemittanceRepository();
+
+export async function createRemittance(rawData: unknown) {
+  try {
+    // Validate input
+    const data = createRemittanceSchema.parse(rawData);
+
+    const remittance = await prisma.$transaction(async (tx) => {
+      // Validate orders are in COLLECTED status
+      const orders = await tx.order.findMany({
+        where: {
+          id: { in: data.orderIds },
+          paymentStatus: PaymentStatus.COLLECTED,
+          remittanceId: null,
+        },
         select: {
           id: true,
-          customerName: true,
           actualPaidPrice: true,
-          status: true,
         },
-      },
-      _count: {
-        select: {
-          orders: true,
+      });
+
+      if (orders.length !== data.orderIds.length) {
+        throw new Error(
+          "Some orders are not in COLLECTED status or already remitted"
+        );
+      }
+
+      const totalAmount = orders.reduce(
+        (sum, order) => sum + (order.actualPaidPrice || 0),
+        0
+      );
+
+      if (totalAmount <= 0) {
+        throw new Error("Total amount must be greater than 0");
+      }
+
+      // Create remittance
+      const newRemittance = await tx.remittance.create({
+        data: {
+          totalAmount,
+          bankReference: data.bankReference || null,
+          dateReceived: data.dateReceived,
+          notes: data.notes || null,
         },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+      });
+
+      // ✅ CREATE BANK TRANSACTION - CRITICAL FIX!
+      await tx.bankTransaction.create({
+        data: {
+          amount: totalAmount,
+          type: BankTransactionType.IN,
+          remittanceId: newRemittance.id,
+          note: `Remittance received: ${data.bankReference || newRemittance.id}`,
+        },
+      });
+
+      // Update orders to SETTLED
+      await tx.order.updateMany({
+        where: { id: { in: data.orderIds } },
+        data: {
+          paymentStatus: PaymentStatus.SETTLED,
+          remittanceId: newRemittance.id,
+        },
+      });
+
+      return newRemittance;
+    });
+
+    revalidatePath("/remittances");
+    revalidatePath("/dashboard");
+    revalidatePath("/finances");
+
+    return { success: true, data: remittance };
+  } catch (error) {
+    console.error("Failed to create remittance:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to create remittance",
+    };
+  }
 }
 
-export async function getRemittanceById(id: string) {
-  return prisma.remittance.findUnique({
-    where: { id },
-    include: {
-      orders: {
-        include: {
-          //   _count: true,
-        },
-      },
-    },
-  });
+export async function getRemittances() {
+  try {
+    const remittances = await remittanceRepo.findAll();
+    return { success: true, data: remittances };
+  } catch (error) {
+    console.error("Failed to get remittances:", error);
+    return { success: false, error: "Failed to fetch remittances" };
+  }
 }
 
 export async function getCollectedOrders() {
-  // Orders that have been delivered and payment collected but not yet settled
-  return prisma.order.findMany({
-    where: {
-      paymentStatus: PaymentStatus.COLLECTED,
-      remittanceId: null,
-    },
-    select: {
-      id: true,
-      customerName: true,
-      customerPhone: true,
-      productTitle: true,
-      comboDetails: true,
-      actualPaidPrice: true,
-      cashCollected: true,
-      shippingFee: true,
-      additionalCosts: true,
-      status: true,
-      updatedAt: true,
-    },
-    orderBy: {
-      updatedAt: "desc",
-    },
-  });
-}
-
-export async function createRemittance(data: {
-  orderIds: string[];
-  bankReference?: string;
-  dateReceived: Date;
-  notes?: string;
-}) {
-  // Calculate total from selected orders
-  const orders = await prisma.order.findMany({
-    where: {
-      id: { in: data.orderIds },
-      paymentStatus: PaymentStatus.COLLECTED,
-    },
-    select: {
-      actualPaidPrice: true,
-    },
-  });
-
-  const totalAmount = orders.reduce(
-    (sum, order) => sum + (order.actualPaidPrice || 0),
-    0
-  );
-
-  // Create remittance and update orders
-  const remittance = await prisma.remittance.create({
-    data: {
-      totalAmount,
-      bankReference: data.bankReference || null,
-      dateReceived: data.dateReceived,
-      notes: data.notes || null,
-      orders: {
-        connect: data.orderIds.map((id) => ({ id })),
-      },
-    },
-  });
-
-  // Update payment status to SETTLED
-  await prisma.order.updateMany({
-    where: {
-      id: { in: data.orderIds },
-    },
-    data: {
-      paymentStatus: PaymentStatus.SETTLED,
-    },
-  });
-
-  revalidatePath("/remittances");
-  revalidatePath("/dashboard");
-  revalidatePath("/orders");
-
-  return remittance;
-}
-
-export async function deleteRemittance(id: string) {
-  // First, disconnect orders and set them back to COLLECTED
-  const remittance = await prisma.remittance.findUnique({
-    where: { id },
-    include: { orders: true },
-  });
-
-  if (remittance) {
-    await prisma.order.updateMany({
+  try {
+    const orders = await prisma.order.findMany({
       where: {
-        remittanceId: id,
-      },
-      data: {
-        remittanceId: null,
         paymentStatus: PaymentStatus.COLLECTED,
+        remittanceId: null,
+      },
+      select: {
+        id: true,
+        customerName: true,
+        customerPhone: true,
+        productTitle: true,
+        comboDetails: true,
+        actualPaidPrice: true,
+        cashCollected: true,
+        shippingFee: true,
+        additionalCosts: true,
+        status: true,
+        updatedAt: true,
+      },
+      orderBy: {
+        updatedAt: "desc",
       },
     });
+
+    return { success: true, data: orders };
+  } catch (error) {
+    console.error("Failed to get collected orders:", error);
+    return { success: false, error: "Failed to fetch orders" };
   }
-
-  await prisma.remittance.delete({
-    where: { id },
-  });
-
-  revalidatePath("/remittances");
-  revalidatePath("/dashboard");
-  revalidatePath("/orders");
-}
-
-export async function getRemittanceStats() {
-  const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-
-  const [thisMonth, total, pending] = await Promise.all([
-    // This month's remittances
-    prisma.remittance.aggregate({
-      where: {
-        createdAt: { gte: monthStart },
-      },
-      _sum: { totalAmount: true },
-      _count: { id: true },
-    }),
-
-    // All time total
-    prisma.remittance.aggregate({
-      _sum: { totalAmount: true },
-      _count: { id: true },
-    }),
-
-    // Pending collection (COLLECTED but not SETTLED)
-    prisma.order.aggregate({
-      where: {
-        paymentStatus: PaymentStatus.COLLECTED,
-      },
-      _sum: { actualPaidPrice: true },
-      _count: { id: true },
-    }),
-  ]);
-
-  return {
-    thisMonth: {
-      amount: thisMonth._sum.totalAmount || 0,
-      count: thisMonth._count.id,
-    },
-    total: {
-      amount: total._sum.totalAmount || 0,
-      count: total._count.id,
-    },
-    pending: {
-      amount: pending._sum.actualPaidPrice || 0,
-      count: pending._count.id,
-    },
-  };
 }

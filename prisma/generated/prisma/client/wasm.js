@@ -97,7 +97,13 @@ exports.Prisma.StockScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
   productTitle: 'productTitle',
+  quantityOnHand: 'quantityOnHand',
+  quantityReserved: 'quantityReserved',
   quantity: 'quantity',
+  averageCost: 'averageCost',
+  lastPurchasePrice: 'lastPurchasePrice',
+  reorderPoint: 'reorderPoint',
+  reorderQuantity: 'reorderQuantity',
   updatedAt: 'updatedAt'
 };
 
@@ -109,7 +115,10 @@ exports.Prisma.StockMovementScalarFieldEnum = {
   quantity: 'quantity',
   type: 'type',
   orderId: 'orderId',
-  notes: 'notes'
+  notes: 'notes',
+  isReservation: 'isReservation',
+  unitCost: 'unitCost',
+  totalCost: 'totalCost'
 };
 
 exports.Prisma.OrderScalarFieldEnum = {
@@ -156,7 +165,28 @@ exports.Prisma.ExpenseScalarFieldEnum = {
   reference: 'reference',
   month: 'month',
   year: 'year',
-  isVirtual: 'isVirtual'
+  isVirtual: 'isVirtual',
+  paidFromBank: 'paidFromBank'
+};
+
+exports.Prisma.BankTransactionScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  amount: 'amount',
+  type: 'type',
+  remittanceId: 'remittanceId',
+  expenseId: 'expenseId',
+  note: 'note'
+};
+
+exports.Prisma.FounderLoanTransactionScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  amount: 'amount',
+  type: 'type',
+  expenseId: 'expenseId',
+  bankTransactionId: 'bankTransactionId',
+  note: 'note'
 };
 
 exports.Prisma.SortOrder = {
@@ -177,7 +207,9 @@ exports.StockMovementType = exports.$Enums.StockMovementType = {
   PURCHASE: 'PURCHASE',
   SALE: 'SALE',
   ADJUSTMENT: 'ADJUSTMENT',
-  RETURN: 'RETURN'
+  RETURN: 'RETURN',
+  RESERVATION: 'RESERVATION',
+  RESERVATION_RELEASE: 'RESERVATION_RELEASE'
 };
 
 exports.OrderType = exports.$Enums.OrderType = {
@@ -212,12 +244,24 @@ exports.ExpenseType = exports.$Enums.ExpenseType = {
   OTHER: 'OTHER'
 };
 
+exports.BankTransactionType = exports.$Enums.BankTransactionType = {
+  IN: 'IN',
+  OUT: 'OUT'
+};
+
+exports.FounderLoanType = exports.$Enums.FounderLoanType = {
+  COMPANY_OWES_FOUNDER: 'COMPANY_OWES_FOUNDER',
+  COMPANY_REPAID_FOUNDER: 'COMPANY_REPAID_FOUNDER'
+};
+
 exports.Prisma.ModelName = {
   Stock: 'Stock',
   StockMovement: 'StockMovement',
   Order: 'Order',
   Remittance: 'Remittance',
-  Expense: 'Expense'
+  Expense: 'Expense',
+  BankTransaction: 'BankTransaction',
+  FounderLoanTransaction: 'FounderLoanTransaction'
 };
 /**
  * Create the Client
@@ -267,13 +311,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/prisma/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n  // uncomment next line if you use Prisma <5.10\n  // directUrl = env(\"DATABASE_URL_UNPOOLED\")\n}\n\nenum StockMovementType {\n  PURCHASE\n  SALE\n  ADJUSTMENT\n  RETURN\n}\n\nenum OrderType {\n  LEAD\n  ORDER\n}\n\nenum OrderStatus {\n  PENDING\n  NO_ANSWER\n  CANCELLED\n  CONFIRMED\n  SHIPPED\n  DELIVERED\n  RETURNED\n}\n\nenum PaymentStatus {\n  AWAITING_COLLECTION\n  COLLECTED\n  SETTLED\n  REFUNDED\n}\n\nenum ExpenseType {\n  MARKETING\n  SALARY\n  RENT\n  SOFTWARE\n  LOGISTICS\n  TAX\n  OTHER\n}\n\nmodel Stock {\n  id           String   @id @default(uuid())\n  productId    String   @unique\n  productTitle String\n  quantity     Int      @default(0)\n  updatedAt    DateTime @updatedAt\n\n  @@index([productId])\n}\n\nmodel StockMovement {\n  id           String            @id @default(uuid())\n  createdAt    DateTime          @default(now())\n  productId    String\n  productTitle String\n  quantity     Int\n  type         StockMovementType\n  orderId      String?\n  order        Order?            @relation(fields: [orderId], references: [id])\n  notes        String?\n\n  @@index([productId])\n  @@index([type])\n  @@index([createdAt])\n}\n\nmodel Order {\n  id              String          @id @default(uuid())\n  createdAt       DateTime        @default(now())\n  updatedAt       DateTime        @updatedAt\n  returnedAt      DateTime?\n  customerName    String\n  customerPhone   String\n  city            String?\n  address         String?\n  productId       String?\n  productTitle    String?\n  comboDetails    String?\n  quantity        Int             @default(1)\n  expectedPrice   Float           @default(0)\n  cashCollected   Float?\n  actualPaidPrice Float?\n  productCost     Float           @default(0)\n  shippingFee     Float           @default(0)\n  additionalCosts Float           @default(0)\n  type            OrderType       @default(LEAD)\n  status          OrderStatus     @default(PENDING)\n  paymentStatus   PaymentStatus   @default(AWAITING_COLLECTION)\n  notes           String?\n  remittanceId    String?\n  remittance      Remittance?     @relation(fields: [remittanceId], references: [id])\n  stockMoveemnts  StockMovement[]\n\n  @@index([status])\n  @@index([type])\n  @@index([paymentStatus])\n}\n\nmodel Remittance {\n  id            String   @id @default(uuid())\n  createdAt     DateTime @default(now())\n  totalAmount   Float\n  bankReference String?\n  dateReceived  DateTime @default(now())\n  orders        Order[]\n  notes         String?\n}\n\nmodel Expense {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n\n  type   ExpenseType\n  amount Float\n\n  description String?\n  reference   String? // invoice, campaign name, etc.\n\n  month Int\n  year  Int\n\n  isVirtual Boolean @default(false) // for founder salary\n\n  @@index([type])\n  @@index([month, year])\n}\n",
-  "inlineSchemaHash": "c04f3c1f06d49e21d05477c5a25072f64cd41a292ce1b4b538ed1713e8b9fbfb",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/prisma/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n  // uncomment next line if you use Prisma <5.10\n  // directUrl = env(\"DATABASE_URL_UNPOOLED\")\n}\n\nenum StockMovementType {\n  PURCHASE\n  SALE\n  ADJUSTMENT\n  RETURN\n  RESERVATION\n  RESERVATION_RELEASE\n}\n\nenum OrderType {\n  LEAD\n  ORDER\n}\n\nenum OrderStatus {\n  PENDING\n  NO_ANSWER\n  CANCELLED\n  CONFIRMED\n  SHIPPED\n  DELIVERED\n  RETURNED\n}\n\nenum PaymentStatus {\n  AWAITING_COLLECTION\n  COLLECTED\n  SETTLED\n  REFUNDED\n}\n\nenum ExpenseType {\n  MARKETING\n  SALARY\n  RENT\n  SOFTWARE\n  LOGISTICS\n  TAX\n  OTHER\n}\n\nenum BankTransactionType {\n  IN\n  OUT\n}\n\nenum FounderLoanType {\n  COMPANY_OWES_FOUNDER\n  COMPANY_REPAID_FOUNDER\n}\n\nmodel Stock {\n  id           String @id @default(uuid())\n  productId    String @unique\n  productTitle String\n\n  quantityOnHand   Int @default(0)\n  quantityReserved Int @default(0)\n\n  quantity Int @default(0)\n\n  averageCost       Float?\n  lastPurchasePrice Float?\n\n  reorderPoint    Int?\n  reorderQuantity Int?\n\n  updatedAt DateTime @updatedAt\n\n  @@index([productId])\n}\n\nmodel StockMovement {\n  id           String            @id @default(uuid())\n  createdAt    DateTime          @default(now())\n  productId    String\n  productTitle String\n  quantity     Int\n  type         StockMovementType\n  orderId      String?\n  order        Order?            @relation(fields: [orderId], references: [id])\n  notes        String?\n\n  isReservation Boolean @default(false)\n  unitCost      Float?\n  totalCost     Float?\n\n  @@unique([orderId, type])\n  @@index([productId])\n  @@index([type])\n  @@index([createdAt])\n}\n\nmodel Order {\n  id              String          @id @default(uuid())\n  createdAt       DateTime        @default(now())\n  updatedAt       DateTime        @updatedAt\n  returnedAt      DateTime?\n  customerName    String\n  customerPhone   String\n  city            String?\n  address         String?\n  productId       String?\n  productTitle    String?\n  comboDetails    String?\n  quantity        Int             @default(1)\n  expectedPrice   Float           @default(0)\n  cashCollected   Float?\n  actualPaidPrice Float?\n  productCost     Float           @default(0)\n  shippingFee     Float           @default(0)\n  additionalCosts Float           @default(0)\n  type            OrderType       @default(LEAD)\n  status          OrderStatus     @default(PENDING)\n  paymentStatus   PaymentStatus   @default(AWAITING_COLLECTION)\n  notes           String?\n  remittanceId    String?\n  remittance      Remittance?     @relation(fields: [remittanceId], references: [id])\n  stockMoveemnts  StockMovement[]\n\n  @@index([status])\n  @@index([type])\n  @@index([paymentStatus])\n}\n\nmodel Remittance {\n  id               String            @id @default(uuid())\n  createdAt        DateTime          @default(now())\n  totalAmount      Float\n  bankReference    String?\n  dateReceived     DateTime          @default(now())\n  notes            String?\n  orders           Order[]\n  bankTransactions BankTransaction[] @relation(name: \"RemittanceBankTransactions\")\n}\n\nmodel Expense {\n  id              String                  @id @default(uuid())\n  createdAt       DateTime                @default(now())\n  type            ExpenseType\n  amount          Float\n  description     String?\n  reference       String?\n  month           Int\n  year            Int\n  isVirtual       Boolean                 @default(false)\n  paidFromBank    Boolean                 @default(false)\n  bankTransaction BankTransaction?        @relation(name: \"ExpenseBankTransaction\")\n  founderLoan     FounderLoanTransaction?\n\n  @@index([type])\n  @@index([month, year])\n}\n\nmodel BankTransaction {\n  id           String                  @id @default(uuid())\n  createdAt    DateTime                @default(now())\n  amount       Float\n  type         BankTransactionType\n  remittanceId String?\n  remittance   Remittance?             @relation(name: \"RemittanceBankTransactions\", fields: [remittanceId], references: [id])\n  expenseId    String?                 @unique\n  expense      Expense?                @relation(name: \"ExpenseBankTransaction\", fields: [expenseId], references: [id])\n  founderLoan  FounderLoanTransaction?\n  note         String?\n}\n\nmodel FounderLoanTransaction {\n  id                String           @id @default(uuid())\n  createdAt         DateTime         @default(now())\n  amount            Float\n  type              FounderLoanType\n  expenseId         String?          @unique\n  expense           Expense?         @relation(fields: [expenseId], references: [id])\n  bankTransactionId String?          @unique\n  bankTransaction   BankTransaction? @relation(fields: [bankTransactionId], references: [id])\n  note              String?\n}\n",
+  "inlineSchemaHash": "4084839fcf7bf6b6d620b6cdd84497c7a9f8b37b6ab76280aa9626ba5e198daa",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Stock\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productTitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"StockMovement\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productTitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"StockMovementType\"},{\"name\":\"orderId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"order\",\"kind\":\"object\",\"type\":\"Order\",\"relationName\":\"OrderToStockMovement\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"Order\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"returnedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"customerName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"customerPhone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"city\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productTitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"comboDetails\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"expectedPrice\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"cashCollected\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"actualPaidPrice\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"productCost\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"shippingFee\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"additionalCosts\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"OrderType\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"OrderStatus\"},{\"name\":\"paymentStatus\",\"kind\":\"enum\",\"type\":\"PaymentStatus\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"remittanceId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"remittance\",\"kind\":\"object\",\"type\":\"Remittance\",\"relationName\":\"OrderToRemittance\"},{\"name\":\"stockMoveemnts\",\"kind\":\"object\",\"type\":\"StockMovement\",\"relationName\":\"OrderToStockMovement\"}],\"dbName\":null},\"Remittance\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"totalAmount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"bankReference\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"dateReceived\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"orders\",\"kind\":\"object\",\"type\":\"Order\",\"relationName\":\"OrderToRemittance\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"Expense\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"ExpenseType\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"reference\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"month\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"year\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"isVirtual\",\"kind\":\"scalar\",\"type\":\"Boolean\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Stock\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productTitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantityOnHand\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantityReserved\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"averageCost\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"lastPurchasePrice\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"reorderPoint\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"reorderQuantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"StockMovement\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productTitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"StockMovementType\"},{\"name\":\"orderId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"order\",\"kind\":\"object\",\"type\":\"Order\",\"relationName\":\"OrderToStockMovement\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isReservation\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"unitCost\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"totalCost\",\"kind\":\"scalar\",\"type\":\"Float\"}],\"dbName\":null},\"Order\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"returnedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"customerName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"customerPhone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"city\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productTitle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"comboDetails\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"expectedPrice\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"cashCollected\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"actualPaidPrice\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"productCost\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"shippingFee\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"additionalCosts\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"OrderType\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"OrderStatus\"},{\"name\":\"paymentStatus\",\"kind\":\"enum\",\"type\":\"PaymentStatus\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"remittanceId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"remittance\",\"kind\":\"object\",\"type\":\"Remittance\",\"relationName\":\"OrderToRemittance\"},{\"name\":\"stockMoveemnts\",\"kind\":\"object\",\"type\":\"StockMovement\",\"relationName\":\"OrderToStockMovement\"}],\"dbName\":null},\"Remittance\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"totalAmount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"bankReference\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"dateReceived\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"orders\",\"kind\":\"object\",\"type\":\"Order\",\"relationName\":\"OrderToRemittance\"},{\"name\":\"bankTransactions\",\"kind\":\"object\",\"type\":\"BankTransaction\",\"relationName\":\"RemittanceBankTransactions\"}],\"dbName\":null},\"Expense\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"ExpenseType\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"reference\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"month\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"year\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"isVirtual\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"paidFromBank\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"bankTransaction\",\"kind\":\"object\",\"type\":\"BankTransaction\",\"relationName\":\"ExpenseBankTransaction\"},{\"name\":\"founderLoan\",\"kind\":\"object\",\"type\":\"FounderLoanTransaction\",\"relationName\":\"ExpenseToFounderLoanTransaction\"}],\"dbName\":null},\"BankTransaction\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"BankTransactionType\"},{\"name\":\"remittanceId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"remittance\",\"kind\":\"object\",\"type\":\"Remittance\",\"relationName\":\"RemittanceBankTransactions\"},{\"name\":\"expenseId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expense\",\"kind\":\"object\",\"type\":\"Expense\",\"relationName\":\"ExpenseBankTransaction\"},{\"name\":\"founderLoan\",\"kind\":\"object\",\"type\":\"FounderLoanTransaction\",\"relationName\":\"BankTransactionToFounderLoanTransaction\"},{\"name\":\"note\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"FounderLoanTransaction\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"FounderLoanType\"},{\"name\":\"expenseId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expense\",\"kind\":\"object\",\"type\":\"Expense\",\"relationName\":\"ExpenseToFounderLoanTransaction\"},{\"name\":\"bankTransactionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bankTransaction\",\"kind\":\"object\",\"type\":\"BankTransaction\",\"relationName\":\"BankTransactionToFounderLoanTransaction\"},{\"name\":\"note\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

@@ -1,31 +1,42 @@
-import { getOrders, getOrdersStats } from "@/actions/admin/order-actions";
+import { getOrders, getOrdersStats } from "@/actions/admin/orders-actions";
 import { AddOrderDialog } from "@/components/admin/orders/AddNewOrderDialog";
-import { OrdersStatsCards } from "@/components/admin/orders/OrdersStatsCard";
+import { OrdersStatCard } from "@/components/admin/orders/OrderStatCard";
 import { OrdersTable } from "@/components/admin/orders/table/Table";
-import { ordersStatsToCards } from "@/utils/orders/mappers";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export default async function OrdersPage() {
+  const [ordersRes, statsRes] = await Promise.all([
+    getOrders(),
+    getOrdersStats(),
+  ]);
 
-export default async function LeadsPage() {
-  const orders = await getOrders();
+  if (!ordersRes.success || !ordersRes.data) {
+    throw new Error("Failed to load orders");
+  }
 
-  const stats = await getOrdersStats();
+  if (!statsRes.success || !statsRes.data) {
+    throw new Error("Failed to load stats");
+  }
 
-  // Transform into stat cards
-  const statCards = ordersStatsToCards(stats);
+  const stats = statsRes.data;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 lg:px-6 space-y-6">
-      <OrdersStatsCards cards={statCards} />
+    <div className="space-y-6 p-6">
+      <h1 className="text-2xl font-bold">Orders</h1>
 
-      {/* Filters and Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-zinc-200 p-6">
-        <OrdersTable orders={orders} />
+      {/* SERVER CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <OrdersStatCard title="გასაგზავნი" value={stats.readyToShip.count} />
+        <OrdersStatCard title="გზაში" value={stats.inTransit.count} />
+        <OrdersStatCard
+          title="მიწოდებული (თვე)"
+          value={stats.thisMonthDelivered}
+        />
+        <OrdersStatCard title="ყველა" value={ordersRes.data.length} />
       </div>
-      <div className="mb-6">
-        <AddOrderDialog />
-      </div>
+
+      {/* CLIENT TABLE */}
+      <OrdersTable orders={ordersRes.data} />
+      <AddOrderDialog />
     </div>
   );
 }

@@ -1,103 +1,206 @@
 import {
   getExpensesByMonth,
   getExpenseStats,
+  getFounderLoanBalance,
 } from "@/actions/admin/expenses-actions";
-import { AddExpenseDialog } from "@/components/admin/expenses/AddExpenseDialog";
-import { ExpensesTable } from "@/components/admin/expenses/Table";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, TrendingDown, Calendar } from "lucide-react";
-
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ExpenseList } from "@/components/admin/expenses/expense-list";
+import {
+  getExpenseBreakdown,
+  getExpenseTrends,
+} from "@/actions/admin/expenses-analytics-actions";
+import { ExpenseForm } from "@/components/admin/expenses/expense-form";
+import { ExpenseChart } from "@/components/admin/expenses/expense-chart";
 
 export default async function ExpensesPage() {
   const now = new Date();
   const month = now.getMonth() + 1;
   const year = now.getFullYear();
 
-  const [expenses, stats] = await Promise.all([
+  const [expenses, stats, founderLoan, breakdown, trends] = await Promise.all([
     getExpensesByMonth(month, year),
     getExpenseStats(month, year),
+    getFounderLoanBalance(),
+    getExpenseBreakdown(month, year),
+    getExpenseTrends(6),
   ]);
 
+  if (
+    !stats.success ||
+    !stats.data ||
+    !founderLoan.success ||
+    !founderLoan.data ||
+    !breakdown.success ||
+    !breakdown.data ||
+    !trends.success ||
+    !trends.data ||
+    !expenses.success ||
+    !expenses.data
+  ) {
+    return <div>მოხდა შეცდომა</div>;
+  }
+
   return (
-    <div className="max-w-7xl mx-auto px-4 space-y-6">
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              მთლიანი ხარჯები
-            </CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalAmount} ₾</div>
-            <p className="text-xs text-muted-foreground">ამ თვეში</p>
-          </CardContent>
-        </Card>
+    <div className="space-y-6 p-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">ხარჯები</h1>
+        <ExpenseForm />
+      </div>
 
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">მარკეტინგი</CardTitle>
-            <TrendingDown className="h-4 w-4 text-red-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.marketingAmount} ₾</div>
-            <p className="text-xs text-muted-foreground">რეკლამა</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              საკურიეროს ხარჯები
+          <CardHeader>
+            <CardTitle className="text-sm text-gray-600">
+              ჯამური ხარჯები
             </CardTitle>
-            <TrendingDown className="h-4 w-4 text-red-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.courierAmount} ₾</div>
-            <p className="text-xs text-muted-foreground">საკურიერო</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              სხვა ხარჯები (საკურიერო)
-            </CardTitle>
-            <TrendingDown className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {stats.additionalFeesTotal.toFixed(2)} ₾
+              ₾{stats.data.totalAmount.toFixed(2)}
             </div>
-            <p className="text-xs text-muted-foreground">სხვა ხარჯები</p>
+            <div className="text-sm text-gray-600">
+              {stats.data.count} ხარჯი
+            </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              ჩანაწერების რაოდენობა
-            </CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle className="text-sm text-gray-600">მარკეტინგი</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.count}</div>
-            <p className="text-xs text-muted-foreground">ამ თვეში</p>
+            <div className="text-2xl font-bold">
+              ₾{stats.data.marketingAmount.toFixed(2)}
+            </div>
+            <div className="text-sm text-gray-600">
+              {stats.data.totalAmount > 0
+                ? (
+                    (stats.data.marketingAmount / stats.data.totalAmount) *
+                    100
+                  ).toFixed(1)
+                : "0.0"}
+              %-დან
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm text-gray-600">საოპერაციო</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              ₾
+              {(stats.data.totalAmount - stats.data.marketingAmount).toFixed(2)}
+            </div>
+            <div className="text-sm text-gray-600">
+              ქირა, ხელფასი, პროგრამები
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm text-gray-600">
+              დამფუძნებლის ვალი
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              ₾
+              {founderLoan.success
+                ? founderLoan.data.currentBalance.toFixed(2)
+                : "0.00"}
+            </div>
+            <div className="text-sm text-red-600">
+              {founderLoan.success && founderLoan.data.unpaidExpenses.length}{" "}
+              გადაუხდელი
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Table */}
-      <ExpensesTable expenses={expenses} />
+      {/* Founder Loan Alert */}
+      {founderLoan.success && founderLoan.data.currentBalance > 0 && (
+        <Alert>
+          <AlertTitle>🔴 მფლობელის მიმართ ვალი</AlertTitle>
+          <AlertDescription>
+            <div className="space-y-2 mt-2">
+              <div>
+                ვალი:{" "}
+                <strong>₾{founderLoan.data.currentBalance.toFixed(2)}</strong>
+              </div>
+              <div className="text-sm">
+                გადაუხდელი ხარჯები: {founderLoan.data.unpaidExpenses.length}
+              </div>
+              <div className="mt-4">
+                <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                  გადახდა
+                </button>
+              </div>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
 
-      {/* Add Expense */}
-      <div className="mb-6">
-        <AddExpenseDialog />
+      {/* Expense Breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>დეტალურად</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {breakdown.success && (
+              <div className="space-y-3">
+                {breakdown.data.map((item) => (
+                  <div
+                    key={item.category}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 rounded-full bg-blue-600"></div>
+                      <div>
+                        <div className="font-medium">{item.category}</div>
+                        <div className="text-sm text-gray-600">
+                          {item.count} ხარჯი
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold">₾{item.amount.toFixed(2)}</div>
+                      <div className="text-sm text-gray-600">
+                        {item.percentage.toFixed(1)}%
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>6-თვის ტრენდი</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {trends.success && <ExpenseChart data={trends.data} />}
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Expense List */}
+      <Card>
+        <CardHeader>
+          <CardTitle>ბოლო ხარჯები</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {expenses.success && <ExpenseList expenses={expenses.data} />}
+        </CardContent>
+      </Card>
     </div>
   );
 }
