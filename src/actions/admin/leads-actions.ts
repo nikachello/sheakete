@@ -131,6 +131,9 @@ export async function confirmLead(leadId: string) {
       },
     });
 
+    revalidatePath("/leads");
+    revalidatePath("/admin/leads");
+
     return { success: true, order: updatedOrder };
   } catch (error) {
     console.error("Error confirming lead:", error);
@@ -143,20 +146,23 @@ export async function confirmLead(leadId: string) {
  */
 export async function cancelLead(leadId: string, reason?: string) {
   try {
+    const existingLead = await prisma.order.findUnique({
+      where: { id: leadId },
+    });
+
     const updatedOrder = await prisma.order.update({
       where: { id: leadId },
       data: {
         status: OrderStatus.CANCELLED,
         notes: reason
-          ? `გაუქმების მიზეზი: ${reason}${
-              "\n\n" +
-                (await prisma.order.findUnique({ where: { id: leadId } }))
-                  ?.notes || ""
-            }`
-          : undefined,
+          ? `გაუქმების მიზეზი: ${reason}\n\n${existingLead?.notes || ""}`
+          : existingLead?.notes,
         updatedAt: new Date(),
       },
     });
+
+    revalidatePath("/leads");
+    revalidatePath("/admin/leads");
 
     return { success: true, order: updatedOrder };
   } catch (error) {
@@ -170,20 +176,23 @@ export async function cancelLead(leadId: string, reason?: string) {
  */
 export async function markAsNoAnswer(leadId: string, note?: string) {
   try {
+    const existingLead = await prisma.order.findUnique({
+      where: { id: leadId },
+    });
+
     const updatedOrder = await prisma.order.update({
       where: { id: leadId },
       data: {
         status: OrderStatus.NO_ANSWER,
         notes: note
-          ? `${note}${
-              "\n\n" +
-                (await prisma.order.findUnique({ where: { id: leadId } }))
-                  ?.notes || ""
-            }`
-          : undefined,
+          ? `${note}\n\n${existingLead?.notes || ""}`
+          : existingLead?.notes,
         updatedAt: new Date(),
       },
     });
+
+    revalidatePath("/leads");
+    revalidatePath("/admin/leads");
 
     return { success: true, order: updatedOrder };
   } catch (error) {
@@ -208,6 +217,9 @@ export async function confirmMultipleLeads(leadIds: string[]) {
         updatedAt: new Date(),
       },
     });
+
+    revalidatePath("/leads");
+    revalidatePath("/admin/leads");
 
     return { success: true, count: result.count };
   } catch (error) {
@@ -266,6 +278,7 @@ export async function updateLead(
   });
 
   revalidatePath("/leads");
+  revalidatePath("/admin/leads");
 }
 
 export async function confirmLeadAndCreateOrder(
@@ -277,6 +290,11 @@ export async function confirmLeadAndCreateOrder(
     productId?: string;
     expectedPrice?: number;
     quantity: number;
+    productCost?: number;
+    shippingFee?: number;
+    additionalCosts?: number;
+    comboDetails?: string;
+    notes?: string;
   }
 ) {
   await prisma.order.update({
@@ -288,10 +306,18 @@ export async function confirmLeadAndCreateOrder(
       address: data.address,
       productId: data.productId,
       productTitle: data.productTitle,
+      comboDetails: data.comboDetails,
       expectedPrice: data.expectedPrice,
       quantity: data.quantity,
+      productCost: data.productCost || 0,
+      shippingFee: data.shippingFee || 0,
+      additionalCosts: data.additionalCosts || 0,
+      notes: data.notes,
     },
   });
 
   revalidatePath("/leads");
+  revalidatePath("/admin/leads");
+  revalidatePath("/orders");
+  revalidatePath("/admin/orders");
 }

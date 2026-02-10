@@ -1,226 +1,159 @@
 "use client";
 
-import React, { useState } from "react";
-import { createColumnHelper, ColumnDef } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { Lead } from "@/types/leads";
-import { updateLead } from "@/actions/admin/leads-actions";
-import { ConfirmLeadDialog } from "../ConfirmLeadToOrderDialog";
-import { OrderStatus } from "prisma/generated/prisma/client";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Check, X, Phone } from "lucide-react";
+import { cancelLead, markAsNoAnswer } from "@/actions/admin/leads-actions";
+import { useState } from "react";
+import { OrderFormDialog } from "@/components/admin/orders/OrderFormDialog";
 
-const columnHelper = createColumnHelper<Lead>();
+const StatusBadge = ({ status }: { status: string }) => {
+  const variants: Record<string, { label: string; className: string }> = {
+    PENDING: { label: "მოლოდინში", className: "bg-yellow-100 text-yellow-800" },
+    CONFIRMED: {
+      label: "დადასტურებული",
+      className: "bg-green-100 text-green-800",
+    },
+    NO_ANSWER: { label: "არ პასუხობს", className: "bg-gray-100 text-gray-800" },
+    CANCELLED: { label: "გაუქმებული", className: "bg-red-100 text-red-800" },
+  };
 
-const statusColors: Record<string, string> = {
-  PENDING: "bg-yellow-500",
-  NO_ANSWER: "bg-gray-500",
-  CANCELLED: "bg-red-500",
-  CONFIRMED: "bg-blue-500",
+  const variant = variants[status] || variants.PENDING;
+  return <Badge className={variant.className}>{variant.label}</Badge>;
 };
 
-// Editable text cell
-function EditableCell({
-  value: initialValue,
-  rowId,
-  field,
-}: {
-  value: string;
-  rowId: string;
-  field: "customerName" | "customerPhone" | "notes" | "expectedPrice";
-}) {
-  const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState(initialValue);
+function ActionsCell({ lead }: { lead: Lead }) {
+  const [convertDialogOpen, setConvertDialogOpen] = useState(false);
 
-  const handleSave = async () => {
-    if (value !== initialValue) {
-      await updateLead(rowId, { [field]: value });
-    }
-    setEditing(false);
+  const handleNoAnswer = async () => {
+    await markAsNoAnswer(lead.id);
   };
 
-  return editing ? (
-    <input
-      type="text"
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      onBlur={handleSave}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") handleSave();
-        if (e.key === "Escape") {
-          setValue(initialValue);
-          setEditing(false);
-        }
-      }}
-      autoFocus
-      className="w-full px-2 py-1 text-xs sm:text-sm border rounded focus:outline-none focus:ring-1 focus:ring-slate-400"
-    />
-  ) : (
-    <span
-      className="text-slate-700 font-medium cursor-pointer"
-      onDoubleClick={() => setEditing(true)}
-      onTouchStart={() => setEditing(true)}
-    >
-      {value || "-"}
-    </span>
-  );
-}
-
-// Status cell with select and dialog trigger
-function EditableStatusCell({
-  value: initialValue,
-  rowId,
-  lead,
-}: {
-  value: string;
-  rowId: string;
-  lead: Lead;
-}) {
-  const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState(initialValue);
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const handleChange = async (newValue: string) => {
-    if (newValue === "CONFIRMED") {
-      setOpenDialog(true);
-    } else {
-      await updateLead(rowId, { status: newValue as OrderStatus });
-      setValue(newValue);
+  const handleCancel = async () => {
+    if (confirm("დარწმუნებული ხართ რომ გსურთ ლიდის გაუქმება?")) {
+      await cancelLead(lead.id);
     }
-    setEditing(false);
   };
 
-  const statusOptions = ["PENDING", "NO_ANSWER", "CANCELLED", "CONFIRMED"];
-
-  if (editing) {
-    return (
-      <select
-        value={value}
-        onChange={(e) => handleChange(e.target.value)}
-        onBlur={() => setEditing(false)}
-        autoFocus
-        className="px-2 py-1 text-xs sm:text-sm border rounded focus:outline-none focus:ring-1 focus:ring-slate-400"
-      >
-        {statusOptions.map((status) => (
-          <option key={status} value={status}>
-            {status.replace("_", " ")}
-          </option>
-        ))}
-      </select>
-    );
+  if (lead.status === "CONFIRMED" || lead.status === "CANCELLED") {
+    return <span className="text-sm text-muted-foreground">-</span>;
   }
 
   return (
-    <>
-      <span
-        className={`px-2 py-1 rounded-full text-white text-xs font-semibold cursor-pointer ${
-          statusColors[value] || "bg-gray-400"
-        }`}
-        onClick={() => setEditing(true)}
-        onDoubleClick={() => setEditing(true)}
-        onTouchStart={() => setEditing(true)}
+    <div className="flex items-center gap-2">
+      <Button
+        size="sm"
+        variant="default"
+        className="bg-green-600 hover:bg-green-700"
+        onClick={() => setConvertDialogOpen(true)}
       >
-        {value.replace("_", " ")}
-      </span>
+        <Check className="w-4 h-4 mr-1" />
+        დადასტურება
+      </Button>
 
-      {openDialog && (
-        <ConfirmLeadDialog
-          leadId={rowId}
-          defaultCity={lead.city || ""}
-          defaultAddress={lead.address || ""}
-          productTitle={lead.productTitle || ""}
-          expectedPrice={lead.expectedPrice || 0}
-          productId={lead.productId || ""}
-          onClose={() => setOpenDialog(false)}
-        />
-      )}
-    </>
+      <Button size="sm" variant="outline" onClick={handleNoAnswer}>
+        <Phone className="w-4 h-4 mr-1" />
+        არ პასუხობს
+      </Button>
+
+      <Button size="sm" variant="destructive" onClick={handleCancel}>
+        <X className="w-4 h-4" />
+      </Button>
+
+      <OrderFormDialog
+        open={convertDialogOpen}
+        onOpenChange={setConvertDialogOpen}
+        mode="convert"
+        leadId={lead.id}
+        defaultValues={{
+          customerName: lead.customerName,
+          customerPhone: lead.customerPhone,
+          city: lead.city || undefined,
+          address: lead.address || undefined,
+          productId: lead.productId || undefined,
+          productTitle: lead.productTitle || undefined,
+          expectedPrice: lead.expectedPrice || undefined,
+          notes: lead.notes || undefined,
+        }}
+      />
+    </div>
   );
 }
 
-// Columns
-export const leadColumns = [
-  columnHelper.accessor("id", {
-    header: "ID",
-    cell: (info) => (
-      <span className="text-sm font-mono text-gray-700">
-        {String(info.getValue())?.slice(0, 6) ?? "N/A"}
-      </span>
+export const leadColumns: ColumnDef<Lead>[] = [
+  {
+    accessorKey: "customerName",
+    header: "მომხმარებელი",
+    cell: ({ row }) => (
+      <div className="font-medium">{row.getValue("customerName")}</div>
     ),
-  }),
-  columnHelper.accessor("customerName", {
-    header: "სახელი",
-    cell: ({ row, getValue }) => (
-      <EditableCell
-        value={String(getValue() ?? "")}
-        rowId={row.original.id}
-        field="customerName"
-      />
-    ),
-  }),
-  columnHelper.accessor("customerPhone", {
+  },
+  {
+    accessorKey: "customerPhone",
     header: "ტელეფონი",
-    cell: ({ row, getValue }) => (
-      <EditableCell
-        value={String(getValue() ?? "")}
-        rowId={row.original.id}
-        field="customerPhone"
-      />
+    cell: ({ row }) => (
+      <a
+        href={`tel:${row.getValue("customerPhone")}`}
+        className="text-blue-600 hover:underline"
+      >
+        {row.getValue("customerPhone")}
+      </a>
     ),
-  }),
-  columnHelper.accessor("status", {
+  },
+  {
+    accessorKey: "productTitle",
+    header: "პროდუქტი",
+    cell: ({ row }) => {
+      const title = row.getValue("productTitle") as string | null;
+      return title ? (
+        <span className="text-sm">{title}</span>
+      ) : (
+        <span className="text-sm text-muted-foreground">-</span>
+      );
+    },
+  },
+  {
+    accessorKey: "expectedPrice",
+    header: "ფასი",
+    cell: ({ row }) => {
+      const price = row.getValue("expectedPrice") as number | null;
+      return price ? (
+        <span className="font-medium">{price} ₾</span>
+      ) : (
+        <span className="text-sm text-muted-foreground">-</span>
+      );
+    },
+  },
+  {
+    accessorKey: "city",
+    header: "ქალაქი",
+    cell: ({ row }) => {
+      const city = row.getValue("city") as string | null;
+      return city || <span className="text-sm text-muted-foreground">-</span>;
+    },
+  },
+  {
+    accessorKey: "status",
     header: "სტატუსი",
-    cell: ({ row, getValue }) => (
-      <EditableStatusCell
-        value={String(getValue() ?? "")}
-        rowId={row.original.id}
-        lead={row.original}
-      />
-    ),
-  }),
-  columnHelper.accessor("createdAt", {
-    header: "შექმნილია",
-    cell: (info) => {
-      const val = info.getValue();
-      const date = val instanceof Date ? val : new Date(String(val));
+    cell: ({ row }) => <StatusBadge status={row.getValue("status")} />,
+  },
+  {
+    accessorKey: "createdAt",
+    header: "თარიღი",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt"));
       return (
-        <span className="text-sm text-gray-500">
-          {!isNaN(date.getTime()) ? date.toLocaleDateString("ka-GE") : "—"}
+        <span className="text-sm text-muted-foreground">
+          {date.toLocaleDateString("ka-GE")}
         </span>
       );
     },
-  }),
-  columnHelper.accessor("productTitle", {
-    header: "პროდუქტი",
-    cell: (info) => (
-      <span className="text-sm text-gray-500">
-        {String(info.getValue() ?? "")}
-      </span>
-    ),
-  }),
-  columnHelper.accessor("comboDetails", {
-    header: "შეთავაზება",
-    cell: (info) => (
-      <span className="text-sm text-gray-500">
-        {String(info.getValue() ?? "")}
-      </span>
-    ),
-  }),
-  columnHelper.accessor("expectedPrice", {
-    header: "ფასი",
-    cell: ({ row, getValue }) => (
-      <EditableCell
-        value={String(getValue() ?? "")}
-        rowId={row.original.id}
-        field="expectedPrice"
-      />
-    ),
-  }),
-  columnHelper.accessor("notes", {
-    header: "შენიშვნები",
-    cell: ({ row, getValue }) => (
-      <EditableCell
-        value={String(getValue() ?? "")}
-        rowId={row.original.id}
-        field="notes"
-      />
-    ),
-  }),
-] as ColumnDef<Lead, unknown>[];
+  },
+  {
+    id: "actions",
+    header: "ქმედებები",
+    cell: ({ row }) => <ActionsCell lead={row.original} />,
+  },
+];
