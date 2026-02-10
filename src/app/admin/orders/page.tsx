@@ -3,6 +3,8 @@ import { AddOrderDialog } from "@/components/admin/orders/AddNewOrderDialog";
 import { OrdersStatCard } from "@/components/admin/orders/OrderStatCard";
 import { OrdersTable } from "@/components/admin/orders/table/Table";
 
+export const dynamic = "force-dynamic";
+
 export default async function OrdersPage() {
   const [ordersRes, statsRes] = await Promise.all([
     getOrders(),

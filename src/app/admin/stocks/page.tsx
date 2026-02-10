@@ -9,6 +9,8 @@ import { StockAlerts } from "@/components/admin/stocks/stock-alerts";
 import { StockList } from "@/components/admin/stocks/stock-list";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
+export const dynamic = "force-dynamic";
+
 export default async function StocksPage() {
   const [stocks, alerts, abcData] = await Promise.all([
     getStockLevels(),

@@ -6,6 +6,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Order } from "prisma/generated/prisma/client";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const [stats, founderLoan, bankBalance, stockAlerts] = await Promise.all([
     getDashboardStats(),

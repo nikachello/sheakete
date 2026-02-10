@@ -7,6 +7,8 @@ import { CreateRemittanceForm } from "@/components/admin/remittances/create-remi
 import { CollectedOrdersList } from "@/components/admin/remittances/collected-orders-list";
 import { RemittanceList } from "@/components/admin/remittances/remittance-list";
 
+export const dynamic = "force-dynamic";
+
 export default async function RemittancesPage() {
   const [remittances, collectedOrders] = await Promise.all([
     getRemittances(),
