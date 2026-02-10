@@ -37,7 +37,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
+      <h1 className="text-3xl font-bold">დეშბორდი</h1>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -102,12 +102,12 @@ export default async function DashboardPage() {
       {/* Founder Loan Alert */}
       {showFounderLoanAlert && founderLoan.data && (
         <Alert>
-          <AlertTitle>Founder Loan</AlertTitle>
+          <AlertTitle>მფლობელის ვალი</AlertTitle>
           <AlertDescription>
             კომპანიას აქვს მფლობელის ვალი: ₾
             {founderLoan.data.currentBalance.toFixed(2)}
             <br />
-            {founderLoan.data.unpaidExpenses.length} გადაუხდელი ხარჯები
+            {founderLoan.data.unpaidExpenses.length} გადაუხდელი ხარჯი
           </AlertDescription>
         </Alert>
       )}

@@ -1,7 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { StockRepository } from "@/repositories/stock.repository";
 import { StockAlert } from "@/types/stock.types";
-import { StockMovementType, Prisma } from "prisma/generated/prisma/client";
+import {
+  StockMovementType,
+  Prisma,
+  $Enums,
+} from "prisma/generated/prisma/client";
 
 // Type for transaction client
 type TransactionClient = Omit<
@@ -281,6 +285,115 @@ export class StockManagerService {
     );
 
     return totalSold / 30; // Units per day
+  }
+
+  /**
+   * Add stock (purchase or manual adjustment)
+   */
+  async addStock(
+    params: {
+      productId: string;
+      productTitle: string;
+      quantity: number;
+      type:
+        | typeof $Enums.StockMovementType.PURCHASE
+        | typeof $Enums.StockMovementType.StockMovementType.ADJUSTMENT;
+      unitCost?: number;
+      notes?: string;
+    },
+    tx?: TransactionClient
+  ): Promise<void> {
+    const executeAddStock = async (client: TransactionClient) => {
+      // PURCHASE must be positive, ADJUSTMENT can be negative
+      if (params.type === StockMovementType.PURCHASE && params.quantity <= 0) {
+        throw new Error("შესყიდვის რაოდენობა უნდა იყოს დადებითი");
+      }
+
+      if (
+        params.type === StockMovementType.ADJUSTMENT &&
+        params.quantity === 0
+      ) {
+        throw new Error("კორექციის რაოდენობა არ შეიძლება იყოს 0");
+      }
+
+      const existingStock = await client.stock.findUnique({
+        where: { productId: params.productId },
+      });
+
+      // ---- COST CALCULATION (only for PURCHASE) ----
+      let averageCost = existingStock?.averageCost ?? null;
+
+      if (
+        params.type === StockMovementType.PURCHASE &&
+        params.unitCost != null
+      ) {
+        const currentQty = existingStock?.quantityOnHand ?? 0;
+        const currentValue = (averageCost ?? 0) * currentQty;
+
+        const incomingValue = params.unitCost * params.quantity;
+        const newQty = currentQty + params.quantity;
+
+        averageCost =
+          newQty > 0
+            ? (currentValue + incomingValue) / newQty
+            : params.unitCost;
+      }
+
+      // ---- PREVENT NEGATIVE STOCK for ADJUSTMENTS ----
+      if (params.type === StockMovementType.ADJUSTMENT && params.quantity < 0) {
+        const currentQty = existingStock?.quantityOnHand ?? 0;
+        if (currentQty + params.quantity < 0) {
+          throw new Error(
+            `არასაკმარისი მარაგი. ხელმისაწვდომია: ${currentQty}, ცდილობთ გამოაკლოთ: ${Math.abs(params.quantity)}`
+          );
+        }
+      }
+
+      // ---- CREATE MOVEMENT ----
+      await client.stockMovement.create({
+        data: {
+          productId: params.productId,
+          productTitle: params.productTitle,
+          quantity: params.quantity,
+          type: params.type,
+          notes: params.notes,
+          unitCost: params.unitCost,
+          totalCost:
+            params.unitCost != null ? params.unitCost * params.quantity : null,
+        },
+      });
+
+      // ---- UPSERT STOCK ----
+      await client.stock.upsert({
+        where: { productId: params.productId },
+        create: {
+          productId: params.productId,
+          productTitle: params.productTitle,
+          quantityOnHand: Math.max(0, params.quantity), // Ensure non-negative
+          quantityReserved: 0,
+          quantity: Math.max(0, params.quantity), // backward compatibility
+          averageCost,
+          lastPurchasePrice:
+            params.type === StockMovementType.PURCHASE ? params.unitCost : null,
+        },
+        update: {
+          productTitle: params.productTitle,
+          quantityOnHand: { increment: params.quantity }, // Works for both + and -
+          quantity: { increment: params.quantity },
+          averageCost,
+          lastPurchasePrice:
+            params.type === StockMovementType.PURCHASE
+              ? params.unitCost
+              : undefined,
+        },
+      });
+    };
+
+    if (tx) {
+      await executeAddStock(tx);
+    } else {
+      await prisma.$transaction(executeAddStock);
+    }
   }
 }
 

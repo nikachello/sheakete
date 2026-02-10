@@ -81,7 +81,7 @@ export function CreateRemittanceForm({
   };
 
   if (collectedOrders.length === 0) {
-    return <Button disabled>არ არსებობს ჩასარიცხი შეკვეთები</Button>;
+    return <Button disabled>არ გაქვთ ჩასარიცხი შეკვეთები</Button>;
   }
 
   return (
