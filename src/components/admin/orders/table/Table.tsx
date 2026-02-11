@@ -1,4 +1,3 @@
-// components/orders/OrdersTable.tsx
 "use client";
 
 import {
@@ -20,9 +19,18 @@ import { orderColumns } from "./column";
 import { Order } from "prisma/generated/prisma/client";
 
 export function OrdersTable({ orders }: { orders: Order[] }) {
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10, // 🔴 THIS was missing
+  });
+
   const table = useReactTable({
     data: orders,
     columns: orderColumns,
+    state: {
+      pagination,
+    },
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
@@ -59,7 +67,9 @@ export function OrdersTable({ orders }: { orders: Order[] }) {
 
       {/* Pagination */}
       <div className="flex justify-between items-center text-xs">
-        <span>გვერდი {table.getState().pagination.pageIndex + 1}</span>
+        <span>
+          გვერდი {pagination.pageIndex + 1} / {table.getPageCount()}
+        </span>
         <div className="flex gap-2">
           <button
             onClick={() => table.previousPage()}

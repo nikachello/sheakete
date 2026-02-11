@@ -44,6 +44,11 @@ export const orderColumns = [
     cell: (info) => `${info.getValue()} ₾`,
   }),
 
+  columnHelper.accessor("quantity", {
+    header: "რაოდენობა)",
+    cell: (info) => `${info.getValue()}`,
+  }),
+
   columnHelper.accessor("createdAt", {
     header: "შექმნილია",
     cell: (info) => new Date(info.getValue()).toLocaleDateString("ka-GE"),
