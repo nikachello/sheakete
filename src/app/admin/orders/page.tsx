@@ -1,7 +1,7 @@
 import { getOrders, getOrdersStats } from "@/actions/admin/orders-actions";
 import { AddOrderDialog } from "@/components/admin/orders/AddNewOrderDialog";
 import { OrdersStatCard } from "@/components/admin/orders/OrderStatCard";
-import { OrdersTable } from "@/components/admin/orders/table/Table";
+import { OrdersTableComplete } from "@/components/admin/orders/table/Table";
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +37,7 @@ export default async function OrdersPage() {
       </div>
 
       {/* CLIENT TABLE */}
-      <OrdersTable orders={ordersRes.data} />
+      <OrdersTableComplete orders={ordersRes.data} />
       <AddOrderDialog />
     </div>
   );
