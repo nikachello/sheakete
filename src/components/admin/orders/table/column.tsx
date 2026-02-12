@@ -44,6 +44,11 @@ export const orderColumns = [
     cell: (info) => `${info.getValue()} ₾`,
   }),
 
+  columnHelper.accessor("productTitle", {
+    header: "პროდუქტი",
+    cell: (info) => `${info.getValue()} ₾`,
+  }),
+
   columnHelper.accessor("quantity", {
     header: "რაოდენობა)",
     cell: (info) => `${info.getValue()}`,
