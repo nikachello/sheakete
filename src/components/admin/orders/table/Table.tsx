@@ -73,12 +73,14 @@ export function OrdersTable({ orders }: { orders: Order[] }) {
         <div className="flex gap-2">
           <button
             onClick={() => table.previousPage()}
+            className="cursor-pointer"
             disabled={!table.getCanPreviousPage()}
           >
             წინა
           </button>
           <button
             onClick={() => table.nextPage()}
+            className="cursor-pointer"
             disabled={!table.getCanNextPage()}
           >
             შემდეგი

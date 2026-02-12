@@ -49,6 +49,16 @@ export const orderColumns = [
     cell: (info) => `${info.getValue()}`,
   }),
 
+  columnHelper.accessor("city", {
+    header: "ქალაქი)",
+    cell: (info) => `${info.getValue()}`,
+  }),
+
+  columnHelper.accessor("address", {
+    header: "მისამართი)",
+    cell: (info) => `${info.getValue()}`,
+  }),
+
   columnHelper.accessor("createdAt", {
     header: "შექმნილია",
     cell: (info) => new Date(info.getValue()).toLocaleDateString("ka-GE"),
