@@ -3,21 +3,21 @@ generator client {
   output   = "./generated/prisma/client"
 }
 
-
 datasource db {
-  provider  = "postgresql"
-  url  	    = env("DATABASE_URL")
-  // uncomment next line if you use Prisma <5.10
-  // directUrl = env("DATABASE_URL_UNPOOLED")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
 
 enum StockMovementType {
   PURCHASE
   SALE
   ADJUSTMENT
   RETURN
-  RESERVATION        
+  RESERVATION
   RESERVATION_RELEASE
 }
 
@@ -63,37 +63,84 @@ enum FounderLoanType {
   COMPANY_REPAID_FOUNDER
 }
 
+// NEW ENUMS
+enum ShippingMode {
+  AIR
+  LAND
+  SEA
+}
+
+enum InventoryOrderStatus {
+  DRAFT
+  ORDERED
+  IN_TRANSIT
+  ARRIVED
+  CANCELLED
+}
+
+enum MarketingPlatform {
+  FACEBOOK
+  TIKTOK
+  INSTAGRAM
+  GOOGLE
+  ORGANIC
+  OTHER
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum AlertType {
+  LOW_STOCK
+  MARGIN_DROP
+  CASH_RUNWAY
+  RETURN_RATE_SPIKE
+  VELOCITY_CHANGE
+  REORDER_SIGNAL
+}
+
+// ─────────────────────────────────────────────
+// EXISTING MODELS (with improvements)
+// ─────────────────────────────────────────────
+
 model Stock {
-  id String @id @default(uuid())
-  productId String @unique
-  productTitle String
-
-  quantityOnHand  Int      @default(0)
-  quantityReserved Int     @default(0)
-
-  quantity Int @default(0)
-
-  averageCost     Float?
+  id                String   @id @default(uuid())
+  productId         String   @unique
+  productTitle      String
+  quantityOnHand    Int      @default(0)
+  quantityReserved  Int      @default(0)
+  quantity          Int      @default(0)
+  averageCost       Float?
   lastPurchasePrice Float?
+  reorderPoint      Int?
+  reorderQuantity   Int?
 
-  reorderPoint    Int?
-  reorderQuantity Int?
+  // NEW: velocity tracking
+  dailyVelocity     Float?   // units sold per day (rolling 14-day avg)
+  weeklyVelocity    Float?   // units sold per week
+  daysOfStockLeft   Float?   // quantityOnHand / dailyVelocity
+  lastVelocityCalc  DateTime?
 
-  updatedAt DateTime @updatedAt
+  updatedAt         DateTime @updatedAt
+
+  inventoryOrders   InventoryOrder[]
+
   @@index([productId])
 }
 
 model StockMovement {
-  id String @id @default(uuid())
-  createdAt DateTime @default(now())
-  productId String
+  id           String            @id @default(uuid())
+  createdAt    DateTime          @default(now())
+  productId    String
   productTitle String
-  quantity Int
-  type StockMovementType
-  orderId String?
-  order Order? @relation(fields: [orderId], references: [id])
-  notes String?
-
+  quantity     Int
+  type         StockMovementType
+  orderId      String?
+  order        Order?            @relation(fields: [orderId], references: [id])
+  notes        String?
   isReservation Boolean          @default(false)
   unitCost     Float?
   totalCost    Float?
@@ -105,34 +152,65 @@ model StockMovement {
 }
 
 model Order {
-  id             String      @id @default(uuid())
-  createdAt      DateTime    @default(now())
-  updatedAt DateTime @updatedAt
-  returnedAt DateTime? 
-  customerName   String
-  customerPhone  String
-  city String?
-  address String?
-  productId String?
-  productTitle   String?
-  comboDetails   String?
-  quantity Int @default(1)
-  expectedPrice Float @default(0)
-  cashCollected Float?
+  id              String        @id @default(uuid())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  returnedAt      DateTime?
+  followUpAt      DateTime?     // NEW: scheduled callback time
+
+  customerName    String
+  customerPhone   String
+  city            String?
+  address         String?
+
+  productId       String?
+  productTitle    String?
+  comboDetails    String?
+  quantity        Int           @default(1)
+
+  expectedPrice   Float         @default(0)
+  cashCollected   Float?
   actualPaidPrice Float?
-  productCost Float @default(0)
-  shippingFee Float @default(0)
-  additionalCosts Float @default(0)
-  type           OrderType   @default(LEAD)
-  status         OrderStatus @default(PENDING)
-  paymentStatus PaymentStatus @default(AWAITING_COLLECTION)
-  notes          String?
-  remittanceId String?
-  remittance Remittance? @relation(fields: [remittanceId], references: [id])
-  stockMoveemnts StockMovement[]
+  productCost     Float         @default(0)
+  shippingFee     Float         @default(0)
+  additionalCosts Float         @default(0)
+
+  type            OrderType     @default(LEAD)
+  status          OrderStatus   @default(PENDING)
+  paymentStatus   PaymentStatus @default(AWAITING_COLLECTION)
+  notes           String?
+
+  remittanceId    String?
+  remittance      Remittance?   @relation(fields: [remittanceId], references: [id])
+  stockMoveemnts  StockMovement[]
+
+  // NEW: link to marketing campaign for attribution
+  marketingCampaignId String?
+  marketingCampaign   MarketingCampaign? @relation(fields: [marketingCampaignId], references: [id])
+
+  // NEW: order items for combo support
+  orderItems      OrderItem[]
+
   @@index([status])
   @@index([type])
   @@index([paymentStatus])
+  @@index([followUpAt])
+  @@index([createdAt])
+}
+
+// NEW: Proper line-item model for combos/multi-product orders
+model OrderItem {
+  id           String  @id @default(uuid())
+  orderId      String
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String
+  productTitle String
+  quantity     Int
+  unitPrice    Float
+  unitCost     Float   @default(0)
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 model Remittance {
@@ -146,20 +224,18 @@ model Remittance {
   bankTransactions BankTransaction[] @relation(name: "RemittanceBankTransactions")
 }
 
-
-
 model Expense {
-  id           String                   @id @default(uuid())
-  createdAt    DateTime                 @default(now())
-  type         ExpenseType
-  amount       Float
-  description  String?
-  reference    String?
-  month        Int
-  year         Int
-  isVirtual    Boolean                  @default(false)
-  paidFromBank Boolean                  @default(false)
-  bankTransaction BankTransaction?      @relation(name: "ExpenseBankTransaction")
+  id              String                  @id @default(uuid())
+  createdAt       DateTime                @default(now())
+  type            ExpenseType
+  amount          Float
+  description     String?
+  reference       String?
+  month           Int
+  year            Int
+  isVirtual       Boolean                 @default(false)
+  paidFromBank    Boolean                 @default(false)
+  bankTransaction BankTransaction?        @relation(name: "ExpenseBankTransaction")
   founderLoan     FounderLoanTransaction?
 
   @@index([type])
@@ -189,4 +265,210 @@ model FounderLoanTransaction {
   bankTransactionId String?          @unique
   bankTransaction   BankTransaction? @relation(fields: [bankTransactionId], references: [id])
   note              String?
+}
+
+// ─────────────────────────────────────────────
+// NEW MODELS
+// ─────────────────────────────────────────────
+
+// Tracks China purchase orders through the supply chain
+model InventoryOrder {
+  id              String               @id @default(uuid())
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  productId       String
+  productTitle    String
+  stock           Stock                @relation(fields: [productId], references: [productId])
+
+  quantity        Int
+  unitCostCNY     Float                // cost per unit in Chinese Yuan
+  exchangeRate    Float                // CNY to GEL rate at time of order
+  unitCostGEL     Float                // unitCostCNY * exchangeRate
+
+  shippingMode    ShippingMode
+  shippingCostGEL Float                // total shipping cost in GEL
+  shippingPerUnit Float                // shippingCostGEL / quantity
+  landedCostGEL   Float                // unitCostGEL + shippingPerUnit (true cost per unit)
+
+  totalInvestment Float                // quantity * landedCostGEL
+  status          InventoryOrderStatus @default(DRAFT)
+
+  orderedAt       DateTime?
+  expectedArrival DateTime?
+  arrivedAt       DateTime?
+
+  supplierName    String?
+  supplierLink    String?
+  notes           String?
+
+  @@index([productId])
+  @@index([status])
+  @@index([orderedAt])
+}
+
+// Tracks marketing campaigns for ROAS calculation
+model MarketingCampaign {
+  id          String            @id @default(uuid())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  name        String
+  platform    MarketingPlatform
+  productId   String?           // null = brand/general campaign
+  productTitle String?
+
+  startDate   DateTime
+  endDate     DateTime?
+  isActive    Boolean           @default(true)
+
+  spend       Float             @default(0) // total GEL spent
+  impressions Int?
+  clicks      Int?
+  leads       Int?              // orders with type=LEAD linked
+
+  notes       String?
+
+  orders      Order[]
+  spendLogs   CampaignSpendLog[]
+
+  @@index([productId])
+  @@index([platform])
+  @@index([isActive])
+}
+
+// Daily spend log for a campaign (for granular ROAS tracking)
+model CampaignSpendLog {
+  id          String            @id @default(uuid())
+  campaignId  String
+  campaign    MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  date        DateTime
+  spend       Float
+  impressions Int?
+  clicks      Int?
+  notes       String?
+
+  @@index([campaignId])
+  @@index([date])
+}
+
+// Snapshots of product profitability (computed daily/weekly)
+model ProductProfitSnapshot {
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now())
+  snapshotDate    DateTime
+  productId       String
+  productTitle    String
+
+  // Volume
+  unitsSold       Int
+  unitsReturned   Int      @default(0)
+  netUnitsSold    Int      // unitsSold - unitsReturned
+
+  // Revenue
+  grossRevenue    Float
+  returnedRevenue Float    @default(0)
+  netRevenue      Float
+
+  // Costs
+  cogsTotal       Float    // netUnitsSold * averageCost
+  shippingTotal   Float    // sum of shippingFee for this product's orders
+  marketingSpend  Float    @default(0) // attributed marketing spend
+
+  // Margins
+  grossProfit     Float    // netRevenue - cogsTotal
+  grossMargin     Float    // grossProfit / netRevenue
+  contributionProfit Float // grossProfit - shippingTotal - marketingSpend
+  contributionMargin Float
+
+  // Velocity
+  dailyVelocity   Float    // netUnitsSold / period days
+  periodDays      Int
+
+  @@index([productId])
+  @@index([snapshotDate])
+}
+
+// Cash flow projections
+model CashFlowProjection {
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now())
+  projectionDate  DateTime // the date this projection is FOR
+  generatedAt     DateTime @default(now())
+
+  openingBalance  Float
+  expectedInflows Float    // pending remittances + confirmed orders
+  expectedOutflows Float   // pending expenses + in-transit inventory orders
+  projectedBalance Float   // openingBalance + inflows - outflows
+
+  // Breakdown
+  pendingRemittances Float
+  confirmedOrderValue Float
+  scheduledExpenses  Float
+  inventoryCommitments Float // cost of in-transit inventory orders
+
+  notes           String?
+
+  @@index([projectionDate])
+}
+
+// System alerts for operational issues
+model Alert {
+  id          String        @id @default(uuid())
+  createdAt   DateTime      @default(now())
+  resolvedAt  DateTime?
+
+  type        AlertType
+  severity    AlertSeverity
+  title       String
+  message     String
+  productId   String?
+  productTitle String?
+  data        Json?         // extra context
+
+  isRead      Boolean       @default(false)
+  isResolved  Boolean       @default(false)
+
+  @@index([isResolved])
+  @@index([severity])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// Weekly business metric snapshots for trend analysis
+model WeeklyMetricSnapshot {
+  id              String   @id @default(uuid())
+  weekStart       DateTime
+  weekEnd         DateTime
+  createdAt       DateTime @default(now())
+
+  // Revenue
+  totalRevenue    Float
+  totalOrders     Int
+  deliveredOrders Int
+  returnedOrders  Int
+  cancelledOrders Int
+  returnRate      Float    // returnedOrders / deliveredOrders
+
+  // Profit
+  grossProfit     Float
+  grossMargin     Float
+  netProfit       Float
+  netMargin       Float
+
+  // Marketing
+  totalAdSpend    Float
+  costPerOrder    Float?   // totalAdSpend / deliveredOrders
+  roas            Float?   // totalRevenue / totalAdSpend
+
+  // Inventory
+  totalInventoryValue Float
+  inventoryTurnover   Float? // COGS / avg inventory value
+
+  // Cash
+  bankBalance     Float
+  founderLoanBalance Float
+
+  @@unique([weekStart])
+  @@index([weekStart])
 }

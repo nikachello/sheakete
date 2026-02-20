@@ -1,6 +1,7 @@
 "use server";
 
 import { bankReconciliation } from "@/services/financial/bank-reconciliation.service";
+import { cashFlowProjectionService } from "@/services/financial/cash-flow-procetion.service";
 import { financialCalculator } from "@/services/financial/financial-calculator.service";
 import { startOfMonth, endOfMonth, subMonths } from "date-fns";
 
@@ -77,5 +78,15 @@ export async function reconcileBankBalance() {
   } catch (error) {
     console.error("Failed to reconcile bank balance:", error);
     return { success: false, error: "Failed to reconcile" };
+  }
+}
+
+export async function getCashFlowForecast(daysAhead: number = 60) {
+  try {
+    const data = await cashFlowProjectionService.getForecast(daysAhead);
+    return { success: true, data };
+  } catch (error) {
+    console.error("Failed to get cash flow forecast:", error);
+    return { success: false, error: "Failed to calculate cash flow forecast" };
   }
 }

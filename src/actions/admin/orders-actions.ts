@@ -260,3 +260,40 @@ export async function getOrdersStats() {
     return { success: false, error: "Failed to fetch stats" };
   }
 }
+
+export async function setOrderFollowUp(orderId: string, followUpAt: Date) {
+  try {
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { followUpAt },
+    });
+    revalidatePath("/orders");
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: "Failed to set follow-up" };
+  }
+}
+
+export async function getOrdersDueFollowUp() {
+  try {
+    const data = await prisma.order.findMany({
+      where: {
+        followUpAt: { lte: new Date() },
+        status: { in: ["PENDING", "NO_ANSWER"] },
+      },
+      orderBy: { followUpAt: "asc" },
+      select: {
+        id: true,
+        customerName: true,
+        customerPhone: true,
+        productTitle: true,
+        followUpAt: true,
+        status: true,
+        notes: true,
+      },
+    });
+    return { success: true, data };
+  } catch (error) {
+    return { success: false, error: "Failed to get follow-ups" };
+  }
+}

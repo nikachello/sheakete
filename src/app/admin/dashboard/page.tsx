@@ -5,15 +5,33 @@ import { getLowStockAlerts } from "@/actions/admin/stock-actions";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Order } from "prisma/generated/prisma/client";
+import {
+  getActiveAlerts,
+  getReorderSignals,
+} from "@/actions/admin/product-profitability.actions";
+import { getOrdersDueFollowUp } from "@/actions/admin/orders-actions";
+import { AlertBanner } from "@/components/admin/alerts/alert-banner";
+import { ReorderSignalsWidget } from "@/components/admin/stocks/reorder-signals-widgget";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const [stats, founderLoan, bankBalance, stockAlerts] = await Promise.all([
+  const [
+    stats,
+    founderLoan,
+    bankBalance,
+    stockAlerts,
+    alerts,
+    reorders,
+    followUps,
+  ] = await Promise.all([
     getDashboardStats(),
     getFounderLoanBalance(),
     getCurrentBankBalance(),
     getLowStockAlerts(),
+    getActiveAlerts(),
+    getReorderSignals(),
+    getOrdersDueFollowUp(),
   ]);
 
   // --- Guard against missing dashboard data ---
@@ -37,9 +55,15 @@ export default async function DashboardPage() {
     founderLoan.data &&
     founderLoan.data.currentBalance > 0;
 
+  console.log(alerts, reorders);
+
   return (
     <div className="space-y-6 p-6">
       <h1 className="text-3xl font-bold">დეშბორდი</h1>
+
+      <AlertBanner alerts={alerts.data} />
+      <ReorderSignalsWidget signals={reorders.data} />
+      {/* <FollowUpQueue orders={followUps.data} /> */}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
