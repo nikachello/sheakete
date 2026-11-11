@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Expense, ExpenseType, Prisma } from "prisma/generated/prisma/client";
+import { Expense, ExpenseType, Prisma } from "@prisma-client";
 
 export class ExpenseRepository {
   async findInPeriod(startDate: Date, endDate: Date): Promise<Expense[]> {

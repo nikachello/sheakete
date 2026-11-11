@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { StockRepository } from "@/repositories/stock.repository";
 import { StockAlert } from "@/types/stock.types";
-import { $Enums, StockMovementType } from "prisma/generated/prisma/client";
+import { $Enums, StockMovementType } from "@prisma-client";
 
 // Type for transaction client
 type TransactionClient = Omit<

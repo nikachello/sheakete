@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Prisma, Remittance } from "prisma/generated/prisma/client";
+import { Prisma, Remittance } from "@prisma-client";
 
 export class RemittanceRepository {
   async findById(id: string) {

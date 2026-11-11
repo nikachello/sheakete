@@ -75,6 +75,8 @@ function ActionsCell({ lead }: { lead: Lead }) {
           productId: lead.productId || undefined,
           productTitle: lead.productTitle || undefined,
           expectedPrice: lead.expectedPrice || undefined,
+          quantity: lead.quantity,
+          comboDetails: lead.comboDetails || undefined,
           notes: lead.notes || undefined,
         }}
       />

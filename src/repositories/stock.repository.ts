@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Stock, StockMovement } from "prisma/generated/prisma/client";
+import { Stock, StockMovement } from "@prisma-client";
 
 export class StockRepository {
   async findByProductId(productId: string): Promise<Stock | null> {

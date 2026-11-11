@@ -152,11 +152,14 @@ model StockMovement {
 }
 
 model Order {
-  id         String    @id @default(uuid())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  returnedAt DateTime?
-  followUpAt DateTime? // NEW: scheduled callback time
+  id           String                @id @default(uuid())
+  submissionId String?               @unique
+  attribution  Json?
+  metaEvents   MetaConversionEvent[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  returnedAt   DateTime?
+  followUpAt   DateTime? // NEW: scheduled callback time
 
   customerName  String
   customerPhone String
@@ -196,6 +199,28 @@ model Order {
   @@index([paymentStatus])
   @@index([followUpAt])
   @@index([createdAt])
+}
+
+// Durable conversions: committed with the business action and retried separately.
+model MetaConversionEvent {
+  id            String    @id @default(uuid())
+  orderId       String
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  eventName     String
+  eventId       String    @unique
+  occurredAt    DateTime
+  payload       Json
+  status        String    @default("PENDING")
+  attempts      Int       @default(0)
+  nextAttemptAt DateTime  @default(now())
+  lockedUntil   DateTime?
+  leaseToken    String?
+  sentAt        DateTime?
+  lastError     String?
+  createdAt     DateTime  @default(now())
+
+  @@unique([orderId, eventName])
+  @@index([status, nextAttemptAt])
 }
 
 // NEW: Proper line-item model for combos/multi-product orders

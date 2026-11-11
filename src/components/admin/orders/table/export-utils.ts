@@ -1,6 +1,6 @@
 "use client";
 
-import { Order } from "prisma/generated/prisma/client";
+import { Order } from "@prisma-client";
 
 type EnrichedOrder = Order & {
   profit: number;

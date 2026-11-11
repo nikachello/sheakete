@@ -1,6 +1,6 @@
 import { ExpenseRepository } from "@/repositories/expense.repository";
 import { startOfMonth, endOfMonth, subMonths } from "date-fns";
-import { ExpenseType } from "prisma/generated/prisma/client";
+import { ExpenseType } from "@prisma-client";
 
 export interface ExpenseBreakdown {
   category: ExpenseType;

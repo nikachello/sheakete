@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ORDER_STATUS_TRANSITIONS } from "@/utils/orders/order-status";
 import { updateOrderStatus } from "@/actions/admin/orders-actions";
-import { OrderStatus } from "prisma/generated/prisma/client";
+import { OrderStatus } from "@prisma-client";
 
 const statusColors: Record<OrderStatus, string> = {
   CONFIRMED: "bg-blue-500",

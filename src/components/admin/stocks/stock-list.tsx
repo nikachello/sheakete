@@ -1,6 +1,6 @@
 "use client";
 
-import { Stock } from "prisma/generated/prisma/client";
+import { Stock } from "@prisma-client";
 
 interface StockListProps {
   stocks: Stock[];

@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
-import { Noto_Sans_Georgian } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
+import { MetaTracking } from "@/components/tracking/MetaTracking";
 
-const georgian = Noto_Sans_Georgian({
-  weight: ["400", "700"],
-  subsets: ["georgian", "latin"],
+const georgian = localFont({
+  src: [
+    { path: "../../public/fonts/georgian-regular.woff", weight: "400", style: "normal" },
+    { path: "../../public/fonts/georgian-bold.woff", weight: "700", style: "normal" },
+  ],
   variable: "--font-georgian",
   display: "swap",
 });
@@ -21,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`h-full ${georgian.variable}`}>
-      <body className="font-georgian antialiased">{children}</body>
+      <body className="font-georgian antialiased">{children}<MetaTracking /></body>
     </html>
   );
 }

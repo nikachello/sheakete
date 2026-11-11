@@ -1,7 +1,7 @@
 import { ExpenseRepository } from "@/repositories/expense.repository";
 import { OrderRepository } from "@/repositories/order.repository";
 import { OrderFinancials, PeriodFinancials } from "@/types/financial.types";
-import { ExpenseType } from "prisma/generated/prisma/client";
+import { ExpenseType } from "@prisma-client";
 
 export class FinancialCalculatorService {
   constructor(

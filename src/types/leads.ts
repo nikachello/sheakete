@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus } from "prisma/generated/prisma/client";
+import { OrderStatus, PaymentStatus } from "@prisma-client";
 
 export interface Lead {
   id: string;
@@ -12,20 +12,13 @@ export interface Lead {
   productTitle?: string | null;
   comboDetails?: string | null;
   expectedPrice: number;
+  quantity: number;
   status: OrderStatus;
   paymentStatus: PaymentStatus;
   notes?: string | null;
 }
 
-export type CreateLeadInput = {
-  name: string;
-  phone: string;
-  productTitle: string;
-  comboDetails?: string;
-  price: number;
-  notes?: string;
-  actualPaidPrice?: string;
-};
+export type { CreateLeadInput } from "@/validations/lead.validation";
 
 export interface LeadsStats {
   activeLeads: {

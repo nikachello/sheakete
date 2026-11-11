@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { StockRepository } from "@/repositories/stock.repository";
 import { stockManager } from "@/services/inventory/stock-manager.service";
 import { revalidatePath } from "next/cache";
-import { StockMovementType } from "prisma/generated/prisma/client";
+import { StockMovementType } from "@prisma-client";
 
 const stockRepo = new StockRepository();
 

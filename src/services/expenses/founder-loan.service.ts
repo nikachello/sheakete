@@ -3,7 +3,7 @@ import { FounderLoanSummary } from "@/types/financial.types";
 import {
   BankTransactionType,
   FounderLoanType,
-} from "prisma/generated/prisma/client";
+} from "@prisma-client";
 
 export class FounderLoanService {
   /**

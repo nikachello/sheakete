@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus } from "prisma/generated/prisma/client";
+import { OrderStatus, PaymentStatus } from "@prisma-client";
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   PENDING: "მიმდინარე",

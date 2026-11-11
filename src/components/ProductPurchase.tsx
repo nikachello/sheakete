@@ -1,18 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ProductOptions from "./ProductOptions";
 import CountdownTimer from "./CountdownTimer";
 import { ComboOptions } from "@/types/product";
 import { createLead } from "@/actions/public/leads-actions";
+import { getAttribution, trackMetaEvent } from "@/lib/meta/browser";
 
 const ProductPurchase = ({
   comboOptions,
   unit,
   productTitle,
+  productId,
+  basePrice,
 }: {
   comboOptions: ComboOptions[];
   unit: string;
   productTitle: string;
+  productId: string;
+  basePrice: number;
 }) => {
   const [selectedOptionKey, setSelectedOptionKey] = useState(
     comboOptions?.find((opt) => opt.isPopular)?._key || comboOptions?.[0]?._key
@@ -21,6 +26,8 @@ const ProductPurchase = ({
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const submissionId = useRef<string | null>(null);
+  const submitting = useRef(false);
 
   const currentOption = comboOptions?.find(
     (option) => option._key === selectedOptionKey
@@ -28,25 +35,28 @@ const ProductPurchase = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (submitting.current) return;
 
+    submitting.current = true;
     setIsSubmitting(true);
 
     try {
-      // const res = await fetch("/api/telegram", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ message }),
-      // });
+      submissionId.current ??= crypto.randomUUID();
+      let attribution;
+      try { attribution = getAttribution(); } catch { /* Tracking must never block an order. */ }
       const res = await createLead({
+        submissionId: submissionId.current,
         name,
         phone,
-        productTitle,
-        comboDetails: `${currentOption?.quantity} ${unit}`, // Format combo info
-        price: currentOption?.totalPrice || 0,
+        productId,
+        optionKey: currentOption?._key,
+        attribution,
       });
 
       if (res.success) {
+        try {
+          if (res.eventId) trackMetaEvent("Lead", { content_ids: [productId], content_name: productTitle, content_type: "product", currency: "GEL" }, res.eventId);
+        } catch { /* The saved lead is successful even when Pixel is blocked. */ }
         setIsSuccess(true);
         setName("");
         setPhone("");
@@ -57,6 +67,7 @@ const ProductPurchase = ({
       alert("დაფიქსირდა შეცდომა.");
       console.error(err);
     } finally {
+      submitting.current = false;
       setIsSubmitting(false);
     }
   };
@@ -70,7 +81,7 @@ const ProductPurchase = ({
         </h2>
         <p className="text-green-600">ჩვენი მენეჯერი მალე დაგიკავშირდებათ.</p>
         <button
-          onClick={() => setIsSuccess(false)}
+          onClick={() => { submissionId.current = null; setIsSuccess(false); }}
           className="text-sm underline text-green-800 mt-4"
         >
           ახალი შეკვეთა
@@ -81,16 +92,16 @@ const ProductPurchase = ({
 
   return (
     <div className="flex flex-col gap-4 w-full">
-      <ProductOptions
+      {comboOptions.length > 0 && <ProductOptions
         selectedOption={selectedOptionKey}
         setOption={setSelectedOptionKey}
         options={comboOptions}
         unit={unit}
-      />
+      />}
       <div className="flex flex-col gap-2">
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-5 items-start sm:items-center">
           <p className="text-xl md:text-2xl font-bold text-red-500">
-            {currentOption?.quantity} {unit} - {currentOption?.totalPrice} ლარი
+            {currentOption?.quantity ?? 1} {unit} - {currentOption?.totalPrice ?? basePrice} ლარი
           </p>
           <p className="bg-sky-600 text-xs p-2 rounded-full text-white whitespace-nowrap">
             50% ფასდაკლება
@@ -121,6 +132,8 @@ const ProductPurchase = ({
             />
             <button
               type="submit"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
               className="w-full bg-[#8B5E3C] text-white font-bold px-8 py-4 rounded-full shadow-md hover:bg-[#6d4a2e] transition"
             >
               გაგზავნა

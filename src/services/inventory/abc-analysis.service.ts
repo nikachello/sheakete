@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { subMonths } from "date-fns";
-import { OrderStatus } from "prisma/generated/prisma/client";
+import { OrderStatus } from "@prisma-client";
 
 export interface ABCClassification {
   productId: string;

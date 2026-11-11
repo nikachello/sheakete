@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus } from "prisma/generated/prisma/client";
+import { OrderStatus, PaymentStatus } from "@prisma-client";
 
 /**
  * Represents a single stat card to be displayed on the dashboard

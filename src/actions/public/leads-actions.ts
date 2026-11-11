@@ -1,52 +1,106 @@
-"use server";
-import { prisma } from "@/lib/prisma";
-import { CreateLeadInput } from "@/types/leads";
-import { revalidatePath } from "next/cache";
+﻿"use server";
 
-export const createLead = async (formData: CreateLeadInput) => {
+import { isIP } from "node:net";
+import { after } from "next/server";
+import { cookies, headers } from "next/headers";
+import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma-client";
+import { prisma } from "@/lib/prisma";
+import { client } from "@/lib/sanity.client";
+import { createLeadSchema } from "@/validations/lead.validation";
+import { CONSENT_COOKIE, SESSION_COOKIE, cleanUrl } from "@/lib/meta/shared";
+import { normalizePhone } from "@/lib/meta/payload";
+import { enqueueConversion, scheduleConversions } from "@/lib/meta/outbox";
+
+interface ProductOffer {
+  _id: string;
+  title: string;
+  slug: string;
+  price: number;
+  unit: string | null;
+  combos: { _key: string; quantity: number; totalPrice: number }[] | null;
+}
+
+export async function createLead(rawData: unknown) {
   try {
-    // 1. Save to Database
-    const newLead = await prisma.order.create({
-      data: {
-        customerName: formData.name,
-        customerPhone: formData.phone,
-        productTitle: formData.productTitle,
-        comboDetails: formData.comboDetails,
-        notes: formData.notes,
-        status: "PENDING",
-        expectedPrice: formData.price,
-      },
+    const input = createLeadSchema.parse(rawData);
+    const phone = normalizePhone(input.phone);
+    const product = await client.withConfig({ useCdn: false }).fetch<ProductOffer | null>(
+      `*[_type == "product" && _id == $id && !(_id in path("drafts.**")) && defined(slug.current)][0]{_id,title,"slug":slug.current,price,unit,combos[]{_key,quantity,totalPrice}}`,
+      { id: input.productId }, { cache: "no-store" },
+    );
+    if (!product) return { success: false as const, error: "Product unavailable" };
+    const option = product.combos?.find((item) => item._key === input.optionKey);
+    if ((product.combos?.length && !option) || (input.optionKey && !option)) {
+      return { success: false as const, error: "Please select an available offer" };
+    }
+    const price = option ? option.totalPrice : product.price;
+    const quantity = option ? option.quantity : 1;
+    if (!Number.isFinite(price) || price <= 0 || !Number.isInteger(quantity) || quantity < 1 || quantity > 1000) {
+      return { success: false as const, error: "Offer unavailable" };
+    }
+    const requestHeaders = await headers();
+    const cookieStore = await cookies();
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || requestHeaders.get("origin");
+    const site = origin ? new URL(origin).origin : undefined;
+    const trackingAllowed = process.env.NEXT_PUBLIC_META_ENABLED === "true" &&
+      cookieStore.get(CONSENT_COOKIE)?.value === "granted" && input.attribution?.consent === true &&
+      cookieStore.get(SESSION_COOKIE)?.value === input.attribution.consentSessionId;
+    const attribution = trackingAllowed && site && new URL(input.attribution!.landingUrl).origin === site
+      ? { ...input.attribution!, landingUrl: cleanUrl(input.attribution!.landingUrl)!, referrer: cleanUrl(input.attribution!.referrer ?? "") }
+      : undefined;
+    const forwardedIp = process.env.META_TRUST_PROXY_HEADERS === "true"
+      ? requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() : undefined;
+    const browser = site ? {
+      sourceUrl: `${site}/product/${encodeURIComponent(product.slug)}`,
+      userAgent: requestHeaders.get("user-agent")?.slice(0, 1000),
+      ip: forwardedIp && isIP(forwardedIp) ? forwardedIp : undefined,
+    } : undefined;
+    const result = await prisma.$transaction(async (tx) => {
+      const existing = await tx.order.findUnique({ where: { submissionId: input.submissionId } });
+      if (existing) {
+        if (existing.customerPhone !== phone || existing.productId !== input.productId) throw new Error("Submission mismatch");
+        const event = await tx.metaConversionEvent.findUnique({ where: { orderId_eventName: { orderId: existing.id, eventName: "Lead" } } });
+        return { id: existing.id, eventId: event?.eventId, created: false, order: existing };
+      }
+      const order = await tx.order.create({ data: {
+        submissionId: input.submissionId,
+        customerName: input.name, customerPhone: phone,
+        productId: product._id, productTitle: product.title,
+        quantity, comboDetails: `${quantity} ${product.unit || "ცალი"}`,
+        expectedPrice: price, status: "PENDING", type: "LEAD",
+        attribution: attribution ? JSON.parse(JSON.stringify(attribution)) as Prisma.InputJsonObject : Prisma.DbNull,
+      } });
+      await enqueueConversion(tx, order, "Lead", order.createdAt, browser);
+      return { id: order.id, eventId: attribution ? `lead_${order.id}` : undefined, created: true, order };
     });
 
-    // 2. Notify Telegram
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
-
-    if (botToken && chatId) {
-      const message =
-        `<b> ახალი შეკვეთა!</b>\n\n` +
-        `<b>👤 სახელი:</b> ${formData.name}\n` +
-        `<b>📞 ტელ:</b> ${formData.phone}\n` +
-        `<b>📦 პროდუქტი:</b> ${formData.productTitle}\n` +
-        `<b>🎁 შეთავაზება:</b> ${formData.comboDetails || "N/A"}\n` +
-        `<b>💰 ფასი:</b> ${formData.price} GEL\n` +
-        `<b>🛠 სტატუსი:</b> #Pending`;
-
-      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: message,
-          parse_mode: "HTML",
-        }),
+    if (result.created) {
+      // Notifications cannot change the outcome of an already-committed lead.
+      after(async () => {
+        const token = process.env.TELEGRAM_BOT_TOKEN;
+        const chatId = process.env.TELEGRAM_CHAT_ID;
+        if (!token || !chatId) return;
+        try {
+          const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: "POST", signal: AbortSignal.timeout(5000),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chat_id: chatId, text: `ახალი შეკვეთა\n${result.order.customerName}\n${result.order.customerPhone}\n${result.order.productTitle}\n${result.order.comboDetails}\n${result.order.expectedPrice} GEL` }),
+          });
+          if (!response.ok) console.error("Lead saved; Telegram notification failed.");
+        } catch { console.error("Lead saved; Telegram notification unavailable."); }
       });
     }
-
+    scheduleConversions(result.id);
     revalidatePath("/admin/dashboard");
-    return { success: true, data: newLead };
-  } catch (err) {
-    console.error("Lead Creation Error:", err);
-    return { success: false, error: "შეკვეთა ვერ შეინახა" };
+    revalidatePath("/admin/leads");
+    return { success: true as const, id: result.id, eventId: result.eventId };
+  } catch (error) {
+    // A concurrent retry may lose the unique submissionId race; retry with the SAME ID.
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return { success: false as const, error: "Submission is being processed. Please retry." };
+    }
+    console.error("Lead submission failed.");
+    return { success: false as const, error: "შეკვეთა ვერ შეინახა. გადაამოწმეთ მონაცემები და სცადეთ ხელახლა." };
   }
-};
+}

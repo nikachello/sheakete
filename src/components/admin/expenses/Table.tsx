@@ -1,4 +1,4 @@
-import { Expense } from "prisma/generated/prisma/client";
+import { Expense } from "@prisma-client";
 
 interface ExpensesTableProps {
   expenses: Expense[];

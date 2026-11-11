@@ -1,6 +1,6 @@
 // components/admin/expenses/expense-list.tsx
 import React from "react";
-import { Expense } from "prisma/generated/prisma/client";
+import { Expense } from "@prisma-client";
 
 interface ExpenseListProps {
   expenses: Expense[];

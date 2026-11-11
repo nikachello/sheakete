@@ -3,7 +3,7 @@ import {
   OrderStatus,
   PaymentStatus,
   Remittance,
-} from "prisma/generated/prisma/client";
+} from "@prisma-client";
 
 export interface OrderActivity {
   customerName: string;

@@ -5,7 +5,7 @@ import { EditableOrderStatusCell } from "./EditableOrderStatusCell";
 import {
   Order,
   PaymentStatus,
-} from "prisma/generated/prisma/client";
+} from "@prisma-client";
 
 type EnrichedOrder = Order & {
   profit: number;

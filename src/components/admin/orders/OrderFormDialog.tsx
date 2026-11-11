@@ -52,6 +52,8 @@ interface OrderFormDialogProps {
     productId?: string;
     productTitle?: string;
     expectedPrice?: number;
+    quantity?: number;
+    comboDetails?: string;
     notes?: string;
   };
 }
@@ -98,8 +100,8 @@ export function OrderFormDialog({
     city: defaultValues.city || "",
     address: defaultValues.address || "",
     productId: defaultValues.productId || "",
-    comboDetails: "",
-    quantity: "1",
+    comboDetails: defaultValues.comboDetails || "",
+    quantity: defaultValues.quantity?.toString() || "1",
     expectedPrice: defaultValues.expectedPrice?.toString() || "",
     productCost: "",
     shippingFee: "",

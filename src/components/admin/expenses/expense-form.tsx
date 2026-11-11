@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ExpenseType } from "prisma/generated/prisma/client";
+import { ExpenseType } from "@prisma-client";
 import { createExpense } from "@/actions/admin/expenses-actions";
 
 type ExpenseFormState = {

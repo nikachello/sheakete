@@ -6,7 +6,7 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
-import { OrderStatus } from "prisma/generated/prisma/client";
+import { OrderStatus } from "@prisma-client";
 
 export interface WeeklyTrend {
   weeks: {

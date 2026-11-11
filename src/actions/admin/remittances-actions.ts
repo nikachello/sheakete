@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import {
   BankTransactionType,
   PaymentStatus,
-} from "prisma/generated/prisma/client";
+} from "@prisma-client";
 
 const remittanceRepo = new RemittanceRepository();
 

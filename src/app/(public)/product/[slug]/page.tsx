@@ -10,9 +10,12 @@ import Rating from "@/components/Rating";
 import Urgency from "@/components/Urgency";
 import { isEmpty } from "@/lib/helpers";
 import { client } from "@/lib/sanity.client";
+import { ProductViewTracking } from "@/components/tracking/MetaTracking";
+import { notFound } from "next/navigation";
 
 const query = `
-  *[_type == "product" && slug.current == $slug][0]{
+  *[_type == "product" && slug.current == $slug && !(_id in path("drafts.**"))][0]{
+    _id,
     title,
     description,
     price,
@@ -38,10 +41,11 @@ export default async function ProductPage({
     slug,
   });
 
-  if (isEmpty(product)) return <div>არ მოიძებნა პროდუქტი</div>;
+  if (isEmpty(product)) notFound();
 
   return (
     <div className="flex flex-col gap-6 md:gap-10 w-full">
+      <ProductViewTracking id={product._id} title={product.title} price={product.price} />
       {/* Header Text */}
       <HeaderText />
       {/*  Header Image */}
@@ -59,8 +63,10 @@ export default async function ProductPage({
       {/* Options Chooser */}
       <ProductPurchase
         productTitle={product.title}
-        comboOptions={product.combos}
-        unit={product.unit}
+        productId={product._id}
+        basePrice={product.price}
+        comboOptions={product.combos ?? []}
+        unit={product.unit ?? "ცალი"}
       />
       {/* Product Images */}
       <ProductPictures images={product.gallery} />

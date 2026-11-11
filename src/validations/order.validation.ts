@@ -1,4 +1,4 @@
-import { OrderStatus } from "prisma/generated/prisma/client";
+import { OrderStatus } from "@prisma-client";
 import { z } from "zod";
 
 export const createOrderSchema = z.object({

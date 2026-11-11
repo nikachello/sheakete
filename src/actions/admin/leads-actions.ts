@@ -2,7 +2,11 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { OrderStatus, OrderType } from "prisma/generated/prisma/client";
+import { OrderStatus, OrderType } from "@prisma-client";
+import { requireAdmin } from "@/lib/admin-auth";
+import { confirmLead as confirmLeadTransition } from "@/services/analytics/confirm-lead.service";
+import { scheduleConversions } from "@/lib/meta/outbox";
+import { z } from "zod";
 
 export const getLeadsStats = async () => {
   const now = new Date();
@@ -122,14 +126,13 @@ export async function getLeadsAnalytics() {
  */
 export async function confirmLead(leadId: string) {
   try {
-    const updatedOrder = await prisma.order.update({
-      where: { id: leadId },
-      data: {
-        status: OrderStatus.CONFIRMED,
-        type: OrderType.ORDER,
-        updatedAt: new Date(),
-      },
+    await requireAdmin();
+    z.string().uuid().parse(leadId);
+    const updatedOrder = await prisma.$transaction(async (tx) => {
+      await confirmLeadTransition(tx, leadId);
+      return tx.order.findUniqueOrThrow({ where: { id: leadId } });
     });
+    scheduleConversions(leadId);
 
     revalidatePath("/leads");
     revalidatePath("/admin/leads");
@@ -206,22 +209,21 @@ export async function markAsNoAnswer(leadId: string, note?: string) {
  */
 export async function confirmMultipleLeads(leadIds: string[]) {
   try {
-    const result = await prisma.order.updateMany({
-      where: {
-        id: { in: leadIds },
-        type: OrderType.LEAD,
-      },
-      data: {
-        status: OrderStatus.CONFIRMED,
-        type: OrderType.ORDER,
-        updatedAt: new Date(),
-      },
+    await requireAdmin();
+    const ids = z.array(z.string().uuid()).max(100).parse(leadIds);
+    const count = await prisma.$transaction(async (tx) => {
+      let confirmed = 0;
+      for (const id of ids) {
+        if (await confirmLeadTransition(tx, id)) confirmed++;
+      }
+      return confirmed;
     });
+    scheduleConversions();
 
     revalidatePath("/leads");
     revalidatePath("/admin/leads");
 
-    return { success: true, count: result.count };
+    return { success: true, count };
   } catch (error) {
     console.error("Error confirming multiple leads:", error);
     return { success: false, error: "Failed to confirm leads" };
@@ -265,6 +267,7 @@ export async function updateLead(
     expectedPrice: number;
   }>
 ) {
+  await requireAdmin();
   if (typeof data.expectedPrice === "string") {
     data.expectedPrice = parseFloat(data.expectedPrice);
     if (isNaN(data.expectedPrice)) {
@@ -272,10 +275,12 @@ export async function updateLead(
     }
   }
 
-  await prisma.order.update({
-    where: { id },
-    data,
-  });
+  if (data.status === OrderStatus.CONFIRMED) {
+    await prisma.$transaction((tx) => confirmLeadTransition(tx, id, data));
+    scheduleConversions(id);
+  } else {
+    await prisma.order.update({ where: { id }, data });
+  }
 
   revalidatePath("/leads");
   revalidatePath("/admin/leads");
@@ -297,24 +302,28 @@ export async function confirmLeadAndCreateOrder(
     notes?: string;
   }
 ) {
-  await prisma.order.update({
-    where: { id: leadId },
-    data: {
-      type: "ORDER",
-      status: "CONFIRMED",
-      city: data.city,
-      address: data.address,
-      productId: data.productId,
-      productTitle: data.productTitle,
-      comboDetails: data.comboDetails,
-      expectedPrice: data.expectedPrice,
-      quantity: data.quantity,
-      productCost: data.productCost || 0,
-      shippingFee: data.shippingFee || 0,
-      additionalCosts: data.additionalCosts || 0,
-      notes: data.notes,
-    },
-  });
+  await requireAdmin();
+  z.string().uuid().parse(leadId);
+  const input = z.object({
+    city: z.string().trim().max(100).optional(),
+    address: z.string().trim().max(500).optional(),
+    productTitle: z.string().max(300).optional(),
+    productId: z.string().max(128).optional(),
+    expectedPrice: z.number().positive().finite().optional(),
+    quantity: z.number().int().positive().max(1000),
+    productCost: z.number().nonnegative().finite().optional(),
+    shippingFee: z.number().nonnegative().finite().optional(),
+    additionalCosts: z.number().nonnegative().finite().optional(),
+    comboDetails: z.string().max(1000).optional(),
+    notes: z.string().max(2000).optional(),
+  }).parse(data);
+  await prisma.$transaction((tx) => confirmLeadTransition(tx, leadId, {
+      ...input,
+      productCost: input.productCost ?? 0,
+      shippingFee: input.shippingFee ?? 0,
+      additionalCosts: input.additionalCosts ?? 0,
+  }));
+  scheduleConversions(leadId);
 
   revalidatePath("/leads");
   revalidatePath("/admin/leads");

@@ -29,6 +29,11 @@ export type StockMovement = $Result.DefaultSelection<Prisma.$StockMovementPayloa
  */
 export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
 /**
+ * Model MetaConversionEvent
+ * 
+ */
+export type MetaConversionEvent = $Result.DefaultSelection<Prisma.$MetaConversionEventPayload>
+/**
  * Model OrderItem
  * 
  */
@@ -414,6 +419,16 @@ export class PrismaClient<
     * ```
     */
   get order(): Prisma.OrderDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.metaConversionEvent`: Exposes CRUD operations for the **MetaConversionEvent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MetaConversionEvents
+    * const metaConversionEvents = await prisma.metaConversionEvent.findMany()
+    * ```
+    */
+  get metaConversionEvent(): Prisma.MetaConversionEventDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.orderItem`: Exposes CRUD operations for the **OrderItem** model.
@@ -978,6 +993,7 @@ export namespace Prisma {
     Stock: 'Stock',
     StockMovement: 'StockMovement',
     Order: 'Order',
+    MetaConversionEvent: 'MetaConversionEvent',
     OrderItem: 'OrderItem',
     Remittance: 'Remittance',
     Expense: 'Expense',
@@ -1008,7 +1024,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "stock" | "stockMovement" | "order" | "orderItem" | "remittance" | "expense" | "bankTransaction" | "founderLoanTransaction" | "inventoryOrder" | "marketingCampaign" | "campaignSpendLog" | "productProfitSnapshot" | "cashFlowProjection" | "alert" | "weeklyMetricSnapshot"
+      modelProps: "stock" | "stockMovement" | "order" | "metaConversionEvent" | "orderItem" | "remittance" | "expense" | "bankTransaction" | "founderLoanTransaction" | "inventoryOrder" | "marketingCampaign" | "campaignSpendLog" | "productProfitSnapshot" | "cashFlowProjection" | "alert" | "weeklyMetricSnapshot"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1231,6 +1247,80 @@ export namespace Prisma {
           count: {
             args: Prisma.OrderCountArgs<ExtArgs>
             result: $Utils.Optional<OrderCountAggregateOutputType> | number
+          }
+        }
+      }
+      MetaConversionEvent: {
+        payload: Prisma.$MetaConversionEventPayload<ExtArgs>
+        fields: Prisma.MetaConversionEventFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MetaConversionEventFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetaConversionEventPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MetaConversionEventFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetaConversionEventPayload>
+          }
+          findFirst: {
+            args: Prisma.MetaConversionEventFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetaConversionEventPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MetaConversionEventFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetaConversionEventPayload>
+          }
+          findMany: {
+            args: Prisma.MetaConversionEventFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetaConversionEventPayload>[]
+          }
+          create: {
+            args: Prisma.MetaConversionEventCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetaConversionEventPayload>
+          }
+          createMany: {
+            args: Prisma.MetaConversionEventCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MetaConversionEventCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetaConversionEventPayload>[]
+          }
+          delete: {
+            args: Prisma.MetaConversionEventDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetaConversionEventPayload>
+          }
+          update: {
+            args: Prisma.MetaConversionEventUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetaConversionEventPayload>
+          }
+          deleteMany: {
+            args: Prisma.MetaConversionEventDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MetaConversionEventUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MetaConversionEventUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetaConversionEventPayload>[]
+          }
+          upsert: {
+            args: Prisma.MetaConversionEventUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MetaConversionEventPayload>
+          }
+          aggregate: {
+            args: Prisma.MetaConversionEventAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMetaConversionEvent>
+          }
+          groupBy: {
+            args: Prisma.MetaConversionEventGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MetaConversionEventGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MetaConversionEventCountArgs<ExtArgs>
+            result: $Utils.Optional<MetaConversionEventCountAggregateOutputType> | number
           }
         }
       }
@@ -2221,6 +2311,7 @@ export namespace Prisma {
     stock?: StockOmit
     stockMovement?: StockMovementOmit
     order?: OrderOmit
+    metaConversionEvent?: MetaConversionEventOmit
     orderItem?: OrderItemOmit
     remittance?: RemittanceOmit
     expense?: ExpenseOmit
@@ -2344,11 +2435,13 @@ export namespace Prisma {
    */
 
   export type OrderCountOutputType = {
+    metaEvents: number
     stockMoveemnts: number
     orderItems: number
   }
 
   export type OrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    metaEvents?: boolean | OrderCountOutputTypeCountMetaEventsArgs
     stockMoveemnts?: boolean | OrderCountOutputTypeCountStockMoveemntsArgs
     orderItems?: boolean | OrderCountOutputTypeCountOrderItemsArgs
   }
@@ -2362,6 +2455,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the OrderCountOutputType
      */
     select?: OrderCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountMetaEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MetaConversionEventWhereInput
   }
 
   /**
@@ -4964,6 +5064,7 @@ export namespace Prisma {
 
   export type OrderMinAggregateOutputType = {
     id: string | null
+    submissionId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     returnedAt: Date | null
@@ -4992,6 +5093,7 @@ export namespace Prisma {
 
   export type OrderMaxAggregateOutputType = {
     id: string | null
+    submissionId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     returnedAt: Date | null
@@ -5020,6 +5122,8 @@ export namespace Prisma {
 
   export type OrderCountAggregateOutputType = {
     id: number
+    submissionId: number
+    attribution: number
     createdAt: number
     updatedAt: number
     returnedAt: number
@@ -5070,6 +5174,7 @@ export namespace Prisma {
 
   export type OrderMinAggregateInputType = {
     id?: true
+    submissionId?: true
     createdAt?: true
     updatedAt?: true
     returnedAt?: true
@@ -5098,6 +5203,7 @@ export namespace Prisma {
 
   export type OrderMaxAggregateInputType = {
     id?: true
+    submissionId?: true
     createdAt?: true
     updatedAt?: true
     returnedAt?: true
@@ -5126,6 +5232,8 @@ export namespace Prisma {
 
   export type OrderCountAggregateInputType = {
     id?: true
+    submissionId?: true
+    attribution?: true
     createdAt?: true
     updatedAt?: true
     returnedAt?: true
@@ -5241,6 +5349,8 @@ export namespace Prisma {
 
   export type OrderGroupByOutputType = {
     id: string
+    submissionId: string | null
+    attribution: JsonValue | null
     createdAt: Date
     updatedAt: Date
     returnedAt: Date | null
@@ -5288,6 +5398,8 @@ export namespace Prisma {
 
   export type OrderSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    submissionId?: boolean
+    attribution?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     returnedAt?: boolean
@@ -5312,6 +5424,7 @@ export namespace Prisma {
     notes?: boolean
     remittanceId?: boolean
     marketingCampaignId?: boolean
+    metaEvents?: boolean | Order$metaEventsArgs<ExtArgs>
     remittance?: boolean | Order$remittanceArgs<ExtArgs>
     stockMoveemnts?: boolean | Order$stockMoveemntsArgs<ExtArgs>
     marketingCampaign?: boolean | Order$marketingCampaignArgs<ExtArgs>
@@ -5321,6 +5434,8 @@ export namespace Prisma {
 
   export type OrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    submissionId?: boolean
+    attribution?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     returnedAt?: boolean
@@ -5351,6 +5466,8 @@ export namespace Prisma {
 
   export type OrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    submissionId?: boolean
+    attribution?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     returnedAt?: boolean
@@ -5381,6 +5498,8 @@ export namespace Prisma {
 
   export type OrderSelectScalar = {
     id?: boolean
+    submissionId?: boolean
+    attribution?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     returnedAt?: boolean
@@ -5407,8 +5526,9 @@ export namespace Prisma {
     marketingCampaignId?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "returnedAt" | "followUpAt" | "customerName" | "customerPhone" | "city" | "address" | "productId" | "productTitle" | "comboDetails" | "quantity" | "expectedPrice" | "cashCollected" | "actualPaidPrice" | "productCost" | "shippingFee" | "additionalCosts" | "type" | "status" | "paymentStatus" | "notes" | "remittanceId" | "marketingCampaignId", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "submissionId" | "attribution" | "createdAt" | "updatedAt" | "returnedAt" | "followUpAt" | "customerName" | "customerPhone" | "city" | "address" | "productId" | "productTitle" | "comboDetails" | "quantity" | "expectedPrice" | "cashCollected" | "actualPaidPrice" | "productCost" | "shippingFee" | "additionalCosts" | "type" | "status" | "paymentStatus" | "notes" | "remittanceId" | "marketingCampaignId", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    metaEvents?: boolean | Order$metaEventsArgs<ExtArgs>
     remittance?: boolean | Order$remittanceArgs<ExtArgs>
     stockMoveemnts?: boolean | Order$stockMoveemntsArgs<ExtArgs>
     marketingCampaign?: boolean | Order$marketingCampaignArgs<ExtArgs>
@@ -5427,6 +5547,7 @@ export namespace Prisma {
   export type $OrderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Order"
     objects: {
+      metaEvents: Prisma.$MetaConversionEventPayload<ExtArgs>[]
       remittance: Prisma.$RemittancePayload<ExtArgs> | null
       stockMoveemnts: Prisma.$StockMovementPayload<ExtArgs>[]
       marketingCampaign: Prisma.$MarketingCampaignPayload<ExtArgs> | null
@@ -5434,6 +5555,8 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      submissionId: string | null
+      attribution: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
       returnedAt: Date | null
@@ -5852,6 +5975,7 @@ export namespace Prisma {
    */
   export interface Prisma__OrderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    metaEvents<T extends Order$metaEventsArgs<ExtArgs> = {}>(args?: Subset<T, Order$metaEventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MetaConversionEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     remittance<T extends Order$remittanceArgs<ExtArgs> = {}>(args?: Subset<T, Order$remittanceArgs<ExtArgs>>): Prisma__RemittanceClient<$Result.GetResult<Prisma.$RemittancePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     stockMoveemnts<T extends Order$stockMoveemntsArgs<ExtArgs> = {}>(args?: Subset<T, Order$stockMoveemntsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     marketingCampaign<T extends Order$marketingCampaignArgs<ExtArgs> = {}>(args?: Subset<T, Order$marketingCampaignArgs<ExtArgs>>): Prisma__MarketingCampaignClient<$Result.GetResult<Prisma.$MarketingCampaignPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -5886,6 +6010,8 @@ export namespace Prisma {
    */
   interface OrderFieldRefs {
     readonly id: FieldRef<"Order", 'String'>
+    readonly submissionId: FieldRef<"Order", 'String'>
+    readonly attribution: FieldRef<"Order", 'Json'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
     readonly returnedAt: FieldRef<"Order", 'DateTime'>
@@ -6306,6 +6432,30 @@ export namespace Prisma {
   }
 
   /**
+   * Order.metaEvents
+   */
+  export type Order$metaEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventInclude<ExtArgs> | null
+    where?: MetaConversionEventWhereInput
+    orderBy?: MetaConversionEventOrderByWithRelationInput | MetaConversionEventOrderByWithRelationInput[]
+    cursor?: MetaConversionEventWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MetaConversionEventScalarFieldEnum | MetaConversionEventScalarFieldEnum[]
+  }
+
+  /**
    * Order.remittance
    */
   export type Order$remittanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6407,6 +6557,1211 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: OrderInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model MetaConversionEvent
+   */
+
+  export type AggregateMetaConversionEvent = {
+    _count: MetaConversionEventCountAggregateOutputType | null
+    _avg: MetaConversionEventAvgAggregateOutputType | null
+    _sum: MetaConversionEventSumAggregateOutputType | null
+    _min: MetaConversionEventMinAggregateOutputType | null
+    _max: MetaConversionEventMaxAggregateOutputType | null
+  }
+
+  export type MetaConversionEventAvgAggregateOutputType = {
+    attempts: number | null
+  }
+
+  export type MetaConversionEventSumAggregateOutputType = {
+    attempts: number | null
+  }
+
+  export type MetaConversionEventMinAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    eventName: string | null
+    eventId: string | null
+    occurredAt: Date | null
+    status: string | null
+    attempts: number | null
+    nextAttemptAt: Date | null
+    lockedUntil: Date | null
+    leaseToken: string | null
+    sentAt: Date | null
+    lastError: string | null
+    createdAt: Date | null
+  }
+
+  export type MetaConversionEventMaxAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    eventName: string | null
+    eventId: string | null
+    occurredAt: Date | null
+    status: string | null
+    attempts: number | null
+    nextAttemptAt: Date | null
+    lockedUntil: Date | null
+    leaseToken: string | null
+    sentAt: Date | null
+    lastError: string | null
+    createdAt: Date | null
+  }
+
+  export type MetaConversionEventCountAggregateOutputType = {
+    id: number
+    orderId: number
+    eventName: number
+    eventId: number
+    occurredAt: number
+    payload: number
+    status: number
+    attempts: number
+    nextAttemptAt: number
+    lockedUntil: number
+    leaseToken: number
+    sentAt: number
+    lastError: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type MetaConversionEventAvgAggregateInputType = {
+    attempts?: true
+  }
+
+  export type MetaConversionEventSumAggregateInputType = {
+    attempts?: true
+  }
+
+  export type MetaConversionEventMinAggregateInputType = {
+    id?: true
+    orderId?: true
+    eventName?: true
+    eventId?: true
+    occurredAt?: true
+    status?: true
+    attempts?: true
+    nextAttemptAt?: true
+    lockedUntil?: true
+    leaseToken?: true
+    sentAt?: true
+    lastError?: true
+    createdAt?: true
+  }
+
+  export type MetaConversionEventMaxAggregateInputType = {
+    id?: true
+    orderId?: true
+    eventName?: true
+    eventId?: true
+    occurredAt?: true
+    status?: true
+    attempts?: true
+    nextAttemptAt?: true
+    lockedUntil?: true
+    leaseToken?: true
+    sentAt?: true
+    lastError?: true
+    createdAt?: true
+  }
+
+  export type MetaConversionEventCountAggregateInputType = {
+    id?: true
+    orderId?: true
+    eventName?: true
+    eventId?: true
+    occurredAt?: true
+    payload?: true
+    status?: true
+    attempts?: true
+    nextAttemptAt?: true
+    lockedUntil?: true
+    leaseToken?: true
+    sentAt?: true
+    lastError?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type MetaConversionEventAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MetaConversionEvent to aggregate.
+     */
+    where?: MetaConversionEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MetaConversionEvents to fetch.
+     */
+    orderBy?: MetaConversionEventOrderByWithRelationInput | MetaConversionEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MetaConversionEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MetaConversionEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MetaConversionEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MetaConversionEvents
+    **/
+    _count?: true | MetaConversionEventCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: MetaConversionEventAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MetaConversionEventSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MetaConversionEventMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MetaConversionEventMaxAggregateInputType
+  }
+
+  export type GetMetaConversionEventAggregateType<T extends MetaConversionEventAggregateArgs> = {
+        [P in keyof T & keyof AggregateMetaConversionEvent]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMetaConversionEvent[P]>
+      : GetScalarType<T[P], AggregateMetaConversionEvent[P]>
+  }
+
+
+
+
+  export type MetaConversionEventGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MetaConversionEventWhereInput
+    orderBy?: MetaConversionEventOrderByWithAggregationInput | MetaConversionEventOrderByWithAggregationInput[]
+    by: MetaConversionEventScalarFieldEnum[] | MetaConversionEventScalarFieldEnum
+    having?: MetaConversionEventScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MetaConversionEventCountAggregateInputType | true
+    _avg?: MetaConversionEventAvgAggregateInputType
+    _sum?: MetaConversionEventSumAggregateInputType
+    _min?: MetaConversionEventMinAggregateInputType
+    _max?: MetaConversionEventMaxAggregateInputType
+  }
+
+  export type MetaConversionEventGroupByOutputType = {
+    id: string
+    orderId: string
+    eventName: string
+    eventId: string
+    occurredAt: Date
+    payload: JsonValue
+    status: string
+    attempts: number
+    nextAttemptAt: Date
+    lockedUntil: Date | null
+    leaseToken: string | null
+    sentAt: Date | null
+    lastError: string | null
+    createdAt: Date
+    _count: MetaConversionEventCountAggregateOutputType | null
+    _avg: MetaConversionEventAvgAggregateOutputType | null
+    _sum: MetaConversionEventSumAggregateOutputType | null
+    _min: MetaConversionEventMinAggregateOutputType | null
+    _max: MetaConversionEventMaxAggregateOutputType | null
+  }
+
+  type GetMetaConversionEventGroupByPayload<T extends MetaConversionEventGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MetaConversionEventGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MetaConversionEventGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MetaConversionEventGroupByOutputType[P]>
+            : GetScalarType<T[P], MetaConversionEventGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MetaConversionEventSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    eventName?: boolean
+    eventId?: boolean
+    occurredAt?: boolean
+    payload?: boolean
+    status?: boolean
+    attempts?: boolean
+    nextAttemptAt?: boolean
+    lockedUntil?: boolean
+    leaseToken?: boolean
+    sentAt?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["metaConversionEvent"]>
+
+  export type MetaConversionEventSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    eventName?: boolean
+    eventId?: boolean
+    occurredAt?: boolean
+    payload?: boolean
+    status?: boolean
+    attempts?: boolean
+    nextAttemptAt?: boolean
+    lockedUntil?: boolean
+    leaseToken?: boolean
+    sentAt?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["metaConversionEvent"]>
+
+  export type MetaConversionEventSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    eventName?: boolean
+    eventId?: boolean
+    occurredAt?: boolean
+    payload?: boolean
+    status?: boolean
+    attempts?: boolean
+    nextAttemptAt?: boolean
+    lockedUntil?: boolean
+    leaseToken?: boolean
+    sentAt?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["metaConversionEvent"]>
+
+  export type MetaConversionEventSelectScalar = {
+    id?: boolean
+    orderId?: boolean
+    eventName?: boolean
+    eventId?: boolean
+    occurredAt?: boolean
+    payload?: boolean
+    status?: boolean
+    attempts?: boolean
+    nextAttemptAt?: boolean
+    lockedUntil?: boolean
+    leaseToken?: boolean
+    sentAt?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+  }
+
+  export type MetaConversionEventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "eventName" | "eventId" | "occurredAt" | "payload" | "status" | "attempts" | "nextAttemptAt" | "lockedUntil" | "leaseToken" | "sentAt" | "lastError" | "createdAt", ExtArgs["result"]["metaConversionEvent"]>
+  export type MetaConversionEventInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+  export type MetaConversionEventIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+  export type MetaConversionEventIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+
+  export type $MetaConversionEventPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MetaConversionEvent"
+    objects: {
+      order: Prisma.$OrderPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orderId: string
+      eventName: string
+      eventId: string
+      occurredAt: Date
+      payload: Prisma.JsonValue
+      status: string
+      attempts: number
+      nextAttemptAt: Date
+      lockedUntil: Date | null
+      leaseToken: string | null
+      sentAt: Date | null
+      lastError: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["metaConversionEvent"]>
+    composites: {}
+  }
+
+  type MetaConversionEventGetPayload<S extends boolean | null | undefined | MetaConversionEventDefaultArgs> = $Result.GetResult<Prisma.$MetaConversionEventPayload, S>
+
+  type MetaConversionEventCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MetaConversionEventFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MetaConversionEventCountAggregateInputType | true
+    }
+
+  export interface MetaConversionEventDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MetaConversionEvent'], meta: { name: 'MetaConversionEvent' } }
+    /**
+     * Find zero or one MetaConversionEvent that matches the filter.
+     * @param {MetaConversionEventFindUniqueArgs} args - Arguments to find a MetaConversionEvent
+     * @example
+     * // Get one MetaConversionEvent
+     * const metaConversionEvent = await prisma.metaConversionEvent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MetaConversionEventFindUniqueArgs>(args: SelectSubset<T, MetaConversionEventFindUniqueArgs<ExtArgs>>): Prisma__MetaConversionEventClient<$Result.GetResult<Prisma.$MetaConversionEventPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one MetaConversionEvent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MetaConversionEventFindUniqueOrThrowArgs} args - Arguments to find a MetaConversionEvent
+     * @example
+     * // Get one MetaConversionEvent
+     * const metaConversionEvent = await prisma.metaConversionEvent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MetaConversionEventFindUniqueOrThrowArgs>(args: SelectSubset<T, MetaConversionEventFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MetaConversionEventClient<$Result.GetResult<Prisma.$MetaConversionEventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MetaConversionEvent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetaConversionEventFindFirstArgs} args - Arguments to find a MetaConversionEvent
+     * @example
+     * // Get one MetaConversionEvent
+     * const metaConversionEvent = await prisma.metaConversionEvent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MetaConversionEventFindFirstArgs>(args?: SelectSubset<T, MetaConversionEventFindFirstArgs<ExtArgs>>): Prisma__MetaConversionEventClient<$Result.GetResult<Prisma.$MetaConversionEventPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MetaConversionEvent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetaConversionEventFindFirstOrThrowArgs} args - Arguments to find a MetaConversionEvent
+     * @example
+     * // Get one MetaConversionEvent
+     * const metaConversionEvent = await prisma.metaConversionEvent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MetaConversionEventFindFirstOrThrowArgs>(args?: SelectSubset<T, MetaConversionEventFindFirstOrThrowArgs<ExtArgs>>): Prisma__MetaConversionEventClient<$Result.GetResult<Prisma.$MetaConversionEventPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more MetaConversionEvents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetaConversionEventFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MetaConversionEvents
+     * const metaConversionEvents = await prisma.metaConversionEvent.findMany()
+     * 
+     * // Get first 10 MetaConversionEvents
+     * const metaConversionEvents = await prisma.metaConversionEvent.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const metaConversionEventWithIdOnly = await prisma.metaConversionEvent.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MetaConversionEventFindManyArgs>(args?: SelectSubset<T, MetaConversionEventFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MetaConversionEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a MetaConversionEvent.
+     * @param {MetaConversionEventCreateArgs} args - Arguments to create a MetaConversionEvent.
+     * @example
+     * // Create one MetaConversionEvent
+     * const MetaConversionEvent = await prisma.metaConversionEvent.create({
+     *   data: {
+     *     // ... data to create a MetaConversionEvent
+     *   }
+     * })
+     * 
+     */
+    create<T extends MetaConversionEventCreateArgs>(args: SelectSubset<T, MetaConversionEventCreateArgs<ExtArgs>>): Prisma__MetaConversionEventClient<$Result.GetResult<Prisma.$MetaConversionEventPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many MetaConversionEvents.
+     * @param {MetaConversionEventCreateManyArgs} args - Arguments to create many MetaConversionEvents.
+     * @example
+     * // Create many MetaConversionEvents
+     * const metaConversionEvent = await prisma.metaConversionEvent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MetaConversionEventCreateManyArgs>(args?: SelectSubset<T, MetaConversionEventCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MetaConversionEvents and returns the data saved in the database.
+     * @param {MetaConversionEventCreateManyAndReturnArgs} args - Arguments to create many MetaConversionEvents.
+     * @example
+     * // Create many MetaConversionEvents
+     * const metaConversionEvent = await prisma.metaConversionEvent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MetaConversionEvents and only return the `id`
+     * const metaConversionEventWithIdOnly = await prisma.metaConversionEvent.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MetaConversionEventCreateManyAndReturnArgs>(args?: SelectSubset<T, MetaConversionEventCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MetaConversionEventPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a MetaConversionEvent.
+     * @param {MetaConversionEventDeleteArgs} args - Arguments to delete one MetaConversionEvent.
+     * @example
+     * // Delete one MetaConversionEvent
+     * const MetaConversionEvent = await prisma.metaConversionEvent.delete({
+     *   where: {
+     *     // ... filter to delete one MetaConversionEvent
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MetaConversionEventDeleteArgs>(args: SelectSubset<T, MetaConversionEventDeleteArgs<ExtArgs>>): Prisma__MetaConversionEventClient<$Result.GetResult<Prisma.$MetaConversionEventPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one MetaConversionEvent.
+     * @param {MetaConversionEventUpdateArgs} args - Arguments to update one MetaConversionEvent.
+     * @example
+     * // Update one MetaConversionEvent
+     * const metaConversionEvent = await prisma.metaConversionEvent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MetaConversionEventUpdateArgs>(args: SelectSubset<T, MetaConversionEventUpdateArgs<ExtArgs>>): Prisma__MetaConversionEventClient<$Result.GetResult<Prisma.$MetaConversionEventPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more MetaConversionEvents.
+     * @param {MetaConversionEventDeleteManyArgs} args - Arguments to filter MetaConversionEvents to delete.
+     * @example
+     * // Delete a few MetaConversionEvents
+     * const { count } = await prisma.metaConversionEvent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MetaConversionEventDeleteManyArgs>(args?: SelectSubset<T, MetaConversionEventDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MetaConversionEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetaConversionEventUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MetaConversionEvents
+     * const metaConversionEvent = await prisma.metaConversionEvent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MetaConversionEventUpdateManyArgs>(args: SelectSubset<T, MetaConversionEventUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MetaConversionEvents and returns the data updated in the database.
+     * @param {MetaConversionEventUpdateManyAndReturnArgs} args - Arguments to update many MetaConversionEvents.
+     * @example
+     * // Update many MetaConversionEvents
+     * const metaConversionEvent = await prisma.metaConversionEvent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more MetaConversionEvents and only return the `id`
+     * const metaConversionEventWithIdOnly = await prisma.metaConversionEvent.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MetaConversionEventUpdateManyAndReturnArgs>(args: SelectSubset<T, MetaConversionEventUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MetaConversionEventPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one MetaConversionEvent.
+     * @param {MetaConversionEventUpsertArgs} args - Arguments to update or create a MetaConversionEvent.
+     * @example
+     * // Update or create a MetaConversionEvent
+     * const metaConversionEvent = await prisma.metaConversionEvent.upsert({
+     *   create: {
+     *     // ... data to create a MetaConversionEvent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MetaConversionEvent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MetaConversionEventUpsertArgs>(args: SelectSubset<T, MetaConversionEventUpsertArgs<ExtArgs>>): Prisma__MetaConversionEventClient<$Result.GetResult<Prisma.$MetaConversionEventPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of MetaConversionEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetaConversionEventCountArgs} args - Arguments to filter MetaConversionEvents to count.
+     * @example
+     * // Count the number of MetaConversionEvents
+     * const count = await prisma.metaConversionEvent.count({
+     *   where: {
+     *     // ... the filter for the MetaConversionEvents we want to count
+     *   }
+     * })
+    **/
+    count<T extends MetaConversionEventCountArgs>(
+      args?: Subset<T, MetaConversionEventCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MetaConversionEventCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MetaConversionEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetaConversionEventAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MetaConversionEventAggregateArgs>(args: Subset<T, MetaConversionEventAggregateArgs>): Prisma.PrismaPromise<GetMetaConversionEventAggregateType<T>>
+
+    /**
+     * Group by MetaConversionEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MetaConversionEventGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MetaConversionEventGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MetaConversionEventGroupByArgs['orderBy'] }
+        : { orderBy?: MetaConversionEventGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MetaConversionEventGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMetaConversionEventGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MetaConversionEvent model
+   */
+  readonly fields: MetaConversionEventFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MetaConversionEvent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MetaConversionEventClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MetaConversionEvent model
+   */
+  interface MetaConversionEventFieldRefs {
+    readonly id: FieldRef<"MetaConversionEvent", 'String'>
+    readonly orderId: FieldRef<"MetaConversionEvent", 'String'>
+    readonly eventName: FieldRef<"MetaConversionEvent", 'String'>
+    readonly eventId: FieldRef<"MetaConversionEvent", 'String'>
+    readonly occurredAt: FieldRef<"MetaConversionEvent", 'DateTime'>
+    readonly payload: FieldRef<"MetaConversionEvent", 'Json'>
+    readonly status: FieldRef<"MetaConversionEvent", 'String'>
+    readonly attempts: FieldRef<"MetaConversionEvent", 'Int'>
+    readonly nextAttemptAt: FieldRef<"MetaConversionEvent", 'DateTime'>
+    readonly lockedUntil: FieldRef<"MetaConversionEvent", 'DateTime'>
+    readonly leaseToken: FieldRef<"MetaConversionEvent", 'String'>
+    readonly sentAt: FieldRef<"MetaConversionEvent", 'DateTime'>
+    readonly lastError: FieldRef<"MetaConversionEvent", 'String'>
+    readonly createdAt: FieldRef<"MetaConversionEvent", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MetaConversionEvent findUnique
+   */
+  export type MetaConversionEventFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventInclude<ExtArgs> | null
+    /**
+     * Filter, which MetaConversionEvent to fetch.
+     */
+    where: MetaConversionEventWhereUniqueInput
+  }
+
+  /**
+   * MetaConversionEvent findUniqueOrThrow
+   */
+  export type MetaConversionEventFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventInclude<ExtArgs> | null
+    /**
+     * Filter, which MetaConversionEvent to fetch.
+     */
+    where: MetaConversionEventWhereUniqueInput
+  }
+
+  /**
+   * MetaConversionEvent findFirst
+   */
+  export type MetaConversionEventFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventInclude<ExtArgs> | null
+    /**
+     * Filter, which MetaConversionEvent to fetch.
+     */
+    where?: MetaConversionEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MetaConversionEvents to fetch.
+     */
+    orderBy?: MetaConversionEventOrderByWithRelationInput | MetaConversionEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MetaConversionEvents.
+     */
+    cursor?: MetaConversionEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MetaConversionEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MetaConversionEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MetaConversionEvents.
+     */
+    distinct?: MetaConversionEventScalarFieldEnum | MetaConversionEventScalarFieldEnum[]
+  }
+
+  /**
+   * MetaConversionEvent findFirstOrThrow
+   */
+  export type MetaConversionEventFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventInclude<ExtArgs> | null
+    /**
+     * Filter, which MetaConversionEvent to fetch.
+     */
+    where?: MetaConversionEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MetaConversionEvents to fetch.
+     */
+    orderBy?: MetaConversionEventOrderByWithRelationInput | MetaConversionEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MetaConversionEvents.
+     */
+    cursor?: MetaConversionEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MetaConversionEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MetaConversionEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MetaConversionEvents.
+     */
+    distinct?: MetaConversionEventScalarFieldEnum | MetaConversionEventScalarFieldEnum[]
+  }
+
+  /**
+   * MetaConversionEvent findMany
+   */
+  export type MetaConversionEventFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventInclude<ExtArgs> | null
+    /**
+     * Filter, which MetaConversionEvents to fetch.
+     */
+    where?: MetaConversionEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MetaConversionEvents to fetch.
+     */
+    orderBy?: MetaConversionEventOrderByWithRelationInput | MetaConversionEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MetaConversionEvents.
+     */
+    cursor?: MetaConversionEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MetaConversionEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MetaConversionEvents.
+     */
+    skip?: number
+    distinct?: MetaConversionEventScalarFieldEnum | MetaConversionEventScalarFieldEnum[]
+  }
+
+  /**
+   * MetaConversionEvent create
+   */
+  export type MetaConversionEventCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventInclude<ExtArgs> | null
+    /**
+     * The data needed to create a MetaConversionEvent.
+     */
+    data: XOR<MetaConversionEventCreateInput, MetaConversionEventUncheckedCreateInput>
+  }
+
+  /**
+   * MetaConversionEvent createMany
+   */
+  export type MetaConversionEventCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MetaConversionEvents.
+     */
+    data: MetaConversionEventCreateManyInput | MetaConversionEventCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MetaConversionEvent createManyAndReturn
+   */
+  export type MetaConversionEventCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * The data used to create many MetaConversionEvents.
+     */
+    data: MetaConversionEventCreateManyInput | MetaConversionEventCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MetaConversionEvent update
+   */
+  export type MetaConversionEventUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventInclude<ExtArgs> | null
+    /**
+     * The data needed to update a MetaConversionEvent.
+     */
+    data: XOR<MetaConversionEventUpdateInput, MetaConversionEventUncheckedUpdateInput>
+    /**
+     * Choose, which MetaConversionEvent to update.
+     */
+    where: MetaConversionEventWhereUniqueInput
+  }
+
+  /**
+   * MetaConversionEvent updateMany
+   */
+  export type MetaConversionEventUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MetaConversionEvents.
+     */
+    data: XOR<MetaConversionEventUpdateManyMutationInput, MetaConversionEventUncheckedUpdateManyInput>
+    /**
+     * Filter which MetaConversionEvents to update
+     */
+    where?: MetaConversionEventWhereInput
+    /**
+     * Limit how many MetaConversionEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MetaConversionEvent updateManyAndReturn
+   */
+  export type MetaConversionEventUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * The data used to update MetaConversionEvents.
+     */
+    data: XOR<MetaConversionEventUpdateManyMutationInput, MetaConversionEventUncheckedUpdateManyInput>
+    /**
+     * Filter which MetaConversionEvents to update
+     */
+    where?: MetaConversionEventWhereInput
+    /**
+     * Limit how many MetaConversionEvents to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MetaConversionEvent upsert
+   */
+  export type MetaConversionEventUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventInclude<ExtArgs> | null
+    /**
+     * The filter to search for the MetaConversionEvent to update in case it exists.
+     */
+    where: MetaConversionEventWhereUniqueInput
+    /**
+     * In case the MetaConversionEvent found by the `where` argument doesn't exist, create a new MetaConversionEvent with this data.
+     */
+    create: XOR<MetaConversionEventCreateInput, MetaConversionEventUncheckedCreateInput>
+    /**
+     * In case the MetaConversionEvent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MetaConversionEventUpdateInput, MetaConversionEventUncheckedUpdateInput>
+  }
+
+  /**
+   * MetaConversionEvent delete
+   */
+  export type MetaConversionEventDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventInclude<ExtArgs> | null
+    /**
+     * Filter which MetaConversionEvent to delete.
+     */
+    where: MetaConversionEventWhereUniqueInput
+  }
+
+  /**
+   * MetaConversionEvent deleteMany
+   */
+  export type MetaConversionEventDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MetaConversionEvents to delete
+     */
+    where?: MetaConversionEventWhereInput
+    /**
+     * Limit how many MetaConversionEvents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * MetaConversionEvent without action
+   */
+  export type MetaConversionEventDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MetaConversionEvent
+     */
+    select?: MetaConversionEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MetaConversionEvent
+     */
+    omit?: MetaConversionEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MetaConversionEventInclude<ExtArgs> | null
   }
 
 
@@ -20831,6 +22186,8 @@ export namespace Prisma {
 
   export const OrderScalarFieldEnum: {
     id: 'id',
+    submissionId: 'submissionId',
+    attribution: 'attribution',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     returnedAt: 'returnedAt',
@@ -20858,6 +22215,26 @@ export namespace Prisma {
   };
 
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+  export const MetaConversionEventScalarFieldEnum: {
+    id: 'id',
+    orderId: 'orderId',
+    eventName: 'eventName',
+    eventId: 'eventId',
+    occurredAt: 'occurredAt',
+    payload: 'payload',
+    status: 'status',
+    attempts: 'attempts',
+    nextAttemptAt: 'nextAttemptAt',
+    lockedUntil: 'lockedUntil',
+    leaseToken: 'leaseToken',
+    sentAt: 'sentAt',
+    lastError: 'lastError',
+    createdAt: 'createdAt'
+  };
+
+  export type MetaConversionEventScalarFieldEnum = (typeof MetaConversionEventScalarFieldEnum)[keyof typeof MetaConversionEventScalarFieldEnum]
 
 
   export const OrderItemScalarFieldEnum: {
@@ -21094,6 +22471,13 @@ export namespace Prisma {
   export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
@@ -21198,6 +22582,20 @@ export namespace Prisma {
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -21352,20 +22750,6 @@ export namespace Prisma {
    * Reference to a field of type 'AlertSeverity[]'
    */
   export type ListEnumAlertSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AlertSeverity[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Json'
-   */
-  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-  /**
-   * Reference to a field of type 'QueryMode'
-   */
-  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
   /**
    * Deep Input Types
@@ -21572,6 +22956,8 @@ export namespace Prisma {
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
     id?: StringFilter<"Order"> | string
+    submissionId?: StringNullableFilter<"Order"> | string | null
+    attribution?: JsonNullableFilter<"Order">
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     returnedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -21596,6 +22982,7 @@ export namespace Prisma {
     notes?: StringNullableFilter<"Order"> | string | null
     remittanceId?: StringNullableFilter<"Order"> | string | null
     marketingCampaignId?: StringNullableFilter<"Order"> | string | null
+    metaEvents?: MetaConversionEventListRelationFilter
     remittance?: XOR<RemittanceNullableScalarRelationFilter, RemittanceWhereInput> | null
     stockMoveemnts?: StockMovementListRelationFilter
     marketingCampaign?: XOR<MarketingCampaignNullableScalarRelationFilter, MarketingCampaignWhereInput> | null
@@ -21604,6 +22991,8 @@ export namespace Prisma {
 
   export type OrderOrderByWithRelationInput = {
     id?: SortOrder
+    submissionId?: SortOrderInput | SortOrder
+    attribution?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     returnedAt?: SortOrderInput | SortOrder
@@ -21628,6 +23017,7 @@ export namespace Prisma {
     notes?: SortOrderInput | SortOrder
     remittanceId?: SortOrderInput | SortOrder
     marketingCampaignId?: SortOrderInput | SortOrder
+    metaEvents?: MetaConversionEventOrderByRelationAggregateInput
     remittance?: RemittanceOrderByWithRelationInput
     stockMoveemnts?: StockMovementOrderByRelationAggregateInput
     marketingCampaign?: MarketingCampaignOrderByWithRelationInput
@@ -21636,9 +23026,11 @@ export namespace Prisma {
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    submissionId?: string
     AND?: OrderWhereInput | OrderWhereInput[]
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
+    attribution?: JsonNullableFilter<"Order">
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     returnedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -21663,14 +23055,17 @@ export namespace Prisma {
     notes?: StringNullableFilter<"Order"> | string | null
     remittanceId?: StringNullableFilter<"Order"> | string | null
     marketingCampaignId?: StringNullableFilter<"Order"> | string | null
+    metaEvents?: MetaConversionEventListRelationFilter
     remittance?: XOR<RemittanceNullableScalarRelationFilter, RemittanceWhereInput> | null
     stockMoveemnts?: StockMovementListRelationFilter
     marketingCampaign?: XOR<MarketingCampaignNullableScalarRelationFilter, MarketingCampaignWhereInput> | null
     orderItems?: OrderItemListRelationFilter
-  }, "id">
+  }, "id" | "submissionId">
 
   export type OrderOrderByWithAggregationInput = {
     id?: SortOrder
+    submissionId?: SortOrderInput | SortOrder
+    attribution?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     returnedAt?: SortOrderInput | SortOrder
@@ -21707,6 +23102,8 @@ export namespace Prisma {
     OR?: OrderScalarWhereWithAggregatesInput[]
     NOT?: OrderScalarWhereWithAggregatesInput | OrderScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Order"> | string
+    submissionId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    attribution?: JsonNullableWithAggregatesFilter<"Order">
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     returnedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
@@ -21731,6 +23128,109 @@ export namespace Prisma {
     notes?: StringNullableWithAggregatesFilter<"Order"> | string | null
     remittanceId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     marketingCampaignId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+  }
+
+  export type MetaConversionEventWhereInput = {
+    AND?: MetaConversionEventWhereInput | MetaConversionEventWhereInput[]
+    OR?: MetaConversionEventWhereInput[]
+    NOT?: MetaConversionEventWhereInput | MetaConversionEventWhereInput[]
+    id?: StringFilter<"MetaConversionEvent"> | string
+    orderId?: StringFilter<"MetaConversionEvent"> | string
+    eventName?: StringFilter<"MetaConversionEvent"> | string
+    eventId?: StringFilter<"MetaConversionEvent"> | string
+    occurredAt?: DateTimeFilter<"MetaConversionEvent"> | Date | string
+    payload?: JsonFilter<"MetaConversionEvent">
+    status?: StringFilter<"MetaConversionEvent"> | string
+    attempts?: IntFilter<"MetaConversionEvent"> | number
+    nextAttemptAt?: DateTimeFilter<"MetaConversionEvent"> | Date | string
+    lockedUntil?: DateTimeNullableFilter<"MetaConversionEvent"> | Date | string | null
+    leaseToken?: StringNullableFilter<"MetaConversionEvent"> | string | null
+    sentAt?: DateTimeNullableFilter<"MetaConversionEvent"> | Date | string | null
+    lastError?: StringNullableFilter<"MetaConversionEvent"> | string | null
+    createdAt?: DateTimeFilter<"MetaConversionEvent"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+  }
+
+  export type MetaConversionEventOrderByWithRelationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    eventName?: SortOrder
+    eventId?: SortOrder
+    occurredAt?: SortOrder
+    payload?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    lockedUntil?: SortOrderInput | SortOrder
+    leaseToken?: SortOrderInput | SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    lastError?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    order?: OrderOrderByWithRelationInput
+  }
+
+  export type MetaConversionEventWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    eventId?: string
+    orderId_eventName?: MetaConversionEventOrderIdEventNameCompoundUniqueInput
+    AND?: MetaConversionEventWhereInput | MetaConversionEventWhereInput[]
+    OR?: MetaConversionEventWhereInput[]
+    NOT?: MetaConversionEventWhereInput | MetaConversionEventWhereInput[]
+    orderId?: StringFilter<"MetaConversionEvent"> | string
+    eventName?: StringFilter<"MetaConversionEvent"> | string
+    occurredAt?: DateTimeFilter<"MetaConversionEvent"> | Date | string
+    payload?: JsonFilter<"MetaConversionEvent">
+    status?: StringFilter<"MetaConversionEvent"> | string
+    attempts?: IntFilter<"MetaConversionEvent"> | number
+    nextAttemptAt?: DateTimeFilter<"MetaConversionEvent"> | Date | string
+    lockedUntil?: DateTimeNullableFilter<"MetaConversionEvent"> | Date | string | null
+    leaseToken?: StringNullableFilter<"MetaConversionEvent"> | string | null
+    sentAt?: DateTimeNullableFilter<"MetaConversionEvent"> | Date | string | null
+    lastError?: StringNullableFilter<"MetaConversionEvent"> | string | null
+    createdAt?: DateTimeFilter<"MetaConversionEvent"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+  }, "id" | "eventId" | "orderId_eventName">
+
+  export type MetaConversionEventOrderByWithAggregationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    eventName?: SortOrder
+    eventId?: SortOrder
+    occurredAt?: SortOrder
+    payload?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    lockedUntil?: SortOrderInput | SortOrder
+    leaseToken?: SortOrderInput | SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    lastError?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: MetaConversionEventCountOrderByAggregateInput
+    _avg?: MetaConversionEventAvgOrderByAggregateInput
+    _max?: MetaConversionEventMaxOrderByAggregateInput
+    _min?: MetaConversionEventMinOrderByAggregateInput
+    _sum?: MetaConversionEventSumOrderByAggregateInput
+  }
+
+  export type MetaConversionEventScalarWhereWithAggregatesInput = {
+    AND?: MetaConversionEventScalarWhereWithAggregatesInput | MetaConversionEventScalarWhereWithAggregatesInput[]
+    OR?: MetaConversionEventScalarWhereWithAggregatesInput[]
+    NOT?: MetaConversionEventScalarWhereWithAggregatesInput | MetaConversionEventScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"MetaConversionEvent"> | string
+    orderId?: StringWithAggregatesFilter<"MetaConversionEvent"> | string
+    eventName?: StringWithAggregatesFilter<"MetaConversionEvent"> | string
+    eventId?: StringWithAggregatesFilter<"MetaConversionEvent"> | string
+    occurredAt?: DateTimeWithAggregatesFilter<"MetaConversionEvent"> | Date | string
+    payload?: JsonWithAggregatesFilter<"MetaConversionEvent">
+    status?: StringWithAggregatesFilter<"MetaConversionEvent"> | string
+    attempts?: IntWithAggregatesFilter<"MetaConversionEvent"> | number
+    nextAttemptAt?: DateTimeWithAggregatesFilter<"MetaConversionEvent"> | Date | string
+    lockedUntil?: DateTimeNullableWithAggregatesFilter<"MetaConversionEvent"> | Date | string | null
+    leaseToken?: StringNullableWithAggregatesFilter<"MetaConversionEvent"> | string | null
+    sentAt?: DateTimeNullableWithAggregatesFilter<"MetaConversionEvent"> | Date | string | null
+    lastError?: StringNullableWithAggregatesFilter<"MetaConversionEvent"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"MetaConversionEvent"> | Date | string
   }
 
   export type OrderItemWhereInput = {
@@ -23080,6 +24580,8 @@ export namespace Prisma {
 
   export type OrderCreateInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -23102,6 +24604,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     paymentStatus?: $Enums.PaymentStatus
     notes?: string | null
+    metaEvents?: MetaConversionEventCreateNestedManyWithoutOrderInput
     remittance?: RemittanceCreateNestedOneWithoutOrdersInput
     stockMoveemnts?: StockMovementCreateNestedManyWithoutOrderInput
     marketingCampaign?: MarketingCampaignCreateNestedOneWithoutOrdersInput
@@ -23110,6 +24613,8 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -23134,12 +24639,15 @@ export namespace Prisma {
     notes?: string | null
     remittanceId?: string | null
     marketingCampaignId?: string | null
+    metaEvents?: MetaConversionEventUncheckedCreateNestedManyWithoutOrderInput
     stockMoveemnts?: StockMovementUncheckedCreateNestedManyWithoutOrderInput
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -23162,6 +24670,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    metaEvents?: MetaConversionEventUpdateManyWithoutOrderNestedInput
     remittance?: RemittanceUpdateOneWithoutOrdersNestedInput
     stockMoveemnts?: StockMovementUpdateManyWithoutOrderNestedInput
     marketingCampaign?: MarketingCampaignUpdateOneWithoutOrdersNestedInput
@@ -23170,6 +24679,8 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -23194,12 +24705,15 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     remittanceId?: NullableStringFieldUpdateOperationsInput | string | null
     marketingCampaignId?: NullableStringFieldUpdateOperationsInput | string | null
+    metaEvents?: MetaConversionEventUncheckedUpdateManyWithoutOrderNestedInput
     stockMoveemnts?: StockMovementUncheckedUpdateManyWithoutOrderNestedInput
     orderItems?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -23228,6 +24742,8 @@ export namespace Prisma {
 
   export type OrderUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -23254,6 +24770,8 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -23278,6 +24796,124 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     remittanceId?: NullableStringFieldUpdateOperationsInput | string | null
     marketingCampaignId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type MetaConversionEventCreateInput = {
+    id?: string
+    eventName: string
+    eventId: string
+    occurredAt: Date | string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: string
+    attempts?: number
+    nextAttemptAt?: Date | string
+    lockedUntil?: Date | string | null
+    leaseToken?: string | null
+    sentAt?: Date | string | null
+    lastError?: string | null
+    createdAt?: Date | string
+    order: OrderCreateNestedOneWithoutMetaEventsInput
+  }
+
+  export type MetaConversionEventUncheckedCreateInput = {
+    id?: string
+    orderId: string
+    eventName: string
+    eventId: string
+    occurredAt: Date | string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: string
+    attempts?: number
+    nextAttemptAt?: Date | string
+    lockedUntil?: Date | string | null
+    leaseToken?: string | null
+    sentAt?: Date | string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
+  export type MetaConversionEventUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventName?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    occurredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutMetaEventsNestedInput
+  }
+
+  export type MetaConversionEventUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    eventName?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    occurredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MetaConversionEventCreateManyInput = {
+    id?: string
+    orderId: string
+    eventName: string
+    eventId: string
+    occurredAt: Date | string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: string
+    attempts?: number
+    nextAttemptAt?: Date | string
+    lockedUntil?: Date | string | null
+    leaseToken?: string | null
+    sentAt?: Date | string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
+  export type MetaConversionEventUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventName?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    occurredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MetaConversionEventUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    eventName?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    occurredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderItemCreateInput = {
@@ -24960,6 +26596,29 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type FloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
@@ -24993,6 +26652,12 @@ export namespace Prisma {
     not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
   }
 
+  export type MetaConversionEventListRelationFilter = {
+    every?: MetaConversionEventWhereInput
+    some?: MetaConversionEventWhereInput
+    none?: MetaConversionEventWhereInput
+  }
+
   export type RemittanceNullableScalarRelationFilter = {
     is?: RemittanceWhereInput | null
     isNot?: RemittanceWhereInput | null
@@ -25015,6 +26680,10 @@ export namespace Prisma {
     none?: OrderItemWhereInput
   }
 
+  export type MetaConversionEventOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type StockMovementOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -25025,6 +26694,8 @@ export namespace Prisma {
 
   export type OrderCountOrderByAggregateInput = {
     id?: SortOrder
+    submissionId?: SortOrder
+    attribution?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     returnedAt?: SortOrder
@@ -25063,6 +26734,7 @@ export namespace Prisma {
 
   export type OrderMaxOrderByAggregateInput = {
     id?: SortOrder
+    submissionId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     returnedAt?: SortOrder
@@ -25091,6 +26763,7 @@ export namespace Prisma {
 
   export type OrderMinOrderByAggregateInput = {
     id?: SortOrder
+    submissionId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     returnedAt?: SortOrder
@@ -25125,6 +26798,32 @@ export namespace Prisma {
     productCost?: SortOrder
     shippingFee?: SortOrder
     additionalCosts?: SortOrder
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type FloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -25172,10 +26871,121 @@ export namespace Prisma {
     _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
     _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
   }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type OrderScalarRelationFilter = {
     is?: OrderWhereInput
     isNot?: OrderWhereInput
+  }
+
+  export type MetaConversionEventOrderIdEventNameCompoundUniqueInput = {
+    orderId: string
+    eventName: string
+  }
+
+  export type MetaConversionEventCountOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    eventName?: SortOrder
+    eventId?: SortOrder
+    occurredAt?: SortOrder
+    payload?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    lockedUntil?: SortOrder
+    leaseToken?: SortOrder
+    sentAt?: SortOrder
+    lastError?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MetaConversionEventAvgOrderByAggregateInput = {
+    attempts?: SortOrder
+  }
+
+  export type MetaConversionEventMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    eventName?: SortOrder
+    eventId?: SortOrder
+    occurredAt?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    lockedUntil?: SortOrder
+    leaseToken?: SortOrder
+    sentAt?: SortOrder
+    lastError?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MetaConversionEventMinOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    eventName?: SortOrder
+    eventId?: SortOrder
+    occurredAt?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    lockedUntil?: SortOrder
+    leaseToken?: SortOrder
+    sentAt?: SortOrder
+    lastError?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MetaConversionEventSumOrderByAggregateInput = {
+    attempts?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
   }
 
   export type OrderItemCountOrderByAggregateInput = {
@@ -25931,29 +27741,6 @@ export namespace Prisma {
     notIn?: $Enums.AlertSeverity[] | ListEnumAlertSeverityFieldRefInput<$PrismaModel>
     not?: NestedEnumAlertSeverityFilter<$PrismaModel> | $Enums.AlertSeverity
   }
-  export type JsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type AlertCountOrderByAggregateInput = {
     id?: SortOrder
@@ -26016,32 +27803,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAlertSeverityFilter<$PrismaModel>
     _max?: NestedEnumAlertSeverityFilter<$PrismaModel>
-  }
-  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedJsonNullableFilter<$PrismaModel>
-    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type WeeklyMetricSnapshotCountOrderByAggregateInput = {
@@ -26262,6 +28023,13 @@ export namespace Prisma {
     update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutStockMoveemntsInput, OrderUpdateWithoutStockMoveemntsInput>, OrderUncheckedUpdateWithoutStockMoveemntsInput>
   }
 
+  export type MetaConversionEventCreateNestedManyWithoutOrderInput = {
+    create?: XOR<MetaConversionEventCreateWithoutOrderInput, MetaConversionEventUncheckedCreateWithoutOrderInput> | MetaConversionEventCreateWithoutOrderInput[] | MetaConversionEventUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: MetaConversionEventCreateOrConnectWithoutOrderInput | MetaConversionEventCreateOrConnectWithoutOrderInput[]
+    createMany?: MetaConversionEventCreateManyOrderInputEnvelope
+    connect?: MetaConversionEventWhereUniqueInput | MetaConversionEventWhereUniqueInput[]
+  }
+
   export type RemittanceCreateNestedOneWithoutOrdersInput = {
     create?: XOR<RemittanceCreateWithoutOrdersInput, RemittanceUncheckedCreateWithoutOrdersInput>
     connectOrCreate?: RemittanceCreateOrConnectWithoutOrdersInput
@@ -26286,6 +28054,13 @@ export namespace Prisma {
     connectOrCreate?: OrderItemCreateOrConnectWithoutOrderInput | OrderItemCreateOrConnectWithoutOrderInput[]
     createMany?: OrderItemCreateManyOrderInputEnvelope
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+  }
+
+  export type MetaConversionEventUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<MetaConversionEventCreateWithoutOrderInput, MetaConversionEventUncheckedCreateWithoutOrderInput> | MetaConversionEventCreateWithoutOrderInput[] | MetaConversionEventUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: MetaConversionEventCreateOrConnectWithoutOrderInput | MetaConversionEventCreateOrConnectWithoutOrderInput[]
+    createMany?: MetaConversionEventCreateManyOrderInputEnvelope
+    connect?: MetaConversionEventWhereUniqueInput | MetaConversionEventWhereUniqueInput[]
   }
 
   export type StockMovementUncheckedCreateNestedManyWithoutOrderInput = {
@@ -26320,6 +28095,20 @@ export namespace Prisma {
 
   export type EnumPaymentStatusFieldUpdateOperationsInput = {
     set?: $Enums.PaymentStatus
+  }
+
+  export type MetaConversionEventUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<MetaConversionEventCreateWithoutOrderInput, MetaConversionEventUncheckedCreateWithoutOrderInput> | MetaConversionEventCreateWithoutOrderInput[] | MetaConversionEventUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: MetaConversionEventCreateOrConnectWithoutOrderInput | MetaConversionEventCreateOrConnectWithoutOrderInput[]
+    upsert?: MetaConversionEventUpsertWithWhereUniqueWithoutOrderInput | MetaConversionEventUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: MetaConversionEventCreateManyOrderInputEnvelope
+    set?: MetaConversionEventWhereUniqueInput | MetaConversionEventWhereUniqueInput[]
+    disconnect?: MetaConversionEventWhereUniqueInput | MetaConversionEventWhereUniqueInput[]
+    delete?: MetaConversionEventWhereUniqueInput | MetaConversionEventWhereUniqueInput[]
+    connect?: MetaConversionEventWhereUniqueInput | MetaConversionEventWhereUniqueInput[]
+    update?: MetaConversionEventUpdateWithWhereUniqueWithoutOrderInput | MetaConversionEventUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: MetaConversionEventUpdateManyWithWhereWithoutOrderInput | MetaConversionEventUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: MetaConversionEventScalarWhereInput | MetaConversionEventScalarWhereInput[]
   }
 
   export type RemittanceUpdateOneWithoutOrdersNestedInput = {
@@ -26370,6 +28159,20 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
+  export type MetaConversionEventUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<MetaConversionEventCreateWithoutOrderInput, MetaConversionEventUncheckedCreateWithoutOrderInput> | MetaConversionEventCreateWithoutOrderInput[] | MetaConversionEventUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: MetaConversionEventCreateOrConnectWithoutOrderInput | MetaConversionEventCreateOrConnectWithoutOrderInput[]
+    upsert?: MetaConversionEventUpsertWithWhereUniqueWithoutOrderInput | MetaConversionEventUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: MetaConversionEventCreateManyOrderInputEnvelope
+    set?: MetaConversionEventWhereUniqueInput | MetaConversionEventWhereUniqueInput[]
+    disconnect?: MetaConversionEventWhereUniqueInput | MetaConversionEventWhereUniqueInput[]
+    delete?: MetaConversionEventWhereUniqueInput | MetaConversionEventWhereUniqueInput[]
+    connect?: MetaConversionEventWhereUniqueInput | MetaConversionEventWhereUniqueInput[]
+    update?: MetaConversionEventUpdateWithWhereUniqueWithoutOrderInput | MetaConversionEventUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: MetaConversionEventUpdateManyWithWhereWithoutOrderInput | MetaConversionEventUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: MetaConversionEventScalarWhereInput | MetaConversionEventScalarWhereInput[]
+  }
+
   export type StockMovementUncheckedUpdateManyWithoutOrderNestedInput = {
     create?: XOR<StockMovementCreateWithoutOrderInput, StockMovementUncheckedCreateWithoutOrderInput> | StockMovementCreateWithoutOrderInput[] | StockMovementUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: StockMovementCreateOrConnectWithoutOrderInput | StockMovementCreateOrConnectWithoutOrderInput[]
@@ -26396,6 +28199,20 @@ export namespace Prisma {
     update?: OrderItemUpdateWithWhereUniqueWithoutOrderInput | OrderItemUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: OrderItemUpdateManyWithWhereWithoutOrderInput | OrderItemUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
+  }
+
+  export type OrderCreateNestedOneWithoutMetaEventsInput = {
+    create?: XOR<OrderCreateWithoutMetaEventsInput, OrderUncheckedCreateWithoutMetaEventsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutMetaEventsInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type OrderUpdateOneRequiredWithoutMetaEventsNestedInput = {
+    create?: XOR<OrderCreateWithoutMetaEventsInput, OrderUncheckedCreateWithoutMetaEventsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutMetaEventsInput
+    upsert?: OrderUpsertWithoutMetaEventsInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutMetaEventsInput, OrderUpdateWithoutMetaEventsInput>, OrderUncheckedUpdateWithoutMetaEventsInput>
   }
 
   export type OrderCreateNestedOneWithoutOrderItemsInput = {
@@ -27054,6 +28871,29 @@ export namespace Prisma {
     notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
@@ -27099,6 +28939,29 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
     _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
+  }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type NestedEnumExpenseTypeFilter<$PrismaModel = never> = {
@@ -27236,29 +29099,6 @@ export namespace Prisma {
     _min?: NestedEnumAlertSeverityFilter<$PrismaModel>
     _max?: NestedEnumAlertSeverityFilter<$PrismaModel>
   }
-  export type NestedJsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type InventoryOrderCreateWithoutStockInput = {
     id?: string
@@ -27361,6 +29201,8 @@ export namespace Prisma {
 
   export type OrderCreateWithoutStockMoveemntsInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -27383,6 +29225,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     paymentStatus?: $Enums.PaymentStatus
     notes?: string | null
+    metaEvents?: MetaConversionEventCreateNestedManyWithoutOrderInput
     remittance?: RemittanceCreateNestedOneWithoutOrdersInput
     marketingCampaign?: MarketingCampaignCreateNestedOneWithoutOrdersInput
     orderItems?: OrderItemCreateNestedManyWithoutOrderInput
@@ -27390,6 +29233,8 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateWithoutStockMoveemntsInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -27414,6 +29259,7 @@ export namespace Prisma {
     notes?: string | null
     remittanceId?: string | null
     marketingCampaignId?: string | null
+    metaEvents?: MetaConversionEventUncheckedCreateNestedManyWithoutOrderInput
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
   }
 
@@ -27435,6 +29281,8 @@ export namespace Prisma {
 
   export type OrderUpdateWithoutStockMoveemntsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27457,6 +29305,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    metaEvents?: MetaConversionEventUpdateManyWithoutOrderNestedInput
     remittance?: RemittanceUpdateOneWithoutOrdersNestedInput
     marketingCampaign?: MarketingCampaignUpdateOneWithoutOrdersNestedInput
     orderItems?: OrderItemUpdateManyWithoutOrderNestedInput
@@ -27464,6 +29313,8 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateWithoutStockMoveemntsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27488,7 +29339,50 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     remittanceId?: NullableStringFieldUpdateOperationsInput | string | null
     marketingCampaignId?: NullableStringFieldUpdateOperationsInput | string | null
+    metaEvents?: MetaConversionEventUncheckedUpdateManyWithoutOrderNestedInput
     orderItems?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
+  export type MetaConversionEventCreateWithoutOrderInput = {
+    id?: string
+    eventName: string
+    eventId: string
+    occurredAt: Date | string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: string
+    attempts?: number
+    nextAttemptAt?: Date | string
+    lockedUntil?: Date | string | null
+    leaseToken?: string | null
+    sentAt?: Date | string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
+  export type MetaConversionEventUncheckedCreateWithoutOrderInput = {
+    id?: string
+    eventName: string
+    eventId: string
+    occurredAt: Date | string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: string
+    attempts?: number
+    nextAttemptAt?: Date | string
+    lockedUntil?: Date | string | null
+    leaseToken?: string | null
+    sentAt?: Date | string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
+  export type MetaConversionEventCreateOrConnectWithoutOrderInput = {
+    where: MetaConversionEventWhereUniqueInput
+    create: XOR<MetaConversionEventCreateWithoutOrderInput, MetaConversionEventUncheckedCreateWithoutOrderInput>
+  }
+
+  export type MetaConversionEventCreateManyOrderInputEnvelope = {
+    data: MetaConversionEventCreateManyOrderInput | MetaConversionEventCreateManyOrderInput[]
+    skipDuplicates?: boolean
   }
 
   export type RemittanceCreateWithoutOrdersInput = {
@@ -27621,6 +29515,42 @@ export namespace Prisma {
   export type OrderItemCreateManyOrderInputEnvelope = {
     data: OrderItemCreateManyOrderInput | OrderItemCreateManyOrderInput[]
     skipDuplicates?: boolean
+  }
+
+  export type MetaConversionEventUpsertWithWhereUniqueWithoutOrderInput = {
+    where: MetaConversionEventWhereUniqueInput
+    update: XOR<MetaConversionEventUpdateWithoutOrderInput, MetaConversionEventUncheckedUpdateWithoutOrderInput>
+    create: XOR<MetaConversionEventCreateWithoutOrderInput, MetaConversionEventUncheckedCreateWithoutOrderInput>
+  }
+
+  export type MetaConversionEventUpdateWithWhereUniqueWithoutOrderInput = {
+    where: MetaConversionEventWhereUniqueInput
+    data: XOR<MetaConversionEventUpdateWithoutOrderInput, MetaConversionEventUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type MetaConversionEventUpdateManyWithWhereWithoutOrderInput = {
+    where: MetaConversionEventScalarWhereInput
+    data: XOR<MetaConversionEventUpdateManyMutationInput, MetaConversionEventUncheckedUpdateManyWithoutOrderInput>
+  }
+
+  export type MetaConversionEventScalarWhereInput = {
+    AND?: MetaConversionEventScalarWhereInput | MetaConversionEventScalarWhereInput[]
+    OR?: MetaConversionEventScalarWhereInput[]
+    NOT?: MetaConversionEventScalarWhereInput | MetaConversionEventScalarWhereInput[]
+    id?: StringFilter<"MetaConversionEvent"> | string
+    orderId?: StringFilter<"MetaConversionEvent"> | string
+    eventName?: StringFilter<"MetaConversionEvent"> | string
+    eventId?: StringFilter<"MetaConversionEvent"> | string
+    occurredAt?: DateTimeFilter<"MetaConversionEvent"> | Date | string
+    payload?: JsonFilter<"MetaConversionEvent">
+    status?: StringFilter<"MetaConversionEvent"> | string
+    attempts?: IntFilter<"MetaConversionEvent"> | number
+    nextAttemptAt?: DateTimeFilter<"MetaConversionEvent"> | Date | string
+    lockedUntil?: DateTimeNullableFilter<"MetaConversionEvent"> | Date | string | null
+    leaseToken?: StringNullableFilter<"MetaConversionEvent"> | string | null
+    sentAt?: DateTimeNullableFilter<"MetaConversionEvent"> | Date | string | null
+    lastError?: StringNullableFilter<"MetaConversionEvent"> | string | null
+    createdAt?: DateTimeFilter<"MetaConversionEvent"> | Date | string
   }
 
   export type RemittanceUpsertWithoutOrdersInput = {
@@ -27765,8 +29695,10 @@ export namespace Prisma {
     unitCost?: FloatFilter<"OrderItem"> | number
   }
 
-  export type OrderCreateWithoutOrderItemsInput = {
+  export type OrderCreateWithoutMetaEventsInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -27792,10 +29724,13 @@ export namespace Prisma {
     remittance?: RemittanceCreateNestedOneWithoutOrdersInput
     stockMoveemnts?: StockMovementCreateNestedManyWithoutOrderInput
     marketingCampaign?: MarketingCampaignCreateNestedOneWithoutOrdersInput
+    orderItems?: OrderItemCreateNestedManyWithoutOrderInput
   }
 
-  export type OrderUncheckedCreateWithoutOrderItemsInput = {
+  export type OrderUncheckedCreateWithoutMetaEventsInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -27821,26 +29756,29 @@ export namespace Prisma {
     remittanceId?: string | null
     marketingCampaignId?: string | null
     stockMoveemnts?: StockMovementUncheckedCreateNestedManyWithoutOrderInput
+    orderItems?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
   }
 
-  export type OrderCreateOrConnectWithoutOrderItemsInput = {
+  export type OrderCreateOrConnectWithoutMetaEventsInput = {
     where: OrderWhereUniqueInput
-    create: XOR<OrderCreateWithoutOrderItemsInput, OrderUncheckedCreateWithoutOrderItemsInput>
+    create: XOR<OrderCreateWithoutMetaEventsInput, OrderUncheckedCreateWithoutMetaEventsInput>
   }
 
-  export type OrderUpsertWithoutOrderItemsInput = {
-    update: XOR<OrderUpdateWithoutOrderItemsInput, OrderUncheckedUpdateWithoutOrderItemsInput>
-    create: XOR<OrderCreateWithoutOrderItemsInput, OrderUncheckedCreateWithoutOrderItemsInput>
+  export type OrderUpsertWithoutMetaEventsInput = {
+    update: XOR<OrderUpdateWithoutMetaEventsInput, OrderUncheckedUpdateWithoutMetaEventsInput>
+    create: XOR<OrderCreateWithoutMetaEventsInput, OrderUncheckedCreateWithoutMetaEventsInput>
     where?: OrderWhereInput
   }
 
-  export type OrderUpdateToOneWithWhereWithoutOrderItemsInput = {
+  export type OrderUpdateToOneWithWhereWithoutMetaEventsInput = {
     where?: OrderWhereInput
-    data: XOR<OrderUpdateWithoutOrderItemsInput, OrderUncheckedUpdateWithoutOrderItemsInput>
+    data: XOR<OrderUpdateWithoutMetaEventsInput, OrderUncheckedUpdateWithoutMetaEventsInput>
   }
 
-  export type OrderUpdateWithoutOrderItemsInput = {
+  export type OrderUpdateWithoutMetaEventsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27866,10 +29804,13 @@ export namespace Prisma {
     remittance?: RemittanceUpdateOneWithoutOrdersNestedInput
     stockMoveemnts?: StockMovementUpdateManyWithoutOrderNestedInput
     marketingCampaign?: MarketingCampaignUpdateOneWithoutOrdersNestedInput
+    orderItems?: OrderItemUpdateManyWithoutOrderNestedInput
   }
 
-  export type OrderUncheckedUpdateWithoutOrderItemsInput = {
+  export type OrderUncheckedUpdateWithoutMetaEventsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27895,10 +29836,13 @@ export namespace Prisma {
     remittanceId?: NullableStringFieldUpdateOperationsInput | string | null
     marketingCampaignId?: NullableStringFieldUpdateOperationsInput | string | null
     stockMoveemnts?: StockMovementUncheckedUpdateManyWithoutOrderNestedInput
+    orderItems?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   }
 
-  export type OrderCreateWithoutRemittanceInput = {
+  export type OrderCreateWithoutOrderItemsInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -27921,6 +29865,151 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     paymentStatus?: $Enums.PaymentStatus
     notes?: string | null
+    metaEvents?: MetaConversionEventCreateNestedManyWithoutOrderInput
+    remittance?: RemittanceCreateNestedOneWithoutOrdersInput
+    stockMoveemnts?: StockMovementCreateNestedManyWithoutOrderInput
+    marketingCampaign?: MarketingCampaignCreateNestedOneWithoutOrdersInput
+  }
+
+  export type OrderUncheckedCreateWithoutOrderItemsInput = {
+    id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    returnedAt?: Date | string | null
+    followUpAt?: Date | string | null
+    customerName: string
+    customerPhone: string
+    city?: string | null
+    address?: string | null
+    productId?: string | null
+    productTitle?: string | null
+    comboDetails?: string | null
+    quantity?: number
+    expectedPrice?: number
+    cashCollected?: number | null
+    actualPaidPrice?: number | null
+    productCost?: number
+    shippingFee?: number
+    additionalCosts?: number
+    type?: $Enums.OrderType
+    status?: $Enums.OrderStatus
+    paymentStatus?: $Enums.PaymentStatus
+    notes?: string | null
+    remittanceId?: string | null
+    marketingCampaignId?: string | null
+    metaEvents?: MetaConversionEventUncheckedCreateNestedManyWithoutOrderInput
+    stockMoveemnts?: StockMovementUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutOrderItemsInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutOrderItemsInput, OrderUncheckedCreateWithoutOrderItemsInput>
+  }
+
+  export type OrderUpsertWithoutOrderItemsInput = {
+    update: XOR<OrderUpdateWithoutOrderItemsInput, OrderUncheckedUpdateWithoutOrderItemsInput>
+    create: XOR<OrderCreateWithoutOrderItemsInput, OrderUncheckedCreateWithoutOrderItemsInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutOrderItemsInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutOrderItemsInput, OrderUncheckedUpdateWithoutOrderItemsInput>
+  }
+
+  export type OrderUpdateWithoutOrderItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    followUpAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customerName?: StringFieldUpdateOperationsInput | string
+    customerPhone?: StringFieldUpdateOperationsInput | string
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    productTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    comboDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    expectedPrice?: FloatFieldUpdateOperationsInput | number
+    cashCollected?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualPaidPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    productCost?: FloatFieldUpdateOperationsInput | number
+    shippingFee?: FloatFieldUpdateOperationsInput | number
+    additionalCosts?: FloatFieldUpdateOperationsInput | number
+    type?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    metaEvents?: MetaConversionEventUpdateManyWithoutOrderNestedInput
+    remittance?: RemittanceUpdateOneWithoutOrdersNestedInput
+    stockMoveemnts?: StockMovementUpdateManyWithoutOrderNestedInput
+    marketingCampaign?: MarketingCampaignUpdateOneWithoutOrdersNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutOrderItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    followUpAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customerName?: StringFieldUpdateOperationsInput | string
+    customerPhone?: StringFieldUpdateOperationsInput | string
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    productTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    comboDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    expectedPrice?: FloatFieldUpdateOperationsInput | number
+    cashCollected?: NullableFloatFieldUpdateOperationsInput | number | null
+    actualPaidPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    productCost?: FloatFieldUpdateOperationsInput | number
+    shippingFee?: FloatFieldUpdateOperationsInput | number
+    additionalCosts?: FloatFieldUpdateOperationsInput | number
+    type?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    remittanceId?: NullableStringFieldUpdateOperationsInput | string | null
+    marketingCampaignId?: NullableStringFieldUpdateOperationsInput | string | null
+    metaEvents?: MetaConversionEventUncheckedUpdateManyWithoutOrderNestedInput
+    stockMoveemnts?: StockMovementUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderCreateWithoutRemittanceInput = {
+    id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    returnedAt?: Date | string | null
+    followUpAt?: Date | string | null
+    customerName: string
+    customerPhone: string
+    city?: string | null
+    address?: string | null
+    productId?: string | null
+    productTitle?: string | null
+    comboDetails?: string | null
+    quantity?: number
+    expectedPrice?: number
+    cashCollected?: number | null
+    actualPaidPrice?: number | null
+    productCost?: number
+    shippingFee?: number
+    additionalCosts?: number
+    type?: $Enums.OrderType
+    status?: $Enums.OrderStatus
+    paymentStatus?: $Enums.PaymentStatus
+    notes?: string | null
+    metaEvents?: MetaConversionEventCreateNestedManyWithoutOrderInput
     stockMoveemnts?: StockMovementCreateNestedManyWithoutOrderInput
     marketingCampaign?: MarketingCampaignCreateNestedOneWithoutOrdersInput
     orderItems?: OrderItemCreateNestedManyWithoutOrderInput
@@ -27928,6 +30017,8 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateWithoutRemittanceInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -27951,6 +30042,7 @@ export namespace Prisma {
     paymentStatus?: $Enums.PaymentStatus
     notes?: string | null
     marketingCampaignId?: string | null
+    metaEvents?: MetaConversionEventUncheckedCreateNestedManyWithoutOrderInput
     stockMoveemnts?: StockMovementUncheckedCreateNestedManyWithoutOrderInput
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
   }
@@ -28016,6 +30108,8 @@ export namespace Prisma {
     OR?: OrderScalarWhereInput[]
     NOT?: OrderScalarWhereInput | OrderScalarWhereInput[]
     id?: StringFilter<"Order"> | string
+    submissionId?: StringNullableFilter<"Order"> | string | null
+    attribution?: JsonNullableFilter<"Order">
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     returnedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -28577,6 +30671,8 @@ export namespace Prisma {
 
   export type OrderCreateWithoutMarketingCampaignInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -28599,6 +30695,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     paymentStatus?: $Enums.PaymentStatus
     notes?: string | null
+    metaEvents?: MetaConversionEventCreateNestedManyWithoutOrderInput
     remittance?: RemittanceCreateNestedOneWithoutOrdersInput
     stockMoveemnts?: StockMovementCreateNestedManyWithoutOrderInput
     orderItems?: OrderItemCreateNestedManyWithoutOrderInput
@@ -28606,6 +30703,8 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateWithoutMarketingCampaignInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -28629,6 +30728,7 @@ export namespace Prisma {
     paymentStatus?: $Enums.PaymentStatus
     notes?: string | null
     remittanceId?: string | null
+    metaEvents?: MetaConversionEventUncheckedCreateNestedManyWithoutOrderInput
     stockMoveemnts?: StockMovementUncheckedCreateNestedManyWithoutOrderInput
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
   }
@@ -28900,6 +31000,22 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type MetaConversionEventCreateManyOrderInput = {
+    id?: string
+    eventName: string
+    eventId: string
+    occurredAt: Date | string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: string
+    attempts?: number
+    nextAttemptAt?: Date | string
+    lockedUntil?: Date | string | null
+    leaseToken?: string | null
+    sentAt?: Date | string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
   export type StockMovementCreateManyOrderInput = {
     id?: string
     createdAt?: Date | string
@@ -28920,6 +31036,54 @@ export namespace Prisma {
     quantity: number
     unitPrice: number
     unitCost?: number
+  }
+
+  export type MetaConversionEventUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventName?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    occurredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MetaConversionEventUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventName?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    occurredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MetaConversionEventUncheckedUpdateManyWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventName?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    occurredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StockMovementUpdateWithoutOrderInput = {
@@ -28990,6 +31154,8 @@ export namespace Prisma {
 
   export type OrderCreateManyRemittanceInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -29026,6 +31192,8 @@ export namespace Prisma {
 
   export type OrderUpdateWithoutRemittanceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29048,6 +31216,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    metaEvents?: MetaConversionEventUpdateManyWithoutOrderNestedInput
     stockMoveemnts?: StockMovementUpdateManyWithoutOrderNestedInput
     marketingCampaign?: MarketingCampaignUpdateOneWithoutOrdersNestedInput
     orderItems?: OrderItemUpdateManyWithoutOrderNestedInput
@@ -29055,6 +31224,8 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateWithoutRemittanceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29078,12 +31249,15 @@ export namespace Prisma {
     paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     marketingCampaignId?: NullableStringFieldUpdateOperationsInput | string | null
+    metaEvents?: MetaConversionEventUncheckedUpdateManyWithoutOrderNestedInput
     stockMoveemnts?: StockMovementUncheckedUpdateManyWithoutOrderNestedInput
     orderItems?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutRemittanceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29140,6 +31314,8 @@ export namespace Prisma {
 
   export type OrderCreateManyMarketingCampaignInput = {
     id?: string
+    submissionId?: string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -29176,6 +31352,8 @@ export namespace Prisma {
 
   export type OrderUpdateWithoutMarketingCampaignInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29198,6 +31376,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    metaEvents?: MetaConversionEventUpdateManyWithoutOrderNestedInput
     remittance?: RemittanceUpdateOneWithoutOrdersNestedInput
     stockMoveemnts?: StockMovementUpdateManyWithoutOrderNestedInput
     orderItems?: OrderItemUpdateManyWithoutOrderNestedInput
@@ -29205,6 +31384,8 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateWithoutMarketingCampaignInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29228,12 +31409,15 @@ export namespace Prisma {
     paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     remittanceId?: NullableStringFieldUpdateOperationsInput | string | null
+    metaEvents?: MetaConversionEventUncheckedUpdateManyWithoutOrderNestedInput
     stockMoveemnts?: StockMovementUncheckedUpdateManyWithoutOrderNestedInput
     orderItems?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutMarketingCampaignInput = {
     id?: StringFieldUpdateOperationsInput | string
+    submissionId?: NullableStringFieldUpdateOperationsInput | string | null
+    attribution?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

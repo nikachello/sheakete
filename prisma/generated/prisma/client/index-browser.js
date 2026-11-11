@@ -155,6 +155,8 @@ exports.Prisma.StockMovementScalarFieldEnum = {
 
 exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
+  submissionId: 'submissionId',
+  attribution: 'attribution',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   returnedAt: 'returnedAt',
@@ -179,6 +181,23 @@ exports.Prisma.OrderScalarFieldEnum = {
   notes: 'notes',
   remittanceId: 'remittanceId',
   marketingCampaignId: 'marketingCampaignId'
+};
+
+exports.Prisma.MetaConversionEventScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  eventName: 'eventName',
+  eventId: 'eventId',
+  occurredAt: 'occurredAt',
+  payload: 'payload',
+  status: 'status',
+  attempts: 'attempts',
+  nextAttemptAt: 'nextAttemptAt',
+  lockedUntil: 'lockedUntil',
+  leaseToken: 'leaseToken',
+  sentAt: 'sentAt',
+  lastError: 'lastError',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.OrderItemScalarFieldEnum = {
@@ -373,6 +392,10 @@ exports.Prisma.NullableJsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -481,6 +504,7 @@ exports.Prisma.ModelName = {
   Stock: 'Stock',
   StockMovement: 'StockMovement',
   Order: 'Order',
+  MetaConversionEvent: 'MetaConversionEvent',
   OrderItem: 'OrderItem',
   Remittance: 'Remittance',
   Expense: 'Expense',

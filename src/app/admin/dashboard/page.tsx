@@ -4,7 +4,7 @@ import { getCurrentBankBalance } from "@/actions/admin/financials-actions";
 import { getLowStockAlerts } from "@/actions/admin/stock-actions";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Order } from "prisma/generated/prisma/client";
+import { Order } from "@prisma-client";
 
 export const dynamic = "force-dynamic";
 

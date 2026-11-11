@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState, useMemo } from "react";
-import { Order } from "prisma/generated/prisma/client";
+import { Order } from "@prisma-client";
 import {
   Search,
   SlidersHorizontal,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ExpenseType } from "prisma/generated/prisma/client";
+import { ExpenseType } from "@prisma-client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

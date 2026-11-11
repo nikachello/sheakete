@@ -7,7 +7,7 @@ import {
 } from "@/types/dashboard";
 import { formatCurrency, formatNumber } from "../formatters";
 import { OrderActivity } from "@/types/order";
-import { OrderStatus, PaymentStatus } from "prisma/generated/prisma/client";
+import { OrderStatus, PaymentStatus } from "@prisma-client";
 
 export function mapOrderToActivityMessage(
   status: OrderStatus,

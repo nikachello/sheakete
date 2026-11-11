@@ -12,7 +12,7 @@ import {
   OrderStatus,
   OrderType,
   PaymentStatus,
-} from "prisma/generated/prisma/client";
+} from "@prisma-client";
 import z from "zod";
 
 type FieldError = {

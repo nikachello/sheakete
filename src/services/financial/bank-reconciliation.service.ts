@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { BankReconciliation } from "@/types/financial.types";
-import { BankTransactionType } from "prisma/generated/prisma/client";
+import { BankTransactionType } from "@prisma-client";
 
 export class BankReconciliationService {
   /**

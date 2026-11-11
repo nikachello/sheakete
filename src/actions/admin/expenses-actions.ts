@@ -9,7 +9,7 @@ import {
   BankTransactionType,
   ExpenseType,
   FounderLoanType,
-} from "prisma/generated/prisma/client";
+} from "@prisma-client";
 
 const expenseRepo = new ExpenseRepository();
 
