@@ -8,11 +8,13 @@ import {
   Package,
   Users,
   Menu,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 const menuItems = [
+  { label: "Meta tracking", icon: Activity, href: "/admin/tracking" },
   { label: "მთავარი", icon: LayoutDashboard, href: "/admin/dashboard" },
   { label: "ლიდები", icon: Users, href: "/admin/leads", badge: 5 },
   { label: "შეკვეთები", icon: ShoppingCart, href: "/admin/orders" },
