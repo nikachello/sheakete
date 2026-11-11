@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { client } from "@/lib/sanity.client";
 import { createLeadSchema } from "@/validations/lead.validation";
 import { TRACKING_PREFERENCE_COOKIE, SESSION_COOKIE, cleanUrl } from "@/lib/meta/shared";
-import { normalizePhone } from "@/lib/meta/payload";
+import { captureWebsiteContext, normalizePhone } from "@/lib/meta/payload";
 import { enqueueConversion, scheduleConversions } from "@/lib/meta/outbox";
 
 interface ProductOffer {
@@ -46,7 +46,7 @@ export async function createLead(rawData: unknown) {
     const trackingAllowed = process.env.NEXT_PUBLIC_META_ENABLED === "true" &&
       cookieStore.get(TRACKING_PREFERENCE_COOKIE)?.value !== "denied" && !!input.attribution &&
       cookieStore.get(SESSION_COOKIE)?.value === input.attribution.sessionId;
-    const attribution = trackingAllowed && site && new URL(input.attribution!.landingUrl).origin === site
+    const attributionBase = trackingAllowed && site && new URL(input.attribution!.landingUrl).origin === site
       ? { ...input.attribution!, landingUrl: cleanUrl(input.attribution!.landingUrl)!, referrer: cleanUrl(input.attribution!.referrer ?? "") }
       : undefined;
     const forwardedIp = process.env.META_TRUST_PROXY_HEADERS === "true"
@@ -56,6 +56,7 @@ export async function createLead(rawData: unknown) {
       userAgent: requestHeaders.get("user-agent")?.slice(0, 1000),
       ip: forwardedIp && isIP(forwardedIp) ? forwardedIp : undefined,
     } : undefined;
+    const attribution = captureWebsiteContext(attributionBase, browser);
     const result = await prisma.$transaction(async (tx) => {
       const existing = await tx.order.findUnique({ where: { submissionId: input.submissionId } });
       if (existing) {

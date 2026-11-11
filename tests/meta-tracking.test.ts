@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Prisma, type MetaConversionEvent } from "../prisma/generated/prisma/client";
-import { buildConversion, normalizePhone, hashIdentifier, eventExpired } from "../src/lib/meta/payload";
+import { buildConversion, captureWebsiteContext, normalizePhone, hashIdentifier, eventExpired } from "../src/lib/meta/payload";
 import { createLeadSchema } from "../src/validations/lead.validation";
 import { cleanUrl, attributionSchema } from "../src/lib/meta/shared";
 import { TRACKING_PREFERENCE_COOKIE, SESSION_COOKIE } from "../src/lib/meta/shared";
@@ -57,7 +57,7 @@ test("lead matching hashes phone; browser/server copies have a stable event ID",
   assert.ok(!JSON.stringify(lead).includes(order.customerPhone));
 });
 
-test("purchase uses confirmed bundle total once and excludes staff browser information", () => {
+test("historical purchase keeps its classification and excludes staff browser information", () => {
   const purchase = buildConversion(order, "Purchase", new Date(), { sourceUrl: "https://shop.example/admin", userAgent: "Staff", ip: "203.0.113.2" })!;
   assert.equal(purchase.custom_data.value, 50); // Not 50 * quantity, and not profit.
   assert.equal(purchase.custom_data.currency, "GEL");
@@ -66,6 +66,30 @@ test("purchase uses confirmed bundle total once and excludes staff browser infor
   assert.equal(purchase.user_data.client_user_agent, undefined);
   assert.equal(purchase.user_data.client_ip_address, undefined);
   assert.throws(() => buildConversion({ ...order, expectedPrice: 0 }, "Purchase", new Date()));
+});
+
+test("new confirmed website purchase reuses original customer context and full order total", () => {
+  const customer = { sourceUrl: "https://shop.example/product/tool", userAgent: "Original customer browser", ip: "203.0.113.1" };
+  const saved = captureWebsiteContext(attributionSchema.parse(attribution), customer);
+  const purchase = buildConversion({ ...order, attribution: saved }, "Purchase", new Date(), {
+    sourceUrl: "https://shop.example/admin", userAgent: "Manager browser", ip: "203.0.113.2",
+  })!;
+  assert.equal(purchase.action_source, "website");
+  assert.equal(purchase.event_source_url, customer.sourceUrl);
+  assert.equal(purchase.user_data.client_user_agent, customer.userAgent);
+  assert.equal(purchase.user_data.client_ip_address, customer.ip);
+  assert.equal(purchase.custom_data.value, 50);
+  assert.equal(purchase.event_id, `purchase_${order.id}`);
+});
+
+test("browser context supplied by the client cannot replace server-captured context", () => {
+  const parsed = attributionSchema.parse(attribution);
+  const untrusted = { ...parsed, websiteContext: { sourceUrl: "https://untrusted.example", userAgent: "Forged browser" } };
+  const captured = captureWebsiteContext(untrusted, { sourceUrl: "https://shop.example/product/tool", userAgent: "Real request browser" })!;
+  assert.equal(captured.websiteContext?.userAgent, "Real request browser");
+  assert.equal(captured.websiteContext?.sourceUrl, "https://shop.example/product/tool");
+  assert.equal(captureWebsiteContext(untrusted, undefined)?.websiteContext, undefined);
+  assert.equal(captureWebsiteContext(undefined, { sourceUrl: "https://shop.example", userAgent: "Browser" }), undefined);
 });
 
 test("missing attribution suppresses conversions; delivery time is independent of click/lead age", () => {

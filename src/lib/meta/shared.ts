@@ -20,6 +20,12 @@ const attributionDetails = z.object({
   ad_id: z.string().max(100).optional(),
   fbc: z.string().regex(/^fb\.\d+\.\d+\.[A-Za-z0-9_-]+$/).max(500).optional(),
   fbp: z.string().regex(/^fb\.\d+\.\d+\.\d+$/).max(200).optional(),
+  // Captured by the server at lead submission, not from the manager's request.
+  websiteContext: z.object({
+    sourceUrl: z.string().url().max(1000),
+    userAgent: z.string().min(1).max(1000),
+    ip: z.union([z.ipv4(), z.ipv6()]).optional(),
+  }).optional(),
 });
 
 export const attributionSchema = z.union([

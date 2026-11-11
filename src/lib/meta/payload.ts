@@ -1,5 +1,22 @@
 import { createHash } from "node:crypto";
-import { attributionSchema } from "./shared";
+import { attributionSchema, type Attribution } from "./shared";
+
+export interface BrowserContext {
+  userAgent?: string;
+  ip?: string;
+  sourceUrl: string;
+}
+
+export function captureWebsiteContext(attribution: Attribution | undefined, browser: BrowserContext | undefined): Attribution | undefined {
+  if (!attribution) return;
+  const captured = { ...attribution };
+  // Discard any context supplied by the client; only request headers/canonical URL count.
+  delete captured.websiteContext;
+  if (browser?.userAgent) {
+    captured.websiteContext = { sourceUrl: browser.sourceUrl, userAgent: browser.userAgent, ...(browser.ip ? { ip: browser.ip } : {}) };
+  }
+  return captured;
+}
 
 export type ConversionName = "Lead" | "Purchase";
 export interface ConversionOrder {
@@ -51,12 +68,16 @@ export function buildConversion(
   order: ConversionOrder,
   name: ConversionName,
   occurredAt: Date,
-  browser?: { userAgent?: string; ip?: string; sourceUrl: string },
+  browser?: BrowserContext,
 ): MetaEventPayload | null {
   const result = attributionSchema.safeParse(order.attribution);
   if (!result.success) return null;
   const attribution = result.data;
   if (name === "Lead" && !browser?.sourceUrl) return null;
+  // New online orders retain the customer's original browser context. Historical
+  // orders without that context keep their original phone-call classification.
+  const customerBrowser = name === "Lead" ? browser : attribution.websiteContext;
+  const websiteEvent = name === "Lead" || !!attribution.websiteContext;
   if (name === "Purchase" && (!Number.isFinite(order.expectedPrice) || order.expectedPrice <= 0)) {
     throw new Error("A confirmed purchase requires a positive final order total");
   }
@@ -64,15 +85,15 @@ export function buildConversion(
     event_name: name,
     event_id: `${name.toLowerCase()}_${order.id}`,
     event_time: Math.floor(occurredAt.getTime() / 1000),
-    action_source: name === "Lead" ? "website" : "phone_call",
-    ...(name === "Lead" ? { event_source_url: browser!.sourceUrl } : {}),
+    action_source: websiteEvent ? "website" : "phone_call",
+    ...(websiteEvent ? { event_source_url: customerBrowser!.sourceUrl } : {}),
     user_data: {
       ph: [hashIdentifier(normalizePhone(order.customerPhone).slice(1))],
       external_id: [hashIdentifier(order.id)],
       ...(attribution.fbc ? { fbc: attribution.fbc } : {}),
       ...(attribution.fbp ? { fbp: attribution.fbp } : {}),
-      ...(name === "Lead" && browser?.userAgent ? { client_user_agent: browser.userAgent } : {}),
-      ...(name === "Lead" && browser?.ip ? { client_ip_address: browser.ip } : {}),
+      ...(websiteEvent && customerBrowser?.userAgent ? { client_user_agent: customerBrowser.userAgent } : {}),
+      ...(websiteEvent && customerBrowser?.ip ? { client_ip_address: customerBrowser.ip } : {}),
     },
     custom_data: {
       currency: "GEL",
