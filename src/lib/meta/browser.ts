@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  ATTRIBUTION_KEY, CONSENT_COOKIE, CONSENT_EVENT, SESSION_COOKIE,
+  ATTRIBUTION_KEY, TRACKING_PREFERENCE_COOKIE, TRACKING_EVENT, SESSION_COOKIE,
   attributionSchema, cleanUrl, publicMetaEnabled, type Attribution,
 } from "./shared";
-import { withdrawMarketingConsent } from "@/actions/public/tracking-actions";
+import { optOutOfMarketing } from "@/actions/public/tracking-actions";
 
 type Pixel = ((...args: unknown[]) => void) & {
   callMethod?: (...args: unknown[]) => void;
@@ -31,37 +31,37 @@ function writeCookie(name: string, value: string, maxAge = 60 * 60 * 24 * 90) {
   document.cookie = `${name}=${value}; Path=/; Max-Age=${maxAge}; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
 }
 
-export function consentSnapshot() {
-  return readCookie(CONSENT_COOKIE) ?? "unknown";
+export function trackingSnapshot() {
+  return readCookie(TRACKING_PREFERENCE_COOKIE) === "denied" ? "disabled" : "enabled";
 }
 
-export function subscribeConsent(callback: () => void) {
-  window.addEventListener(CONSENT_EVENT, callback);
+export function subscribeTracking(callback: () => void) {
+  window.addEventListener(TRACKING_EVENT, callback);
   window.addEventListener("storage", callback);
   return () => {
-    window.removeEventListener(CONSENT_EVENT, callback);
+    window.removeEventListener(TRACKING_EVENT, callback);
     window.removeEventListener("storage", callback);
   };
 }
 
-export async function setMarketingConsent(granted: boolean) {
-  writeCookie(CONSENT_COOKIE, granted ? "granted" : "denied");
-  if (!granted) {
+export async function setTrackingEnabled(enabled: boolean) {
+  writeCookie(TRACKING_PREFERENCE_COOKIE, enabled ? "enabled" : "denied");
+  if (!enabled) {
     window.fbq?.("consent", "revoke");
     try { sessionStorage.removeItem(ATTRIBUTION_KEY); } catch { /* Storage may be unavailable. */ }
     writeCookie("_fbc", "", 0);
     writeCookie("_fbp", "", 0);
     // Suppress pending server events too. Already-sent events cannot be unsent here.
-    await withdrawMarketingConsent();
+    await optOutOfMarketing();
     location.reload();
     return;
   }
   if (!readCookie(SESSION_COOKIE)) writeCookie(SESSION_COOKIE, crypto.randomUUID());
-  window.dispatchEvent(new Event(CONSENT_EVENT));
+  window.dispatchEvent(new Event(TRACKING_EVENT));
 }
 
 export function getAttribution(): Attribution | undefined {
-  if (!publicMetaEnabled() || consentSnapshot() !== "granted") return;
+  if (!publicMetaEnabled() || trackingSnapshot() !== "enabled" || location.pathname.startsWith("/admin")) return;
   if (!readCookie(SESSION_COOKIE)) writeCookie(SESSION_COOKIE, crypto.randomUUID());
   const url = new URL(location.href);
   const fbclid = url.searchParams.get("fbclid");
@@ -74,9 +74,9 @@ export function getAttribution(): Attribution | undefined {
   const parsed = attributionSchema.safeParse(previous);
   const campaignKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "campaign_id", "adset_id", "ad_id"] as const;
   const hasCampaign = campaignKeys.some((key) => url.searchParams.has(key));
-  const base = parsed.success && !hasCampaign && parsed.data.consentSessionId === readCookie(SESSION_COOKIE) ? parsed.data : {
-    consent: true as const,
-    consentSessionId: readCookie(SESSION_COOKIE),
+  const base = parsed.success && !hasCampaign && parsed.data.sessionId === readCookie(SESSION_COOKIE) ? parsed.data : {
+    trackingMode: "automatic" as const,
+    sessionId: readCookie(SESSION_COOKIE),
     capturedAt: new Date().toISOString(),
     landingUrl: cleanUrl(location.href)!,
     referrer: cleanUrl(document.referrer),
@@ -89,7 +89,7 @@ export function getAttribution(): Attribution | undefined {
 }
 
 function initializePixel(): Pixel | undefined {
-  if (!publicMetaEnabled() || consentSnapshot() !== "granted" || location.pathname.startsWith("/admin")) return;
+  if (!publicMetaEnabled() || trackingSnapshot() !== "enabled" || location.pathname.startsWith("/admin")) return;
   if (!window.fbq) {
     const pixel = function (...args: unknown[]) {
       if (pixel.callMethod) pixel.callMethod(...args);

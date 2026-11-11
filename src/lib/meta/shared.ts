@@ -1,13 +1,12 @@
 import { z } from "zod";
 
-export const CONSENT_COOKIE = "sheakete_marketing_v1";
+// Retain the existing preference cookie so previous opt-outs remain effective.
+export const TRACKING_PREFERENCE_COOKIE = "sheakete_marketing_v1";
 export const SESSION_COOKIE = "sheakete_marketing_session_v1";
 export const ATTRIBUTION_KEY = "sheakete_attribution_v1";
-export const CONSENT_EVENT = "sheakete:marketing-consent";
+export const TRACKING_EVENT = "sheakete:tracking-preference";
 
-export const attributionSchema = z.object({
-  consent: z.literal(true),
-  consentSessionId: z.string().uuid(),
+const attributionDetails = z.object({
   capturedAt: z.string().datetime(),
   landingUrl: z.string().url().max(1000),
   referrer: z.string().max(1000).optional(),
@@ -22,6 +21,15 @@ export const attributionSchema = z.object({
   fbc: z.string().regex(/^fb\.\d+\.\d+\.[A-Za-z0-9_-]+$/).max(500).optional(),
   fbp: z.string().regex(/^fb\.\d+\.\d+\.\d+$/).max(200).optional(),
 });
+
+export const attributionSchema = z.union([
+  attributionDetails.extend({ trackingMode: z.enum(["automatic", "opt_in"]), sessionId: z.string().uuid() }),
+  // Existing leads keep working without rewriting historical consent records.
+  attributionDetails.extend({ consent: z.literal(true), consentSessionId: z.string().uuid() })
+    .transform((legacy) => ({
+      ...attributionDetails.parse(legacy), trackingMode: "opt_in" as const, sessionId: legacy.consentSessionId,
+    })),
+]);
 
 export type Attribution = z.infer<typeof attributionSchema>;
 

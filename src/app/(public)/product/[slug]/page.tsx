@@ -1,4 +1,3 @@
-import Footer from "@/components/Footer";
 import HeaderText from "@/components/HeaderCard";
 import HeaderImage from "@/components/HeaderImage";
 import ProductConsList from "@/components/ProductConsList";
@@ -70,8 +69,6 @@ export default async function ProductPage({
       />
       {/* Product Images */}
       <ProductPictures images={product.gallery} />
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

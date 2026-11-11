@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { MetaTracking } from "@/components/tracking/MetaTracking";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const georgian = localFont({
   src: [
@@ -23,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`h-full ${georgian.variable}`}>
-      <body className="font-georgian antialiased">{children}<MetaTracking /></body>
+    <html lang="ka" className={`h-full ${georgian.variable}`}>
+      <body className="font-georgian antialiased">{children}<SiteFooter /><MetaTracking /></body>
     </html>
   );
 }

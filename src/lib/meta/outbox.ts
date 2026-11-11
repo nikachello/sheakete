@@ -61,7 +61,9 @@ export async function dispatchConversions(orderId?: string, db: OutboxClient = p
       status: "PENDING", nextAttemptAt: { lte: now },
       OR: [{ lockedUntil: null }, { lockedUntil: { lt: now } }],
     },
-    orderBy: { occurredAt: "asc" }, take: 5,
+    // Free external schedulers commonly time out after 30 seconds. Two 8-second
+    // Meta requests leave room for database queries and cold starts.
+    orderBy: { occurredAt: "asc" }, take: 2,
   });
   for (const event of due) {
     const leaseToken = randomUUID();

@@ -8,7 +8,7 @@ import { Prisma } from "@prisma-client";
 import { prisma } from "@/lib/prisma";
 import { client } from "@/lib/sanity.client";
 import { createLeadSchema } from "@/validations/lead.validation";
-import { CONSENT_COOKIE, SESSION_COOKIE, cleanUrl } from "@/lib/meta/shared";
+import { TRACKING_PREFERENCE_COOKIE, SESSION_COOKIE, cleanUrl } from "@/lib/meta/shared";
 import { normalizePhone } from "@/lib/meta/payload";
 import { enqueueConversion, scheduleConversions } from "@/lib/meta/outbox";
 
@@ -44,8 +44,8 @@ export async function createLead(rawData: unknown) {
     const origin = process.env.NEXT_PUBLIC_SITE_URL || requestHeaders.get("origin");
     const site = origin ? new URL(origin).origin : undefined;
     const trackingAllowed = process.env.NEXT_PUBLIC_META_ENABLED === "true" &&
-      cookieStore.get(CONSENT_COOKIE)?.value === "granted" && input.attribution?.consent === true &&
-      cookieStore.get(SESSION_COOKIE)?.value === input.attribution.consentSessionId;
+      cookieStore.get(TRACKING_PREFERENCE_COOKIE)?.value !== "denied" && !!input.attribution &&
+      cookieStore.get(SESSION_COOKIE)?.value === input.attribution.sessionId;
     const attribution = trackingAllowed && site && new URL(input.attribution!.landingUrl).origin === site
       ? { ...input.attribution!, landingUrl: cleanUrl(input.attribution!.landingUrl)!, referrer: cleanUrl(input.attribution!.referrer ?? "") }
       : undefined;
