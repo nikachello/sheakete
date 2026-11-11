@@ -34,6 +34,11 @@ export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
  */
 export type MetaConversionEvent = $Result.DefaultSelection<Prisma.$MetaConversionEventPayload>
 /**
+ * Model SitePageView
+ * 
+ */
+export type SitePageView = $Result.DefaultSelection<Prisma.$SitePageViewPayload>
+/**
  * Model OrderItem
  * 
  */
@@ -429,6 +434,16 @@ export class PrismaClient<
     * ```
     */
   get metaConversionEvent(): Prisma.MetaConversionEventDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.sitePageView`: Exposes CRUD operations for the **SitePageView** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SitePageViews
+    * const sitePageViews = await prisma.sitePageView.findMany()
+    * ```
+    */
+  get sitePageView(): Prisma.SitePageViewDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.orderItem`: Exposes CRUD operations for the **OrderItem** model.
@@ -994,6 +1009,7 @@ export namespace Prisma {
     StockMovement: 'StockMovement',
     Order: 'Order',
     MetaConversionEvent: 'MetaConversionEvent',
+    SitePageView: 'SitePageView',
     OrderItem: 'OrderItem',
     Remittance: 'Remittance',
     Expense: 'Expense',
@@ -1024,7 +1040,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "stock" | "stockMovement" | "order" | "metaConversionEvent" | "orderItem" | "remittance" | "expense" | "bankTransaction" | "founderLoanTransaction" | "inventoryOrder" | "marketingCampaign" | "campaignSpendLog" | "productProfitSnapshot" | "cashFlowProjection" | "alert" | "weeklyMetricSnapshot"
+      modelProps: "stock" | "stockMovement" | "order" | "metaConversionEvent" | "sitePageView" | "orderItem" | "remittance" | "expense" | "bankTransaction" | "founderLoanTransaction" | "inventoryOrder" | "marketingCampaign" | "campaignSpendLog" | "productProfitSnapshot" | "cashFlowProjection" | "alert" | "weeklyMetricSnapshot"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1321,6 +1337,80 @@ export namespace Prisma {
           count: {
             args: Prisma.MetaConversionEventCountArgs<ExtArgs>
             result: $Utils.Optional<MetaConversionEventCountAggregateOutputType> | number
+          }
+        }
+      }
+      SitePageView: {
+        payload: Prisma.$SitePageViewPayload<ExtArgs>
+        fields: Prisma.SitePageViewFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SitePageViewFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SitePageViewPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SitePageViewFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SitePageViewPayload>
+          }
+          findFirst: {
+            args: Prisma.SitePageViewFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SitePageViewPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SitePageViewFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SitePageViewPayload>
+          }
+          findMany: {
+            args: Prisma.SitePageViewFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SitePageViewPayload>[]
+          }
+          create: {
+            args: Prisma.SitePageViewCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SitePageViewPayload>
+          }
+          createMany: {
+            args: Prisma.SitePageViewCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SitePageViewCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SitePageViewPayload>[]
+          }
+          delete: {
+            args: Prisma.SitePageViewDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SitePageViewPayload>
+          }
+          update: {
+            args: Prisma.SitePageViewUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SitePageViewPayload>
+          }
+          deleteMany: {
+            args: Prisma.SitePageViewDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SitePageViewUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SitePageViewUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SitePageViewPayload>[]
+          }
+          upsert: {
+            args: Prisma.SitePageViewUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SitePageViewPayload>
+          }
+          aggregate: {
+            args: Prisma.SitePageViewAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSitePageView>
+          }
+          groupBy: {
+            args: Prisma.SitePageViewGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SitePageViewGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SitePageViewCountArgs<ExtArgs>
+            result: $Utils.Optional<SitePageViewCountAggregateOutputType> | number
           }
         }
       }
@@ -2312,6 +2402,7 @@ export namespace Prisma {
     stockMovement?: StockMovementOmit
     order?: OrderOmit
     metaConversionEvent?: MetaConversionEventOmit
+    sitePageView?: SitePageViewOmit
     orderItem?: OrderItemOmit
     remittance?: RemittanceOmit
     expense?: ExpenseOmit
@@ -5065,6 +5156,8 @@ export namespace Prisma {
   export type OrderMinAggregateOutputType = {
     id: string | null
     submissionId: string | null
+    analyticsVisitorId: string | null
+    analyticsSessionId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     returnedAt: Date | null
@@ -5094,6 +5187,8 @@ export namespace Prisma {
   export type OrderMaxAggregateOutputType = {
     id: string | null
     submissionId: string | null
+    analyticsVisitorId: string | null
+    analyticsSessionId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     returnedAt: Date | null
@@ -5124,6 +5219,8 @@ export namespace Prisma {
     id: number
     submissionId: number
     attribution: number
+    analyticsVisitorId: number
+    analyticsSessionId: number
     createdAt: number
     updatedAt: number
     returnedAt: number
@@ -5175,6 +5272,8 @@ export namespace Prisma {
   export type OrderMinAggregateInputType = {
     id?: true
     submissionId?: true
+    analyticsVisitorId?: true
+    analyticsSessionId?: true
     createdAt?: true
     updatedAt?: true
     returnedAt?: true
@@ -5204,6 +5303,8 @@ export namespace Prisma {
   export type OrderMaxAggregateInputType = {
     id?: true
     submissionId?: true
+    analyticsVisitorId?: true
+    analyticsSessionId?: true
     createdAt?: true
     updatedAt?: true
     returnedAt?: true
@@ -5234,6 +5335,8 @@ export namespace Prisma {
     id?: true
     submissionId?: true
     attribution?: true
+    analyticsVisitorId?: true
+    analyticsSessionId?: true
     createdAt?: true
     updatedAt?: true
     returnedAt?: true
@@ -5351,6 +5454,8 @@ export namespace Prisma {
     id: string
     submissionId: string | null
     attribution: JsonValue | null
+    analyticsVisitorId: string | null
+    analyticsSessionId: string | null
     createdAt: Date
     updatedAt: Date
     returnedAt: Date | null
@@ -5400,6 +5505,8 @@ export namespace Prisma {
     id?: boolean
     submissionId?: boolean
     attribution?: boolean
+    analyticsVisitorId?: boolean
+    analyticsSessionId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     returnedAt?: boolean
@@ -5436,6 +5543,8 @@ export namespace Prisma {
     id?: boolean
     submissionId?: boolean
     attribution?: boolean
+    analyticsVisitorId?: boolean
+    analyticsSessionId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     returnedAt?: boolean
@@ -5468,6 +5577,8 @@ export namespace Prisma {
     id?: boolean
     submissionId?: boolean
     attribution?: boolean
+    analyticsVisitorId?: boolean
+    analyticsSessionId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     returnedAt?: boolean
@@ -5500,6 +5611,8 @@ export namespace Prisma {
     id?: boolean
     submissionId?: boolean
     attribution?: boolean
+    analyticsVisitorId?: boolean
+    analyticsSessionId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     returnedAt?: boolean
@@ -5526,7 +5639,7 @@ export namespace Prisma {
     marketingCampaignId?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "submissionId" | "attribution" | "createdAt" | "updatedAt" | "returnedAt" | "followUpAt" | "customerName" | "customerPhone" | "city" | "address" | "productId" | "productTitle" | "comboDetails" | "quantity" | "expectedPrice" | "cashCollected" | "actualPaidPrice" | "productCost" | "shippingFee" | "additionalCosts" | "type" | "status" | "paymentStatus" | "notes" | "remittanceId" | "marketingCampaignId", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "submissionId" | "attribution" | "analyticsVisitorId" | "analyticsSessionId" | "createdAt" | "updatedAt" | "returnedAt" | "followUpAt" | "customerName" | "customerPhone" | "city" | "address" | "productId" | "productTitle" | "comboDetails" | "quantity" | "expectedPrice" | "cashCollected" | "actualPaidPrice" | "productCost" | "shippingFee" | "additionalCosts" | "type" | "status" | "paymentStatus" | "notes" | "remittanceId" | "marketingCampaignId", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     metaEvents?: boolean | Order$metaEventsArgs<ExtArgs>
     remittance?: boolean | Order$remittanceArgs<ExtArgs>
@@ -5557,6 +5670,8 @@ export namespace Prisma {
       id: string
       submissionId: string | null
       attribution: Prisma.JsonValue | null
+      analyticsVisitorId: string | null
+      analyticsSessionId: string | null
       createdAt: Date
       updatedAt: Date
       returnedAt: Date | null
@@ -6012,6 +6127,8 @@ export namespace Prisma {
     readonly id: FieldRef<"Order", 'String'>
     readonly submissionId: FieldRef<"Order", 'String'>
     readonly attribution: FieldRef<"Order", 'Json'>
+    readonly analyticsVisitorId: FieldRef<"Order", 'String'>
+    readonly analyticsSessionId: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
     readonly returnedAt: FieldRef<"Order", 'DateTime'>
@@ -7762,6 +7879,1027 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: MetaConversionEventInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SitePageView
+   */
+
+  export type AggregateSitePageView = {
+    _count: SitePageViewCountAggregateOutputType | null
+    _min: SitePageViewMinAggregateOutputType | null
+    _max: SitePageViewMaxAggregateOutputType | null
+  }
+
+  export type SitePageViewMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    visitorId: string | null
+    sessionId: string | null
+    path: string | null
+    source: string | null
+    campaign: string | null
+  }
+
+  export type SitePageViewMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    visitorId: string | null
+    sessionId: string | null
+    path: string | null
+    source: string | null
+    campaign: string | null
+  }
+
+  export type SitePageViewCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    visitorId: number
+    sessionId: number
+    path: number
+    source: number
+    campaign: number
+    _all: number
+  }
+
+
+  export type SitePageViewMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    visitorId?: true
+    sessionId?: true
+    path?: true
+    source?: true
+    campaign?: true
+  }
+
+  export type SitePageViewMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    visitorId?: true
+    sessionId?: true
+    path?: true
+    source?: true
+    campaign?: true
+  }
+
+  export type SitePageViewCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    visitorId?: true
+    sessionId?: true
+    path?: true
+    source?: true
+    campaign?: true
+    _all?: true
+  }
+
+  export type SitePageViewAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SitePageView to aggregate.
+     */
+    where?: SitePageViewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SitePageViews to fetch.
+     */
+    orderBy?: SitePageViewOrderByWithRelationInput | SitePageViewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SitePageViewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SitePageViews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SitePageViews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SitePageViews
+    **/
+    _count?: true | SitePageViewCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SitePageViewMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SitePageViewMaxAggregateInputType
+  }
+
+  export type GetSitePageViewAggregateType<T extends SitePageViewAggregateArgs> = {
+        [P in keyof T & keyof AggregateSitePageView]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSitePageView[P]>
+      : GetScalarType<T[P], AggregateSitePageView[P]>
+  }
+
+
+
+
+  export type SitePageViewGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SitePageViewWhereInput
+    orderBy?: SitePageViewOrderByWithAggregationInput | SitePageViewOrderByWithAggregationInput[]
+    by: SitePageViewScalarFieldEnum[] | SitePageViewScalarFieldEnum
+    having?: SitePageViewScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SitePageViewCountAggregateInputType | true
+    _min?: SitePageViewMinAggregateInputType
+    _max?: SitePageViewMaxAggregateInputType
+  }
+
+  export type SitePageViewGroupByOutputType = {
+    id: string
+    createdAt: Date
+    visitorId: string
+    sessionId: string
+    path: string
+    source: string
+    campaign: string | null
+    _count: SitePageViewCountAggregateOutputType | null
+    _min: SitePageViewMinAggregateOutputType | null
+    _max: SitePageViewMaxAggregateOutputType | null
+  }
+
+  type GetSitePageViewGroupByPayload<T extends SitePageViewGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SitePageViewGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SitePageViewGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SitePageViewGroupByOutputType[P]>
+            : GetScalarType<T[P], SitePageViewGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SitePageViewSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    visitorId?: boolean
+    sessionId?: boolean
+    path?: boolean
+    source?: boolean
+    campaign?: boolean
+  }, ExtArgs["result"]["sitePageView"]>
+
+  export type SitePageViewSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    visitorId?: boolean
+    sessionId?: boolean
+    path?: boolean
+    source?: boolean
+    campaign?: boolean
+  }, ExtArgs["result"]["sitePageView"]>
+
+  export type SitePageViewSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    visitorId?: boolean
+    sessionId?: boolean
+    path?: boolean
+    source?: boolean
+    campaign?: boolean
+  }, ExtArgs["result"]["sitePageView"]>
+
+  export type SitePageViewSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    visitorId?: boolean
+    sessionId?: boolean
+    path?: boolean
+    source?: boolean
+    campaign?: boolean
+  }
+
+  export type SitePageViewOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "visitorId" | "sessionId" | "path" | "source" | "campaign", ExtArgs["result"]["sitePageView"]>
+
+  export type $SitePageViewPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SitePageView"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      createdAt: Date
+      visitorId: string
+      sessionId: string
+      path: string
+      source: string
+      campaign: string | null
+    }, ExtArgs["result"]["sitePageView"]>
+    composites: {}
+  }
+
+  type SitePageViewGetPayload<S extends boolean | null | undefined | SitePageViewDefaultArgs> = $Result.GetResult<Prisma.$SitePageViewPayload, S>
+
+  type SitePageViewCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SitePageViewFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SitePageViewCountAggregateInputType | true
+    }
+
+  export interface SitePageViewDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SitePageView'], meta: { name: 'SitePageView' } }
+    /**
+     * Find zero or one SitePageView that matches the filter.
+     * @param {SitePageViewFindUniqueArgs} args - Arguments to find a SitePageView
+     * @example
+     * // Get one SitePageView
+     * const sitePageView = await prisma.sitePageView.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SitePageViewFindUniqueArgs>(args: SelectSubset<T, SitePageViewFindUniqueArgs<ExtArgs>>): Prisma__SitePageViewClient<$Result.GetResult<Prisma.$SitePageViewPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SitePageView that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SitePageViewFindUniqueOrThrowArgs} args - Arguments to find a SitePageView
+     * @example
+     * // Get one SitePageView
+     * const sitePageView = await prisma.sitePageView.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SitePageViewFindUniqueOrThrowArgs>(args: SelectSubset<T, SitePageViewFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SitePageViewClient<$Result.GetResult<Prisma.$SitePageViewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SitePageView that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SitePageViewFindFirstArgs} args - Arguments to find a SitePageView
+     * @example
+     * // Get one SitePageView
+     * const sitePageView = await prisma.sitePageView.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SitePageViewFindFirstArgs>(args?: SelectSubset<T, SitePageViewFindFirstArgs<ExtArgs>>): Prisma__SitePageViewClient<$Result.GetResult<Prisma.$SitePageViewPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SitePageView that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SitePageViewFindFirstOrThrowArgs} args - Arguments to find a SitePageView
+     * @example
+     * // Get one SitePageView
+     * const sitePageView = await prisma.sitePageView.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SitePageViewFindFirstOrThrowArgs>(args?: SelectSubset<T, SitePageViewFindFirstOrThrowArgs<ExtArgs>>): Prisma__SitePageViewClient<$Result.GetResult<Prisma.$SitePageViewPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SitePageViews that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SitePageViewFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SitePageViews
+     * const sitePageViews = await prisma.sitePageView.findMany()
+     * 
+     * // Get first 10 SitePageViews
+     * const sitePageViews = await prisma.sitePageView.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const sitePageViewWithIdOnly = await prisma.sitePageView.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SitePageViewFindManyArgs>(args?: SelectSubset<T, SitePageViewFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SitePageViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SitePageView.
+     * @param {SitePageViewCreateArgs} args - Arguments to create a SitePageView.
+     * @example
+     * // Create one SitePageView
+     * const SitePageView = await prisma.sitePageView.create({
+     *   data: {
+     *     // ... data to create a SitePageView
+     *   }
+     * })
+     * 
+     */
+    create<T extends SitePageViewCreateArgs>(args: SelectSubset<T, SitePageViewCreateArgs<ExtArgs>>): Prisma__SitePageViewClient<$Result.GetResult<Prisma.$SitePageViewPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SitePageViews.
+     * @param {SitePageViewCreateManyArgs} args - Arguments to create many SitePageViews.
+     * @example
+     * // Create many SitePageViews
+     * const sitePageView = await prisma.sitePageView.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SitePageViewCreateManyArgs>(args?: SelectSubset<T, SitePageViewCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SitePageViews and returns the data saved in the database.
+     * @param {SitePageViewCreateManyAndReturnArgs} args - Arguments to create many SitePageViews.
+     * @example
+     * // Create many SitePageViews
+     * const sitePageView = await prisma.sitePageView.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SitePageViews and only return the `id`
+     * const sitePageViewWithIdOnly = await prisma.sitePageView.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SitePageViewCreateManyAndReturnArgs>(args?: SelectSubset<T, SitePageViewCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SitePageViewPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SitePageView.
+     * @param {SitePageViewDeleteArgs} args - Arguments to delete one SitePageView.
+     * @example
+     * // Delete one SitePageView
+     * const SitePageView = await prisma.sitePageView.delete({
+     *   where: {
+     *     // ... filter to delete one SitePageView
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SitePageViewDeleteArgs>(args: SelectSubset<T, SitePageViewDeleteArgs<ExtArgs>>): Prisma__SitePageViewClient<$Result.GetResult<Prisma.$SitePageViewPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SitePageView.
+     * @param {SitePageViewUpdateArgs} args - Arguments to update one SitePageView.
+     * @example
+     * // Update one SitePageView
+     * const sitePageView = await prisma.sitePageView.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SitePageViewUpdateArgs>(args: SelectSubset<T, SitePageViewUpdateArgs<ExtArgs>>): Prisma__SitePageViewClient<$Result.GetResult<Prisma.$SitePageViewPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SitePageViews.
+     * @param {SitePageViewDeleteManyArgs} args - Arguments to filter SitePageViews to delete.
+     * @example
+     * // Delete a few SitePageViews
+     * const { count } = await prisma.sitePageView.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SitePageViewDeleteManyArgs>(args?: SelectSubset<T, SitePageViewDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SitePageViews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SitePageViewUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SitePageViews
+     * const sitePageView = await prisma.sitePageView.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SitePageViewUpdateManyArgs>(args: SelectSubset<T, SitePageViewUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SitePageViews and returns the data updated in the database.
+     * @param {SitePageViewUpdateManyAndReturnArgs} args - Arguments to update many SitePageViews.
+     * @example
+     * // Update many SitePageViews
+     * const sitePageView = await prisma.sitePageView.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SitePageViews and only return the `id`
+     * const sitePageViewWithIdOnly = await prisma.sitePageView.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SitePageViewUpdateManyAndReturnArgs>(args: SelectSubset<T, SitePageViewUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SitePageViewPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SitePageView.
+     * @param {SitePageViewUpsertArgs} args - Arguments to update or create a SitePageView.
+     * @example
+     * // Update or create a SitePageView
+     * const sitePageView = await prisma.sitePageView.upsert({
+     *   create: {
+     *     // ... data to create a SitePageView
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SitePageView we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SitePageViewUpsertArgs>(args: SelectSubset<T, SitePageViewUpsertArgs<ExtArgs>>): Prisma__SitePageViewClient<$Result.GetResult<Prisma.$SitePageViewPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SitePageViews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SitePageViewCountArgs} args - Arguments to filter SitePageViews to count.
+     * @example
+     * // Count the number of SitePageViews
+     * const count = await prisma.sitePageView.count({
+     *   where: {
+     *     // ... the filter for the SitePageViews we want to count
+     *   }
+     * })
+    **/
+    count<T extends SitePageViewCountArgs>(
+      args?: Subset<T, SitePageViewCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SitePageViewCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SitePageView.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SitePageViewAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SitePageViewAggregateArgs>(args: Subset<T, SitePageViewAggregateArgs>): Prisma.PrismaPromise<GetSitePageViewAggregateType<T>>
+
+    /**
+     * Group by SitePageView.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SitePageViewGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SitePageViewGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SitePageViewGroupByArgs['orderBy'] }
+        : { orderBy?: SitePageViewGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SitePageViewGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSitePageViewGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SitePageView model
+   */
+  readonly fields: SitePageViewFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SitePageView.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SitePageViewClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SitePageView model
+   */
+  interface SitePageViewFieldRefs {
+    readonly id: FieldRef<"SitePageView", 'String'>
+    readonly createdAt: FieldRef<"SitePageView", 'DateTime'>
+    readonly visitorId: FieldRef<"SitePageView", 'String'>
+    readonly sessionId: FieldRef<"SitePageView", 'String'>
+    readonly path: FieldRef<"SitePageView", 'String'>
+    readonly source: FieldRef<"SitePageView", 'String'>
+    readonly campaign: FieldRef<"SitePageView", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SitePageView findUnique
+   */
+  export type SitePageViewFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SitePageView
+     */
+    select?: SitePageViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SitePageView
+     */
+    omit?: SitePageViewOmit<ExtArgs> | null
+    /**
+     * Filter, which SitePageView to fetch.
+     */
+    where: SitePageViewWhereUniqueInput
+  }
+
+  /**
+   * SitePageView findUniqueOrThrow
+   */
+  export type SitePageViewFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SitePageView
+     */
+    select?: SitePageViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SitePageView
+     */
+    omit?: SitePageViewOmit<ExtArgs> | null
+    /**
+     * Filter, which SitePageView to fetch.
+     */
+    where: SitePageViewWhereUniqueInput
+  }
+
+  /**
+   * SitePageView findFirst
+   */
+  export type SitePageViewFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SitePageView
+     */
+    select?: SitePageViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SitePageView
+     */
+    omit?: SitePageViewOmit<ExtArgs> | null
+    /**
+     * Filter, which SitePageView to fetch.
+     */
+    where?: SitePageViewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SitePageViews to fetch.
+     */
+    orderBy?: SitePageViewOrderByWithRelationInput | SitePageViewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SitePageViews.
+     */
+    cursor?: SitePageViewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SitePageViews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SitePageViews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SitePageViews.
+     */
+    distinct?: SitePageViewScalarFieldEnum | SitePageViewScalarFieldEnum[]
+  }
+
+  /**
+   * SitePageView findFirstOrThrow
+   */
+  export type SitePageViewFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SitePageView
+     */
+    select?: SitePageViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SitePageView
+     */
+    omit?: SitePageViewOmit<ExtArgs> | null
+    /**
+     * Filter, which SitePageView to fetch.
+     */
+    where?: SitePageViewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SitePageViews to fetch.
+     */
+    orderBy?: SitePageViewOrderByWithRelationInput | SitePageViewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SitePageViews.
+     */
+    cursor?: SitePageViewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SitePageViews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SitePageViews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SitePageViews.
+     */
+    distinct?: SitePageViewScalarFieldEnum | SitePageViewScalarFieldEnum[]
+  }
+
+  /**
+   * SitePageView findMany
+   */
+  export type SitePageViewFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SitePageView
+     */
+    select?: SitePageViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SitePageView
+     */
+    omit?: SitePageViewOmit<ExtArgs> | null
+    /**
+     * Filter, which SitePageViews to fetch.
+     */
+    where?: SitePageViewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SitePageViews to fetch.
+     */
+    orderBy?: SitePageViewOrderByWithRelationInput | SitePageViewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SitePageViews.
+     */
+    cursor?: SitePageViewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SitePageViews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SitePageViews.
+     */
+    skip?: number
+    distinct?: SitePageViewScalarFieldEnum | SitePageViewScalarFieldEnum[]
+  }
+
+  /**
+   * SitePageView create
+   */
+  export type SitePageViewCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SitePageView
+     */
+    select?: SitePageViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SitePageView
+     */
+    omit?: SitePageViewOmit<ExtArgs> | null
+    /**
+     * The data needed to create a SitePageView.
+     */
+    data: XOR<SitePageViewCreateInput, SitePageViewUncheckedCreateInput>
+  }
+
+  /**
+   * SitePageView createMany
+   */
+  export type SitePageViewCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SitePageViews.
+     */
+    data: SitePageViewCreateManyInput | SitePageViewCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SitePageView createManyAndReturn
+   */
+  export type SitePageViewCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SitePageView
+     */
+    select?: SitePageViewSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SitePageView
+     */
+    omit?: SitePageViewOmit<ExtArgs> | null
+    /**
+     * The data used to create many SitePageViews.
+     */
+    data: SitePageViewCreateManyInput | SitePageViewCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SitePageView update
+   */
+  export type SitePageViewUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SitePageView
+     */
+    select?: SitePageViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SitePageView
+     */
+    omit?: SitePageViewOmit<ExtArgs> | null
+    /**
+     * The data needed to update a SitePageView.
+     */
+    data: XOR<SitePageViewUpdateInput, SitePageViewUncheckedUpdateInput>
+    /**
+     * Choose, which SitePageView to update.
+     */
+    where: SitePageViewWhereUniqueInput
+  }
+
+  /**
+   * SitePageView updateMany
+   */
+  export type SitePageViewUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SitePageViews.
+     */
+    data: XOR<SitePageViewUpdateManyMutationInput, SitePageViewUncheckedUpdateManyInput>
+    /**
+     * Filter which SitePageViews to update
+     */
+    where?: SitePageViewWhereInput
+    /**
+     * Limit how many SitePageViews to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SitePageView updateManyAndReturn
+   */
+  export type SitePageViewUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SitePageView
+     */
+    select?: SitePageViewSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SitePageView
+     */
+    omit?: SitePageViewOmit<ExtArgs> | null
+    /**
+     * The data used to update SitePageViews.
+     */
+    data: XOR<SitePageViewUpdateManyMutationInput, SitePageViewUncheckedUpdateManyInput>
+    /**
+     * Filter which SitePageViews to update
+     */
+    where?: SitePageViewWhereInput
+    /**
+     * Limit how many SitePageViews to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SitePageView upsert
+   */
+  export type SitePageViewUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SitePageView
+     */
+    select?: SitePageViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SitePageView
+     */
+    omit?: SitePageViewOmit<ExtArgs> | null
+    /**
+     * The filter to search for the SitePageView to update in case it exists.
+     */
+    where: SitePageViewWhereUniqueInput
+    /**
+     * In case the SitePageView found by the `where` argument doesn't exist, create a new SitePageView with this data.
+     */
+    create: XOR<SitePageViewCreateInput, SitePageViewUncheckedCreateInput>
+    /**
+     * In case the SitePageView was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SitePageViewUpdateInput, SitePageViewUncheckedUpdateInput>
+  }
+
+  /**
+   * SitePageView delete
+   */
+  export type SitePageViewDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SitePageView
+     */
+    select?: SitePageViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SitePageView
+     */
+    omit?: SitePageViewOmit<ExtArgs> | null
+    /**
+     * Filter which SitePageView to delete.
+     */
+    where: SitePageViewWhereUniqueInput
+  }
+
+  /**
+   * SitePageView deleteMany
+   */
+  export type SitePageViewDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SitePageViews to delete
+     */
+    where?: SitePageViewWhereInput
+    /**
+     * Limit how many SitePageViews to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SitePageView without action
+   */
+  export type SitePageViewDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SitePageView
+     */
+    select?: SitePageViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SitePageView
+     */
+    omit?: SitePageViewOmit<ExtArgs> | null
   }
 
 
@@ -22188,6 +23326,8 @@ export namespace Prisma {
     id: 'id',
     submissionId: 'submissionId',
     attribution: 'attribution',
+    analyticsVisitorId: 'analyticsVisitorId',
+    analyticsSessionId: 'analyticsSessionId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     returnedAt: 'returnedAt',
@@ -22235,6 +23375,19 @@ export namespace Prisma {
   };
 
   export type MetaConversionEventScalarFieldEnum = (typeof MetaConversionEventScalarFieldEnum)[keyof typeof MetaConversionEventScalarFieldEnum]
+
+
+  export const SitePageViewScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    visitorId: 'visitorId',
+    sessionId: 'sessionId',
+    path: 'path',
+    source: 'source',
+    campaign: 'campaign'
+  };
+
+  export type SitePageViewScalarFieldEnum = (typeof SitePageViewScalarFieldEnum)[keyof typeof SitePageViewScalarFieldEnum]
 
 
   export const OrderItemScalarFieldEnum: {
@@ -22958,6 +24111,8 @@ export namespace Prisma {
     id?: StringFilter<"Order"> | string
     submissionId?: StringNullableFilter<"Order"> | string | null
     attribution?: JsonNullableFilter<"Order">
+    analyticsVisitorId?: StringNullableFilter<"Order"> | string | null
+    analyticsSessionId?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     returnedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -22993,6 +24148,8 @@ export namespace Prisma {
     id?: SortOrder
     submissionId?: SortOrderInput | SortOrder
     attribution?: SortOrderInput | SortOrder
+    analyticsVisitorId?: SortOrderInput | SortOrder
+    analyticsSessionId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     returnedAt?: SortOrderInput | SortOrder
@@ -23031,6 +24188,8 @@ export namespace Prisma {
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
     attribution?: JsonNullableFilter<"Order">
+    analyticsVisitorId?: StringNullableFilter<"Order"> | string | null
+    analyticsSessionId?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     returnedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -23066,6 +24225,8 @@ export namespace Prisma {
     id?: SortOrder
     submissionId?: SortOrderInput | SortOrder
     attribution?: SortOrderInput | SortOrder
+    analyticsVisitorId?: SortOrderInput | SortOrder
+    analyticsSessionId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     returnedAt?: SortOrderInput | SortOrder
@@ -23104,6 +24265,8 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Order"> | string
     submissionId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     attribution?: JsonNullableWithAggregatesFilter<"Order">
+    analyticsVisitorId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    analyticsSessionId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     returnedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
@@ -23231,6 +24394,68 @@ export namespace Prisma {
     sentAt?: DateTimeNullableWithAggregatesFilter<"MetaConversionEvent"> | Date | string | null
     lastError?: StringNullableWithAggregatesFilter<"MetaConversionEvent"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"MetaConversionEvent"> | Date | string
+  }
+
+  export type SitePageViewWhereInput = {
+    AND?: SitePageViewWhereInput | SitePageViewWhereInput[]
+    OR?: SitePageViewWhereInput[]
+    NOT?: SitePageViewWhereInput | SitePageViewWhereInput[]
+    id?: StringFilter<"SitePageView"> | string
+    createdAt?: DateTimeFilter<"SitePageView"> | Date | string
+    visitorId?: StringFilter<"SitePageView"> | string
+    sessionId?: StringFilter<"SitePageView"> | string
+    path?: StringFilter<"SitePageView"> | string
+    source?: StringFilter<"SitePageView"> | string
+    campaign?: StringNullableFilter<"SitePageView"> | string | null
+  }
+
+  export type SitePageViewOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    visitorId?: SortOrder
+    sessionId?: SortOrder
+    path?: SortOrder
+    source?: SortOrder
+    campaign?: SortOrderInput | SortOrder
+  }
+
+  export type SitePageViewWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SitePageViewWhereInput | SitePageViewWhereInput[]
+    OR?: SitePageViewWhereInput[]
+    NOT?: SitePageViewWhereInput | SitePageViewWhereInput[]
+    createdAt?: DateTimeFilter<"SitePageView"> | Date | string
+    visitorId?: StringFilter<"SitePageView"> | string
+    sessionId?: StringFilter<"SitePageView"> | string
+    path?: StringFilter<"SitePageView"> | string
+    source?: StringFilter<"SitePageView"> | string
+    campaign?: StringNullableFilter<"SitePageView"> | string | null
+  }, "id">
+
+  export type SitePageViewOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    visitorId?: SortOrder
+    sessionId?: SortOrder
+    path?: SortOrder
+    source?: SortOrder
+    campaign?: SortOrderInput | SortOrder
+    _count?: SitePageViewCountOrderByAggregateInput
+    _max?: SitePageViewMaxOrderByAggregateInput
+    _min?: SitePageViewMinOrderByAggregateInput
+  }
+
+  export type SitePageViewScalarWhereWithAggregatesInput = {
+    AND?: SitePageViewScalarWhereWithAggregatesInput | SitePageViewScalarWhereWithAggregatesInput[]
+    OR?: SitePageViewScalarWhereWithAggregatesInput[]
+    NOT?: SitePageViewScalarWhereWithAggregatesInput | SitePageViewScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SitePageView"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"SitePageView"> | Date | string
+    visitorId?: StringWithAggregatesFilter<"SitePageView"> | string
+    sessionId?: StringWithAggregatesFilter<"SitePageView"> | string
+    path?: StringWithAggregatesFilter<"SitePageView"> | string
+    source?: StringWithAggregatesFilter<"SitePageView"> | string
+    campaign?: StringNullableWithAggregatesFilter<"SitePageView"> | string | null
   }
 
   export type OrderItemWhereInput = {
@@ -24582,6 +25807,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -24615,6 +25842,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -24648,6 +25877,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -24681,6 +25912,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -24714,6 +25947,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -24744,6 +25979,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -24772,6 +26009,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -24914,6 +26153,76 @@ export namespace Prisma {
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SitePageViewCreateInput = {
+    id: string
+    createdAt?: Date | string
+    visitorId: string
+    sessionId: string
+    path: string
+    source: string
+    campaign?: string | null
+  }
+
+  export type SitePageViewUncheckedCreateInput = {
+    id: string
+    createdAt?: Date | string
+    visitorId: string
+    sessionId: string
+    path: string
+    source: string
+    campaign?: string | null
+  }
+
+  export type SitePageViewUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visitorId?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    campaign?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type SitePageViewUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visitorId?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    campaign?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type SitePageViewCreateManyInput = {
+    id: string
+    createdAt?: Date | string
+    visitorId: string
+    sessionId: string
+    path: string
+    source: string
+    campaign?: string | null
+  }
+
+  export type SitePageViewUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visitorId?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    campaign?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type SitePageViewUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visitorId?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    campaign?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderItemCreateInput = {
@@ -26696,6 +28005,8 @@ export namespace Prisma {
     id?: SortOrder
     submissionId?: SortOrder
     attribution?: SortOrder
+    analyticsVisitorId?: SortOrder
+    analyticsSessionId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     returnedAt?: SortOrder
@@ -26735,6 +28046,8 @@ export namespace Prisma {
   export type OrderMaxOrderByAggregateInput = {
     id?: SortOrder
     submissionId?: SortOrder
+    analyticsVisitorId?: SortOrder
+    analyticsSessionId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     returnedAt?: SortOrder
@@ -26764,6 +28077,8 @@ export namespace Prisma {
   export type OrderMinOrderByAggregateInput = {
     id?: SortOrder
     submissionId?: SortOrder
+    analyticsVisitorId?: SortOrder
+    analyticsSessionId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     returnedAt?: SortOrder
@@ -26986,6 +28301,36 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedJsonFilter<$PrismaModel>
     _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type SitePageViewCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    visitorId?: SortOrder
+    sessionId?: SortOrder
+    path?: SortOrder
+    source?: SortOrder
+    campaign?: SortOrder
+  }
+
+  export type SitePageViewMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    visitorId?: SortOrder
+    sessionId?: SortOrder
+    path?: SortOrder
+    source?: SortOrder
+    campaign?: SortOrder
+  }
+
+  export type SitePageViewMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    visitorId?: SortOrder
+    sessionId?: SortOrder
+    path?: SortOrder
+    source?: SortOrder
+    campaign?: SortOrder
   }
 
   export type OrderItemCountOrderByAggregateInput = {
@@ -29203,6 +30548,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -29235,6 +30582,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -29283,6 +30632,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29315,6 +30666,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29699,6 +31052,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -29731,6 +31086,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -29779,6 +31136,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29811,6 +31170,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29843,6 +31204,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -29875,6 +31238,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -29923,6 +31288,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29955,6 +31322,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29987,6 +31356,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -30019,6 +31390,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -30110,6 +31483,8 @@ export namespace Prisma {
     id?: StringFilter<"Order"> | string
     submissionId?: StringNullableFilter<"Order"> | string | null
     attribution?: JsonNullableFilter<"Order">
+    analyticsVisitorId?: StringNullableFilter<"Order"> | string | null
+    analyticsSessionId?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     returnedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -30673,6 +32048,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -30705,6 +32082,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -31156,6 +32535,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -31194,6 +32575,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -31226,6 +32609,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -31258,6 +32643,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -31316,6 +32703,8 @@ export namespace Prisma {
     id?: string
     submissionId?: string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: string | null
+    analyticsSessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     returnedAt?: Date | string | null
@@ -31354,6 +32743,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -31386,6 +32777,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -31418,6 +32811,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     submissionId?: NullableStringFieldUpdateOperationsInput | string | null
     attribution?: NullableJsonNullValueInput | InputJsonValue
+    analyticsVisitorId?: NullableStringFieldUpdateOperationsInput | string | null
+    analyticsSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     returnedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

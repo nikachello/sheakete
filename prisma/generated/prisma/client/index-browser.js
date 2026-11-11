@@ -157,6 +157,8 @@ exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   submissionId: 'submissionId',
   attribution: 'attribution',
+  analyticsVisitorId: 'analyticsVisitorId',
+  analyticsSessionId: 'analyticsSessionId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   returnedAt: 'returnedAt',
@@ -198,6 +200,16 @@ exports.Prisma.MetaConversionEventScalarFieldEnum = {
   sentAt: 'sentAt',
   lastError: 'lastError',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.SitePageViewScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  visitorId: 'visitorId',
+  sessionId: 'sessionId',
+  path: 'path',
+  source: 'source',
+  campaign: 'campaign'
 };
 
 exports.Prisma.OrderItemScalarFieldEnum = {
@@ -505,6 +517,7 @@ exports.Prisma.ModelName = {
   StockMovement: 'StockMovement',
   Order: 'Order',
   MetaConversionEvent: 'MetaConversionEvent',
+  SitePageView: 'SitePageView',
   OrderItem: 'OrderItem',
   Remittance: 'Remittance',
   Expense: 'Expense',

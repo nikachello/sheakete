@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { MetaTracking } from "@/components/tracking/MetaTracking";
 import { SiteFooter } from "@/components/SiteFooter";
+import { SiteAnalytics } from "@/components/tracking/SiteAnalytics";
 
 const georgian = localFont({
   src: [
@@ -25,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ka" className={`h-full ${georgian.variable}`}>
-      <body className="font-georgian antialiased">{children}<SiteFooter /><MetaTracking /></body>
+      <body className="font-georgian antialiased">{children}<SiteFooter /><MetaTracking /><SiteAnalytics /></body>
     </html>
   );
 }

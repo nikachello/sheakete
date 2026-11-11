@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:tracking": "node --import tsx --test tests/meta-tracking.test.ts",
+    "test:analytics": "node --import tsx --test tests/site-analytics.test.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

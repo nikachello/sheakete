@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { trackingSnapshot, subscribeTracking, setTrackingEnabled, getAttribution, trackMetaEvent } from "@/lib/meta/browser";
 import { publicMetaEnabled } from "@/lib/meta/shared";
+import { siteAnalyticsEnabled } from "@/lib/site-analytics/shared";
 
 export function MetaTracking() {
   const pathname = usePathname();
@@ -46,7 +47,7 @@ export function TrackingPreference() {
   const tracking = useSyncExternalStore(subscribeTracking, trackingSnapshot, () => "unknown");
   const [saving, setSaving] = useState(false);
   const [failed, setFailed] = useState(false);
-  if (!publicMetaEnabled()) return <p>ამ გარემოში Meta-ს სარეკლამო გაზომვა გამორთულია.</p>;
+  if (!publicMetaEnabled() && !siteAnalyticsEnabled()) return <p>ამ გარემოში საიტისა და რეკლამის გაზომვა გამორთულია.</p>;
   const enabled = tracking !== "disabled";
   const change = async () => {
     setSaving(true);
@@ -57,9 +58,9 @@ export function TrackingPreference() {
   };
   return (
     <div className="space-y-3 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
-      <p aria-live="polite">რეკლამის გაზომვა ამ ბრაუზერში: {enabled ? "ჩართულია" : "გამორთულია"}.</p>
+      <p aria-live="polite">საიტისა და რეკლამის გაზომვა ამ ბრაუზერში: {enabled ? "ჩართულია" : "გამორთულია"}.</p>
       <button type="button" disabled={saving || tracking === "unknown"} onClick={() => void change()} className="min-h-11 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-bold disabled:opacity-50">
-        {saving ? "ინახება…" : failed ? "გამორთვის ხელახლა ცდა" : enabled ? "რეკლამის გაზომვის გამორთვა" : "რეკლამის გაზომვის ჩართვა"}
+        {saving ? "ინახება…" : failed ? "გამორთვის ხელახლა ცდა" : enabled ? "გაზომვის გამორთვა" : "გაზომვის ჩართვა"}
       </button>
       {failed && <p role="alert">ბრაუზერში გაზომვა შეჩერებულია, თუმცა სერვერთან დაკავშირება ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაგვიკავშირდეთ.</p>}
     </div>

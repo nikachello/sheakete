@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma-client";
 import { TRACKING_PREFERENCE_COOKIE, SESSION_COOKIE } from "@/lib/meta/shared";
+import { ANALYTICS_COOKIE } from "@/lib/site-analytics/shared";
 
 export async function optOutOfMarketing() {
   const cookieStore = await cookies();
@@ -23,4 +24,5 @@ export async function optOutOfMarketing() {
   }
   cookieStore.set(TRACKING_PREFERENCE_COOKIE, "denied", { path: "/", maxAge: 90 * 86400, sameSite: "lax", secure: process.env.NODE_ENV === "production" });
   cookieStore.delete(SESSION_COOKIE);
+  cookieStore.delete(ANALYTICS_COOKIE);
 }

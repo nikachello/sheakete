@@ -11,6 +11,8 @@ import { createLeadSchema } from "@/validations/lead.validation";
 import { TRACKING_PREFERENCE_COOKIE, SESSION_COOKIE, cleanUrl } from "@/lib/meta/shared";
 import { captureWebsiteContext, normalizePhone } from "@/lib/meta/payload";
 import { enqueueConversion, scheduleConversions } from "@/lib/meta/outbox";
+import { ANALYTICS_COOKIE } from "@/lib/site-analytics/shared";
+import { analyticsSigningKey, readIdentity, serverSiteAnalyticsEnabled } from "@/lib/site-analytics/identity";
 
 interface ProductOffer {
   _id: string;
@@ -41,6 +43,8 @@ export async function createLead(rawData: unknown) {
     }
     const requestHeaders = await headers();
     const cookieStore = await cookies();
+    const analytics = serverSiteAnalyticsEnabled() && cookieStore.get(TRACKING_PREFERENCE_COOKIE)?.value !== "denied"
+      ? readIdentity(cookieStore.get(ANALYTICS_COOKIE)?.value, analyticsSigningKey()) : null;
     const origin = process.env.NEXT_PUBLIC_SITE_URL || requestHeaders.get("origin");
     const site = origin ? new URL(origin).origin : undefined;
     const trackingAllowed = process.env.NEXT_PUBLIC_META_ENABLED === "true" &&
@@ -66,6 +70,8 @@ export async function createLead(rawData: unknown) {
       }
       const order = await tx.order.create({ data: {
         submissionId: input.submissionId,
+        analyticsVisitorId: analytics?.visitorId,
+        analyticsSessionId: analytics?.sessionId,
         customerName: input.name, customerPhone: phone,
         productId: product._id, productTitle: product.title,
         quantity, comboDetails: `${quantity} ${product.unit || "ცალი"}`,

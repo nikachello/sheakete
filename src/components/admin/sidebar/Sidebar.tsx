@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 const menuItems = [
+  { label: "Analytics", icon: Activity, href: "/admin/analytics" },
   { label: "Meta tracking", icon: Activity, href: "/admin/tracking" },
   { label: "მთავარი", icon: LayoutDashboard, href: "/admin/dashboard" },
   { label: "ლიდები", icon: Users, href: "/admin/leads", badge: 5 },

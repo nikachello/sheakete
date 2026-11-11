@@ -1,5 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { dispatchConversions } from "@/lib/meta/outbox";
+import { cleanSiteAnalytics } from "@/services/analytics/site-analytics.service";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,6 +14,8 @@ export async function GET(request: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
+    try { await cleanSiteAnalytics(); }
+    catch { console.error("Site analytics retention cleanup unavailable; Meta processing will continue."); }
     return Response.json(await dispatchConversions(), { headers: { "Cache-Control": "no-store" } });
   } catch {
     return Response.json({ error: "Outbox unavailable" }, { status: 503 });

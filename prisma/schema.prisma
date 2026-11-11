@@ -155,6 +155,8 @@ model Order {
   id              String        @id @default(uuid())
   submissionId    String?       @unique
   attribution     Json?
+  analyticsVisitorId String?
+  analyticsSessionId String?
   metaEvents      MetaConversionEvent[]
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -199,6 +201,7 @@ model Order {
   @@index([paymentStatus])
   @@index([followUpAt])
   @@index([createdAt])
+  @@index([analyticsSessionId])
 }
 
 // Durable conversions: committed with the business action and retried separately.
@@ -221,6 +224,20 @@ model MetaConversionEvent {
 
   @@unique([orderId, eventName])
   @@index([status, nextAttemptAt])
+}
+
+model SitePageView {
+  id           String   @id
+  createdAt    DateTime @default(now())
+  visitorId    String
+  sessionId    String
+  path         String
+  source       String
+  campaign     String?
+
+  @@index([createdAt])
+  @@index([sessionId, createdAt])
+  @@index([visitorId, createdAt])
 }
 
 // NEW: Proper line-item model for combos/multi-product orders

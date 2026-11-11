@@ -5,6 +5,7 @@ import { getLowStockAlerts } from "@/actions/admin/stock-actions";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Order } from "@prisma-client";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,10 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6 p-6">
       <h1 className="text-3xl font-bold">დეშბორდი</h1>
+      <Link href="/admin/analytics" className="block rounded-xl border bg-white p-4 text-sm hover:bg-zinc-50">
+        <span className="block font-bold">Website analytics →</span>
+        <span className="mt-1 block text-zinc-500">Unique visitors, traffic sources, conversion rates and website order revenue.</span>
+      </Link>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
