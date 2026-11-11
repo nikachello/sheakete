@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ExpenseType } from "prisma/generated/prisma/client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,24 +10,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  createExpense,
-  repayFounderLoan,
-} from "@/actions/admin/expenses-actions";
+import { repayFounderLoan } from "@/actions/admin/expenses-actions";
 
 export function PayOwnerDialog() {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState<number>(0);
 
   const handleSubmit = async () => {
-    const now = new Date();
     await repayFounderLoan(amount);
     setOpen(false);
     setAmount(0);

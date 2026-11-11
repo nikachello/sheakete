@@ -192,7 +192,6 @@ export async function getOrders() {
 export async function getOrdersStats() {
   try {
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
     const [

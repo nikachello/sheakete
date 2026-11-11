@@ -132,6 +132,10 @@ exports.Prisma.StockScalarFieldEnum = {
   lastPurchasePrice: 'lastPurchasePrice',
   reorderPoint: 'reorderPoint',
   reorderQuantity: 'reorderQuantity',
+  dailyVelocity: 'dailyVelocity',
+  weeklyVelocity: 'weeklyVelocity',
+  daysOfStockLeft: 'daysOfStockLeft',
+  lastVelocityCalc: 'lastVelocityCalc',
   updatedAt: 'updatedAt'
 };
 
@@ -154,6 +158,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   returnedAt: 'returnedAt',
+  followUpAt: 'followUpAt',
   customerName: 'customerName',
   customerPhone: 'customerPhone',
   city: 'city',
@@ -172,7 +177,18 @@ exports.Prisma.OrderScalarFieldEnum = {
   status: 'status',
   paymentStatus: 'paymentStatus',
   notes: 'notes',
-  remittanceId: 'remittanceId'
+  remittanceId: 'remittanceId',
+  marketingCampaignId: 'marketingCampaignId'
+};
+
+exports.Prisma.OrderItemScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  productId: 'productId',
+  productTitle: 'productTitle',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  unitCost: 'unitCost'
 };
 
 exports.Prisma.RemittanceScalarFieldEnum = {
@@ -217,9 +233,144 @@ exports.Prisma.FounderLoanTransactionScalarFieldEnum = {
   note: 'note'
 };
 
+exports.Prisma.InventoryOrderScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  productId: 'productId',
+  productTitle: 'productTitle',
+  quantity: 'quantity',
+  unitCostCNY: 'unitCostCNY',
+  exchangeRate: 'exchangeRate',
+  unitCostGEL: 'unitCostGEL',
+  shippingMode: 'shippingMode',
+  shippingCostGEL: 'shippingCostGEL',
+  shippingPerUnit: 'shippingPerUnit',
+  landedCostGEL: 'landedCostGEL',
+  totalInvestment: 'totalInvestment',
+  status: 'status',
+  orderedAt: 'orderedAt',
+  expectedArrival: 'expectedArrival',
+  arrivedAt: 'arrivedAt',
+  supplierName: 'supplierName',
+  supplierLink: 'supplierLink',
+  notes: 'notes'
+};
+
+exports.Prisma.MarketingCampaignScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  platform: 'platform',
+  productId: 'productId',
+  productTitle: 'productTitle',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  isActive: 'isActive',
+  spend: 'spend',
+  impressions: 'impressions',
+  clicks: 'clicks',
+  leads: 'leads',
+  notes: 'notes'
+};
+
+exports.Prisma.CampaignSpendLogScalarFieldEnum = {
+  id: 'id',
+  campaignId: 'campaignId',
+  date: 'date',
+  spend: 'spend',
+  impressions: 'impressions',
+  clicks: 'clicks',
+  notes: 'notes'
+};
+
+exports.Prisma.ProductProfitSnapshotScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  snapshotDate: 'snapshotDate',
+  productId: 'productId',
+  productTitle: 'productTitle',
+  unitsSold: 'unitsSold',
+  unitsReturned: 'unitsReturned',
+  netUnitsSold: 'netUnitsSold',
+  grossRevenue: 'grossRevenue',
+  returnedRevenue: 'returnedRevenue',
+  netRevenue: 'netRevenue',
+  cogsTotal: 'cogsTotal',
+  shippingTotal: 'shippingTotal',
+  marketingSpend: 'marketingSpend',
+  grossProfit: 'grossProfit',
+  grossMargin: 'grossMargin',
+  contributionProfit: 'contributionProfit',
+  contributionMargin: 'contributionMargin',
+  dailyVelocity: 'dailyVelocity',
+  periodDays: 'periodDays'
+};
+
+exports.Prisma.CashFlowProjectionScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  projectionDate: 'projectionDate',
+  generatedAt: 'generatedAt',
+  openingBalance: 'openingBalance',
+  expectedInflows: 'expectedInflows',
+  expectedOutflows: 'expectedOutflows',
+  projectedBalance: 'projectedBalance',
+  pendingRemittances: 'pendingRemittances',
+  confirmedOrderValue: 'confirmedOrderValue',
+  scheduledExpenses: 'scheduledExpenses',
+  inventoryCommitments: 'inventoryCommitments',
+  notes: 'notes'
+};
+
+exports.Prisma.AlertScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  resolvedAt: 'resolvedAt',
+  type: 'type',
+  severity: 'severity',
+  title: 'title',
+  message: 'message',
+  productId: 'productId',
+  productTitle: 'productTitle',
+  data: 'data',
+  isRead: 'isRead',
+  isResolved: 'isResolved'
+};
+
+exports.Prisma.WeeklyMetricSnapshotScalarFieldEnum = {
+  id: 'id',
+  weekStart: 'weekStart',
+  weekEnd: 'weekEnd',
+  createdAt: 'createdAt',
+  totalRevenue: 'totalRevenue',
+  totalOrders: 'totalOrders',
+  deliveredOrders: 'deliveredOrders',
+  returnedOrders: 'returnedOrders',
+  cancelledOrders: 'cancelledOrders',
+  returnRate: 'returnRate',
+  grossProfit: 'grossProfit',
+  grossMargin: 'grossMargin',
+  netProfit: 'netProfit',
+  netMargin: 'netMargin',
+  totalAdSpend: 'totalAdSpend',
+  costPerOrder: 'costPerOrder',
+  roas: 'roas',
+  totalInventoryValue: 'totalInventoryValue',
+  inventoryTurnover: 'inventoryTurnover',
+  bankBalance: 'bankBalance',
+  founderLoanBalance: 'founderLoanBalance'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -230,6 +381,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.StockMovementType = exports.$Enums.StockMovementType = {
   PURCHASE: 'PURCHASE',
@@ -282,14 +439,60 @@ exports.FounderLoanType = exports.$Enums.FounderLoanType = {
   COMPANY_REPAID_FOUNDER: 'COMPANY_REPAID_FOUNDER'
 };
 
+exports.ShippingMode = exports.$Enums.ShippingMode = {
+  AIR: 'AIR',
+  LAND: 'LAND',
+  SEA: 'SEA'
+};
+
+exports.InventoryOrderStatus = exports.$Enums.InventoryOrderStatus = {
+  DRAFT: 'DRAFT',
+  ORDERED: 'ORDERED',
+  IN_TRANSIT: 'IN_TRANSIT',
+  ARRIVED: 'ARRIVED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.MarketingPlatform = exports.$Enums.MarketingPlatform = {
+  FACEBOOK: 'FACEBOOK',
+  TIKTOK: 'TIKTOK',
+  INSTAGRAM: 'INSTAGRAM',
+  GOOGLE: 'GOOGLE',
+  ORGANIC: 'ORGANIC',
+  OTHER: 'OTHER'
+};
+
+exports.AlertType = exports.$Enums.AlertType = {
+  LOW_STOCK: 'LOW_STOCK',
+  MARGIN_DROP: 'MARGIN_DROP',
+  CASH_RUNWAY: 'CASH_RUNWAY',
+  RETURN_RATE_SPIKE: 'RETURN_RATE_SPIKE',
+  VELOCITY_CHANGE: 'VELOCITY_CHANGE',
+  REORDER_SIGNAL: 'REORDER_SIGNAL'
+};
+
+exports.AlertSeverity = exports.$Enums.AlertSeverity = {
+  INFO: 'INFO',
+  WARNING: 'WARNING',
+  CRITICAL: 'CRITICAL'
+};
+
 exports.Prisma.ModelName = {
   Stock: 'Stock',
   StockMovement: 'StockMovement',
   Order: 'Order',
+  OrderItem: 'OrderItem',
   Remittance: 'Remittance',
   Expense: 'Expense',
   BankTransaction: 'BankTransaction',
-  FounderLoanTransaction: 'FounderLoanTransaction'
+  FounderLoanTransaction: 'FounderLoanTransaction',
+  InventoryOrder: 'InventoryOrder',
+  MarketingCampaign: 'MarketingCampaign',
+  CampaignSpendLog: 'CampaignSpendLog',
+  ProductProfitSnapshot: 'ProductProfitSnapshot',
+  CashFlowProjection: 'CashFlowProjection',
+  Alert: 'Alert',
+  WeeklyMetricSnapshot: 'WeeklyMetricSnapshot'
 };
 
 /**

@@ -3,7 +3,7 @@ import { Sidebar } from "@/components/admin/sidebar/Sidebar";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-const layout = ({ children }: { children: React.ReactNode }) => {
+const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const path = usePathname();
   return (
     <div className="flex min-h-screen bg-zinc-50/50">
@@ -15,4 +15,4 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default layout;
+export default AdminLayout;

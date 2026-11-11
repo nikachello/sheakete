@@ -27,16 +27,12 @@ import {
   Columns,
   X,
   Download,
-  ChevronDown,
 } from "lucide-react";
 import { getPresetFilters, PresetFilters } from "./filter-presets";
 import { orderColumnsEnhanced } from "./column";
 import { exportToCSV, exportToJSON, printReport } from "./export-utils";
 
-type EnrichedOrder = Order & {
-  profit: number;
-  revenue: number;
-};
+type DateRangeFilter = [Date | undefined, Date | undefined];
 
 export function OrdersTableComplete({ orders }: { orders: Order[] }) {
   const [pagination, setPagination] = useState({
@@ -125,8 +121,9 @@ export function OrdersTableComplete({ orders }: { orders: Order[] }) {
     [orders]
   );
 
+  const filteredRows = table.getFilteredRowModel().rows;
   const stats = useMemo(() => {
-    const filtered = table.getFilteredRowModel().rows.map((r) => r.original);
+    const filtered = filteredRows.map((r) => r.original);
     return {
       totalOrders: filtered.length,
       totalRevenue: filtered.reduce((sum, o) => sum + (o.revenue || 0), 0),
@@ -137,7 +134,7 @@ export function OrdersTableComplete({ orders }: { orders: Order[] }) {
             filtered.length
           : 0,
     };
-  }, [table.getFilteredRowModel().rows]);
+  }, [filteredRows]);
 
   const handlePresetChange = (presetId: string | null) => {
     setActivePreset(presetId);
@@ -425,7 +422,7 @@ export function OrdersTableComplete({ orders }: { orders: Order[] }) {
                   type="date"
                   onChange={(e) => {
                     const value = e.target.value;
-                    table.getColumn("createdAt")?.setFilterValue((old: any) => {
+                    table.getColumn("createdAt")?.setFilterValue((old: DateRangeFilter | undefined) => {
                       return [value ? new Date(value) : undefined, old?.[1]];
                     });
                     setActivePreset(null);
@@ -442,7 +439,7 @@ export function OrdersTableComplete({ orders }: { orders: Order[] }) {
                   type="date"
                   onChange={(e) => {
                     const value = e.target.value;
-                    table.getColumn("createdAt")?.setFilterValue((old: any) => {
+                    table.getColumn("createdAt")?.setFilterValue((old: DateRangeFilter | undefined) => {
                       return [old?.[0], value ? new Date(value) : undefined];
                     });
                     setActivePreset(null);

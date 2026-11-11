@@ -4,7 +4,6 @@ import { createColumnHelper, ColumnDef, FilterFn } from "@tanstack/react-table";
 import { EditableOrderStatusCell } from "./EditableOrderStatusCell";
 import {
   Order,
-  OrderStatus,
   PaymentStatus,
 } from "prisma/generated/prisma/client";
 
@@ -27,27 +26,6 @@ const dateRangeFilter: FilterFn<EnrichedOrder> = (
   if (start && !end) return date >= start;
   if (!start && end) return date <= end;
   return date >= start! && date <= end!;
-};
-
-// Minimal status badge - Shopify style
-const StatusBadge = ({ status }: { status: OrderStatus }) => {
-  const styles: Record<OrderStatus, string> = {
-    CONFIRMED: "bg-blue-50 text-blue-700 border-blue-200",
-    SHIPPED: "bg-purple-50 text-purple-700 border-purple-200",
-    DELIVERED: "bg-green-50 text-green-700 border-green-200",
-    RETURNED: "bg-red-50 text-red-700 border-red-200",
-    CANCELLED: "bg-gray-50 text-gray-700 border-gray-200",
-    PENDING: "bg-yellow-50 text-yellow-700 border-yellow-200",
-    NO_ANSWER: "bg-orange-50 text-orange-700 border-orange-200",
-  };
-
-  return (
-    <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium border ${styles[status]}`}
-    >
-      {status}
-    </span>
-  );
 };
 
 // Minimal payment status badge

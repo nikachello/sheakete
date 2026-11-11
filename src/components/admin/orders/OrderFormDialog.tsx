@@ -226,7 +226,7 @@ export function OrderFormDialog({
 
       onOpenChange(false);
       resetForm();
-    } catch (error) {
+    } catch {
       setGeneralError("დაფიქსირდა შეცდომა. გთხოვთ სცადოთ თავიდან.");
     } finally {
       setLoading(false);

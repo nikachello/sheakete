@@ -10,8 +10,7 @@ import {
   DollarSign,
   Wallet,
   CreditCard,
-  TrendingDown as Loss,
-  Package,
+  type LucideIcon,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +38,7 @@ function MetricCard({
   title: string;
   value: number;
   previousValue?: number;
-  icon: any;
+  icon: LucideIcon;
   valueColor?: string;
 }) {
   const percentageChange =
@@ -73,7 +72,7 @@ function MetricCard({
               <>
                 <TrendingDown className="mr-1 h-3 w-3 text-red-500" />
                 <span className="text-red-500">
-                  {percentageChange.toFixed(1)}% " "
+                  {percentageChange.toFixed(1)}%{" "}
                 </span>
               </>
             )}

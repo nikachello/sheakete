@@ -1,7 +1,6 @@
 "use client";
 
 import { ColumnFiltersState } from "@tanstack/react-table";
-import { OrderStatus, PaymentStatus } from "prisma/generated/prisma/client";
 
 export type FilterPreset = {
   id: string;
