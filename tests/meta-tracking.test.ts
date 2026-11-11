@@ -8,6 +8,22 @@ import { TRACKING_PREFERENCE_COOKIE, SESSION_COOKIE } from "../src/lib/meta/shar
 import { getAttribution, setTrackingEnabled, trackMetaEvent } from "../src/lib/meta/browser";
 import { confirmLead } from "../src/services/analytics/confirm-lead.service";
 import { dispatchConversions } from "../src/lib/meta/outbox";
+import { purchaseProbe } from "../src/lib/meta/diagnostic";
+
+test("diagnostic source comparison uses synthetic data and distinct event IDs", () => {
+  const now = new Date();
+  const website = purchaseProbe("website", "https://shop.example", "test-run", now);
+  const call = purchaseProbe("phone_call", "https://shop.example", "test-run", now);
+  assert.equal(website.action_source, "website");
+  assert.equal(call.action_source, "phone_call");
+  assert.notEqual(website.event_id, call.event_id);
+  assert.equal(website.event_time, call.event_time);
+  assert.deepEqual(website.custom_data.currency, call.custom_data.currency);
+  assert.deepEqual(website.user_data.em, call.user_data.em);
+  assert.equal(website.event_source_url, "https://shop.example/");
+  assert.equal(call.event_source_url, undefined);
+  assert.ok(!("ph" in website.user_data));
+});
 
 const attribution = {
   consent: true as const,
